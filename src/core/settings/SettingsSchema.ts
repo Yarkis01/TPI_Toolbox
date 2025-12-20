@@ -11,4 +11,11 @@ export interface SettingDefinition {
 /**
  * Default settings definitions.
  */
-export const SETTINGS_DEF: SettingDefinition[] = [];
+export const SETTINGS_DEF: SettingDefinition[] = [
+    {
+        key: 'showRideHypeAsText',
+        label: 'Afficher la hype des attractions en texte',
+        description: 'Au lieu de la barre de hype, afficher la valeur numérique.',
+        defaultValue: false,
+    },
+];
