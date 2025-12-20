@@ -44,7 +44,7 @@ export const STRINGS = {
 export const CONFIG = {
     // Constants about the application
     APP_NAME: "TPI Toolbox",
-    APP_VERSION: "0.0.1",
+    APP_VERSION: "0.1.0",
     DEVELOPER_NAME: "Yarkis01",
     DEVELOPER_WEBSITE: "https://github.com/Yarkis01",
 

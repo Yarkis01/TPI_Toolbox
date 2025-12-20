@@ -7,7 +7,7 @@ export default defineConfig({
             entry: 'src/main.ts',
             userscript: {
                 name: 'TPI Toolbox',
-                version: '0.0.1',
+                version: '0.1.0',
                 author: 'Yarkis01',
                 description: 'A toolbox for TPI enhancing user experience with various features.',
                 match: ['https://www.themeparkindustries.com/*'],
