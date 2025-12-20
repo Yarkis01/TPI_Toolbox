@@ -1,6 +1,9 @@
 import { UIManager } from "../ui/UIManager";
 import { Logger } from "../utils/Logger";
-import { LayoutCleaner } from "../ui/modifiers/cleaners/LayoutCleaner";
+import { LayoutCleaner } from "../ui/modifiers/LayoutCleaner";
+import { HeaderWidgets } from "../ui/components/HeaderWidgets";
+import { ChatOverlay } from "../ui/components/ChatOverlay";
+import { BodyModifier } from "../ui/modifiers/BodyModifier";
 
 /**
  * Main application class.
@@ -14,9 +17,16 @@ export class App {
      */
     public constructor() {
         this._logger = new Logger("App");
-        this._uiManager = new UIManager([
-            new LayoutCleaner()
-        ]);
+        this._uiManager = new UIManager(
+            [
+                new LayoutCleaner(),
+                new BodyModifier()
+            ],
+            [
+                new HeaderWidgets(),
+                new ChatOverlay()
+            ]
+        );
     }
 
     /**

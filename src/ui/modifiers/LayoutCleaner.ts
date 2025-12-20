@@ -1,12 +1,12 @@
-import { SELECTORS } from "../../../core/Config";
-import { injectStyle } from "../../../utils/DomUtils";
-import { Logger } from "../../../utils/Logger";
-import { ICleaner } from "../ICleaner";
+import { CONFIG, SELECTORS } from "../../core/Config";
+import { injectStyle } from "../../utils/DomUtils";
+import { Logger } from "../../utils/Logger";
+import { IModifier } from "../interfaces/IModifier";
 
 /**
  * Cleaner class to remove unnecessary layout elements from the UI.
  */
-export class LayoutCleaner implements ICleaner {
+export class LayoutCleaner implements IModifier {
     private readonly _logger: Logger;
 
     /**
@@ -19,11 +19,11 @@ export class LayoutCleaner implements ICleaner {
     /**
      * @inheritdoc
      */
-    public clean(): void {
+    public apply(): void {
         this._logger.debug("Removing useless UI elements...");
 
         injectStyle(`
-            ${SELECTORS.LINK_TUTORIAL}, ${SELECTORS.DISCORD_BUTTON}, ${SELECTORS.OLD_CHAT_BUTTON} {
+            ${SELECTORS.LINK_TUTORIAL}, ${SELECTORS.DISCORD_BUTTON}, ${SELECTORS.OLD_CHAT_BUTTON}, ${SELECTORS.LOGOUT_BUTTON} {
                 display: none !important;
                 visibility: hidden !important;
             }

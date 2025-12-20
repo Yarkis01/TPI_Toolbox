@@ -1,21 +1,26 @@
 import { Logger } from "../utils/Logger";
-import { ICleaner } from "./modifiers/ICleaner";
+import { IModifier } from "./interfaces/IModifier";
+import { IComponent } from "./interfaces/IComponent";
 
 /**
  * UI Manager class to handle UI modifications and cleaning.
  */
 export class UIManager {
     private readonly _logger: Logger;
-    private readonly _cleaners: ICleaner[];
+    private readonly _cleaners: IModifier[];
+    private readonly _components: IComponent[];
 
     /**
      * Creates an instance of UIManager.
      * @param cleaners - Array of ICleaner instances to apply to the UI.
      */
-    public constructor(cleaners: ICleaner[]) {
+    public constructor(cleaners: IModifier[], components: IComponent[]) {
         this._logger = new Logger("UIManager");
 
         this._cleaners = cleaners;
+        this._components = components;
+
+        this._logger.info(`UIManager initialized with ${this._cleaners.length} cleaners and ${this._components.length} components.`);
     }
 
     /**
@@ -25,8 +30,9 @@ export class UIManager {
         this._logger.info("🖌️ Initializing UI Manager...");
 
         this._sanitize();
+        this._injectComponents();
         
-        this._logger.info("🖌️ UI Manager initialized.");
+        this._logger.info("✅ UI Manager initialized.");
     }
 
     /**
@@ -37,12 +43,29 @@ export class UIManager {
 
         this._cleaners.forEach((cleaner) => {
             try {
-                cleaner.clean();
+                cleaner.apply();
             } catch (error) {
                 this._logger.error(`Failed to apply cleaner: ${(error as Error).message}`);
             }
         })
 
-        this._logger.info("✨ UI sanitized.");
+        this._logger.info("✅ UI sanitized.");
+    }
+
+    /**
+     * Injects all registered UI components.
+     */
+    private _injectComponents(): void {
+        this._logger.info("🔌 Injecting UI components...")
+        
+        this._components.forEach((component) => {
+            try {
+                component.inject();
+            } catch (error) {
+                this._logger.error(`Failed to inject component: ${(error as Error).message}`);
+            }
+        });
+
+        this._logger.info("✅ UI components injected.");
     }
 }
