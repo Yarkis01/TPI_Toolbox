@@ -47,7 +47,9 @@
             line-height: 1;
             cursor: pointer;
             transition: color 0.2s;
-            &:hover { color: $text-main; }
+            &:hover {
+                color: $text-main;
+            }
         }
     }
 
@@ -85,11 +87,13 @@
         padding: 0.5rem 1.5rem 1.5rem 1.5rem;
         overflow-y: auto;
         flex: 1;
-        
-        &::-webkit-scrollbar { width: 6px; }
-        &::-webkit-scrollbar-thumb { 
-            background: rgba(255,255,255,0.1); 
-            border-radius: 3px; 
+
+        &::-webkit-scrollbar {
+            width: 6px;
+        }
+        &::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
         }
     }
 
@@ -128,7 +132,9 @@
     border-bottom: 1px solid $border-color;
     animation: tpiSlideIn 0.3s ease-out;
 
-    &:last-child { border-bottom: none; }
+    &:last-child {
+        border-bottom: none;
+    }
 
     .tpi-setting-info {
         padding-right: 1rem;
@@ -154,10 +160,10 @@
     height: 24px;
     flex-shrink: 0;
 
-    input { 
-        opacity: 0; 
-        width: 0; 
-        height: 0; 
+    input {
+        opacity: 0;
+        width: 0;
+        height: 0;
     }
 
     .tpi-slider {
@@ -165,18 +171,18 @@
         cursor: pointer;
         inset: 0;
         background-color: #4f545c;
-        transition: .3s;
+        transition: 0.3s;
         border-radius: 24px;
 
         &:before {
             position: absolute;
-            content: "";
+            content: '';
             height: 18px;
             width: 18px;
             left: 3px;
             bottom: 3px;
             background-color: white;
-            transition: .3s;
+            transition: 0.3s;
             border-radius: 50%;
         }
     }
@@ -195,11 +201,21 @@
 }
 
 @keyframes tpiFadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 @keyframes tpiSlideIn {
-    from { opacity: 0; transform: translateY(5px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

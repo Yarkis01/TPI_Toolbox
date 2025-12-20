@@ -48,17 +48,21 @@ export class SettingsModal implements IComponent {
      * Opens the settings modal.
      */
     private _open(): void {
-        this._container = createElement('div', { 
-            id: IDS.SETTINGS_MODAL, 
-            class: 'tpi-modal-overlay' 
-        }, [
-            createElement('div', { class: 'tpi-modal-card' }, [
-                this._createHeader(),
-                this._createSearchBar(),
-                this._createBody(),
-                this._createFooter()
-            ])
-        ]);
+        this._container = createElement(
+            'div',
+            {
+                id: IDS.SETTINGS_MODAL,
+                class: 'tpi-modal-overlay',
+            },
+            [
+                createElement('div', { class: 'tpi-modal-card' }, [
+                    this._createHeader(),
+                    this._createSearchBar(),
+                    this._createBody(),
+                    this._createFooter(),
+                ]),
+            ],
+        );
 
         this._container.addEventListener('click', (e) => {
             if (e.target === this._container) this._close();
@@ -82,10 +86,14 @@ export class SettingsModal implements IComponent {
     private _createHeader(): HTMLElement {
         return createElement('div', { class: 'tpi-modal-card__header' }, [
             createElement('h2', {}, [`🔧 ${CONFIG.APP_NAME}`]),
-            createElement('button', {
-                class: 'tpi-close-btn',
-                onclick: () => this._close()
-            }, ['×'])
+            createElement(
+                'button',
+                {
+                    class: 'tpi-close-btn',
+                    onclick: () => this._close(),
+                },
+                ['×'],
+            ),
         ]);
     }
 
@@ -101,12 +109,12 @@ export class SettingsModal implements IComponent {
             oninput: (e: Event) => {
                 const query = (e.target as HTMLInputElement).value.toLowerCase();
                 this._filterSettings(query);
-            }
+            },
         });
 
         return createElement('div', { class: 'tpi-search-bar' }, [
-            createElement('span', { class: 'tpi-search-icon' }, ['🔍']), 
-            input
+            createElement('span', { class: 'tpi-search-icon' }, ['🔍']),
+            input,
         ]);
     }
 
@@ -117,13 +125,17 @@ export class SettingsModal implements IComponent {
     private _createBody(): HTMLElement {
         const settingsMap = this._settingsManager.getAllSettings();
         const settingsElements = Array.from(settingsMap.entries()).map(([def, isEnabled]) =>
-            this._createSettingRow(def, isEnabled)
+            this._createSettingRow(def, isEnabled),
         );
 
-        return createElement('div', { 
-            id: 'tpi-settings-list',
-            class: 'tpi-modal-card__body' 
-        }, settingsElements);
+        return createElement(
+            'div',
+            {
+                id: 'tpi-settings-list',
+                class: 'tpi-modal-card__body',
+            },
+            settingsElements,
+        );
     }
 
     /**
@@ -138,24 +150,28 @@ export class SettingsModal implements IComponent {
             onchange: (e: Event) => {
                 const target = e.target as HTMLInputElement;
                 this._settingsManager.set(def.key, target.checked);
-            }
+            },
         }) as HTMLInputElement;
         checkbox.checked = isEnabled;
 
         const switchLabel = createElement('label', { class: 'tpi-switch' }, [
             checkbox,
-            createElement('span', { class: 'tpi-slider' })
+            createElement('span', { class: 'tpi-slider' }),
         ]);
 
         const textContainer = createElement('div', { class: 'tpi-setting-info' }, [
             createElement('div', { class: 'tpi-setting-label' }, [def.label]),
-            createElement('div', { class: 'tpi-setting-desc' }, [def.description || ''])
+            createElement('div', { class: 'tpi-setting-desc' }, [def.description || '']),
         ]);
 
-        const row = createElement('div', { 
-            class: 'tpi-setting-row',
-            'data-search': `${def.label} ${def.description}`.toLowerCase() 
-        }, [textContainer, switchLabel]);
+        const row = createElement(
+            'div',
+            {
+                class: 'tpi-setting-row',
+                'data-search': `${def.label} ${def.description}`.toLowerCase(),
+            },
+            [textContainer, switchLabel],
+        );
 
         return row;
     }
@@ -166,11 +182,17 @@ export class SettingsModal implements IComponent {
      */
     private _createFooter(): HTMLElement {
         return createElement('div', { class: 'tpi-modal-card__footer' }, [
-            createElement('span', { style: { fontSize: '0.8rem', opacity: '0.5' } }, [`${CONFIG.APP_NAME} v${CONFIG.APP_VERSION} by ${CONFIG.DEVELOPER_NAME}`]),
-            createElement('button', { 
-                class: 'tpi-btn-primary', 
-                onclick: () => document.location.reload() 
-            }, [STRINGS.SAVE_SETTINGS_BUTTON])
+            createElement('span', { style: { fontSize: '0.8rem', opacity: '0.5' } }, [
+                `${CONFIG.APP_NAME} v${CONFIG.APP_VERSION} by ${CONFIG.DEVELOPER_NAME}`,
+            ]),
+            createElement(
+                'button',
+                {
+                    class: 'tpi-btn-primary',
+                    onclick: () => document.location.reload(),
+                },
+                [STRINGS.SAVE_SETTINGS_BUTTON],
+            ),
         ]);
     }
 

@@ -11,6 +11,4 @@ export interface SettingDefinition {
 /**
  * Default settings definitions.
  */
-export const SETTINGS_DEF: SettingDefinition[] = [
-    
-];
+export const SETTINGS_DEF: SettingDefinition[] = [];
