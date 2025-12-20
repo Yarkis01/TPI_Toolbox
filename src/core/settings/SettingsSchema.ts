@@ -21,7 +21,8 @@ export const SETTINGS_DEF: SettingDefinition[] = [
     {
         key: 'entityStatusColorizer',
         label: 'Coloriseur de statut des entités',
-        description: "Colorer les éléments tels que les attractions et boutiques en fonction de leur statut (ouvert, fermé, en travaux, etc…).",
+        description:
+            'Colorer les éléments tels que les attractions et boutiques en fonction de leur statut (ouvert, fermé, en travaux, etc…).',
         defaultValue: false,
-    }
+    },
 ];
