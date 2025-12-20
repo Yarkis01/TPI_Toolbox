@@ -39,7 +39,7 @@ export const EVENTS = {
 export const STRINGS = {
     OPEN_CHAT_BUTTON: 'Ouvrir le Chat',
     CLOSE_CHAT_BUTTON: 'Fermer le Chat',
-    TOOLBOX_BUTTON: 'TPI Toolbox',
+    SAVE_SETTINGS_BUTTON: 'Sauvegarder & Recharger',
 } as const;
 
 /**

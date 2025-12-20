@@ -1,4 +1,4 @@
-import { CONFIG, EVENTS, IDS } from '../../core/Config';
+import { CONFIG, EVENTS, IDS, STRINGS } from '../../core/Config';
 import { SettingsManager } from '../../core/settings/SettingsManager';
 import { SettingDefinition } from '../../core/settings/SettingsSchema';
 import { createElement } from '../../utils/DOMUtils';
@@ -170,7 +170,7 @@ export class SettingsModal implements IComponent {
             createElement('button', { 
                 class: 'tpi-btn-primary', 
                 onclick: () => document.location.reload() 
-            }, ['Sauvegarder & Recharger'])
+            }, [STRINGS.SAVE_SETTINGS_BUTTON])
         ]);
     }
 

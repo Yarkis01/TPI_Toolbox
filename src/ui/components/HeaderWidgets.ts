@@ -1,4 +1,4 @@
-import { EVENTS, IDS, SELECTORS, STRINGS } from '../../core/Config';
+import { CONFIG, EVENTS, IDS, SELECTORS, STRINGS } from '../../core/Config';
 import { createElement } from '../../utils/DOMUtils';
 import { Logger } from '../../utils/Logger';
 import { IComponent } from '../interfaces/IComponent';
@@ -67,7 +67,7 @@ export class HeaderWidgets implements IComponent {
                     marginRight: '1em',
                 },
             },
-            [STRINGS.TOOLBOX_BUTTON],
+            [CONFIG.APP_NAME],
         );
     }
 
