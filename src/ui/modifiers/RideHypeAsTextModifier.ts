@@ -1,3 +1,4 @@
+import { SELECTORS } from '../../core/Config';
 import { Logger } from '../../utils/Logger';
 import { IModifier } from '../interfaces/IModifier';
 
@@ -61,7 +62,7 @@ export class RideHypeAsTextModifier implements IModifier {
      */
     private _processExistingNodes(): void {
         const hypeContainers = document.querySelectorAll<HTMLElement>(
-            '.attraction-card__hype:not([data-processed="true"])',
+            SELECTORS.ATTRACTIONS_HYPE + ':not([data-processed="true"])',
         );
 
         if (hypeContainers.length > 0) {
@@ -77,8 +78,10 @@ export class RideHypeAsTextModifier implements IModifier {
      * @param container The container element with hype dots.
      */
     private _transformContainer(container: HTMLElement): void {
-        const totalDots = container.querySelectorAll('.attraction-card__hype-dot').length;
-        const activeDots = container.querySelectorAll('.attraction-card__hype-dot--on').length;
+        const totalDots = container.querySelectorAll(SELECTORS.ATTRACTIONS_HYPE_DOTS).length;
+        const activeDots = container.querySelectorAll(
+            `${SELECTORS.ATTRACTIONS_HYPE_DOTS}--on`,
+        ).length;
 
         if (totalDots > 0) {
             let colorStyle = '#ffffff';

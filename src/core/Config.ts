@@ -12,6 +12,8 @@ export const SELECTORS = {
     CHAT_HEADER: 'div.chat-window__header',
     CHAT_OPENED: 'tpi-chat-opened',
     CHAT_MESSAGES: 'div#chat-messages',
+    ATTRACTIONS_HYPE: 'span.attraction-card__hype',
+    ATTRACTIONS_HYPE_DOTS: 'span.attraction-card__hype-dot',
 } as const;
 
 /**
