@@ -45,6 +45,9 @@ export class EntityStatusColorizerModifier implements IModifier {
                 case 'en travaux':
                     element.style.border = '2px dashed orange';
                     break;
+                case 'en vente':
+                    element.style.border = '2px solid orange';
+                    break;
                 case 'ferme':
                     element.style.border = '2px solid red';
                     break;
