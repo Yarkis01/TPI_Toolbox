@@ -1,7 +1,7 @@
-import { CONFIG, EVENTS, IDS, SELECTORS } from "../../core/Config";
-import { createElement } from "../../utils/DomUtils";
-import { Logger } from "../../utils/Logger";
-import { IComponent } from "../interfaces/IComponent";
+import { CONFIG, EVENTS, IDS, SELECTORS } from '../../core/Config';
+import { createElement } from '../../utils/DomUtils';
+import { Logger } from '../../utils/Logger';
+import { IComponent } from '../interfaces/IComponent';
 
 /**
  * Class representing the chat overlay component.
@@ -14,7 +14,7 @@ export class ChatOverlay implements IComponent {
      * Creates an instance of ChatOverlay.
      */
     public constructor() {
-        this._logger = new Logger("ChatOverlay");
+        this._logger = new Logger('ChatOverlay');
         this._container = null;
     }
 
@@ -22,14 +22,14 @@ export class ChatOverlay implements IComponent {
      * @inheritdoc
      */
     public inject(): void {
-        this._logger.debug("Injecting chat overlay into the UI.");
+        this._logger.debug('Injecting chat overlay into the UI.');
 
         this._container = this._createChatOverlay();
         document.body.appendChild(this._container);
 
         this._registerEvents();
 
-        this._logger.info("✅ Chat overlay injected successfully.");
+        this._logger.info('✅ Chat overlay injected successfully.');
     }
 
     /**
@@ -37,27 +37,31 @@ export class ChatOverlay implements IComponent {
      * @returns The chat overlay HTMLElement.
      */
     private _createChatOverlay(): HTMLElement {
-        return createElement('aside', {
-            id: IDS.CHAT_OVERLAY,
-            style: {
-                position: 'fixed',
-                top: '0',
-                right: '0',
-                width: CONFIG.CHAT_IFRAME_WIDTH + 'px',
-                height: '100vh',
-                zIndex: '9999',
-                display: 'none',
-                borderLeft: '1px solid #202225',
-                boxShadow: '-4px 0 15px rgba(0,0,0,0.3)'
-            }
-        }, [
-            createElement('iframe', {
-                src: CONFIG.CHAT_IFRAME_SRC,
-                width: '100%',
-                height: '100%',
-                frameborder: '0',
-            })
-        ]);
+        return createElement(
+            'aside',
+            {
+                id: IDS.CHAT_OVERLAY,
+                style: {
+                    position: 'fixed',
+                    top: '0',
+                    right: '0',
+                    width: CONFIG.CHAT_IFRAME_WIDTH + 'px',
+                    height: '100vh',
+                    zIndex: '9999',
+                    display: 'none',
+                    borderLeft: '1px solid #202225',
+                    boxShadow: '-4px 0 15px rgba(0,0,0,0.3)',
+                },
+            },
+            [
+                createElement('iframe', {
+                    src: CONFIG.CHAT_IFRAME_SRC,
+                    width: '100%',
+                    height: '100%',
+                    frameborder: '0',
+                }),
+            ],
+        );
     }
 
     /**

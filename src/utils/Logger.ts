@@ -20,7 +20,7 @@ export enum LogLevel {
     /**
      * Debugging messages.
      */
-    DEBUG = 'DEBUG'
+    DEBUG = 'DEBUG',
 }
 
 /**
@@ -31,7 +31,8 @@ const CONSOLE_STYLES = {
     [LogLevel.WARN]: 'color: #fbc531; font-weight: bold;',
     [LogLevel.ERROR]: 'color: #e84118; font-weight: bold;',
     [LogLevel.DEBUG]: 'color: #7f8fa6; font-style: italic;',
-    CONTEXT: 'color: #9c88ff; font-weight: bold; background-color: #eee; padding: 2px 4px; border-radius: 3px;'
+    CONTEXT:
+        'color: #9c88ff; font-weight: bold; background-color: #eee; padding: 2px 4px; border-radius: 3px;',
 } as const;
 
 /**
@@ -88,12 +89,12 @@ export class Logger {
      */
     private print(level: LogLevel, message: string, consoleMethod: Function): void {
         const timestamp = new Date().toLocaleTimeString('fr-FR', { hour12: false });
-        
+
         consoleMethod(
             `%c[${timestamp}] %c[${this._context}] %c${message}`,
             'color: gray;',
             CONSOLE_STYLES.CONTEXT,
-            CONSOLE_STYLES[level]
+            CONSOLE_STYLES[level],
         );
     }
 }

@@ -25,7 +25,7 @@ export function injectStyle(style: string): void {
 export function createElement<K extends keyof HTMLElementTagNameMap>(
     tag: K,
     attributes: Record<string, string | Function | Object> = {},
-    children: (HTMLElement | string | SVGElement)[] = []
+    children: (HTMLElement | string | SVGElement)[] = [],
 ): HTMLElementTagNameMap[K] {
     const element = document.createElement(tag);
 
@@ -40,7 +40,7 @@ export function createElement<K extends keyof HTMLElementTagNameMap>(
         }
     });
 
-    children.forEach(child => {
+    children.forEach((child) => {
         if (typeof child === 'string') {
             element.appendChild(document.createTextNode(child));
         } else {

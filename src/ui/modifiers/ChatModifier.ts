@@ -1,7 +1,7 @@
-import { SELECTORS } from "../../core/Config";
-import { injectStyle } from "../../utils/DomUtils";
-import { Logger } from "../../utils/Logger";
-import { IModifier } from "../interfaces/IModifier";
+import { SELECTORS } from '../../core/Config';
+import { injectStyle } from '../../utils/DomUtils';
+import { Logger } from '../../utils/Logger';
+import { IModifier } from '../interfaces/IModifier';
 
 /**
  * Modifier to hide old chat UI elements.
@@ -13,14 +13,14 @@ export class ChatModifier implements IModifier {
      * Creates an instance of the ChatModifier class.
      */
     public constructor() {
-        this._logger = new Logger("ChatModifier");
+        this._logger = new Logger('ChatModifier');
     }
 
     /**
      * @inheritdoc
      */
     public apply(): void {
-        this._logger.debug("Cleaning chat UI elements...");
+        this._logger.debug('Cleaning chat UI elements...');
 
         injectStyle(`
             ${SELECTORS.CHAT_CLOSER} {
@@ -37,6 +37,6 @@ export class ChatModifier implements IModifier {
             }
         `);
 
-        this._logger.debug("Chat UI elements cleaned.");
+        this._logger.debug('Chat UI elements cleaned.');
     }
 }

@@ -1,9 +1,9 @@
-import { UIManager } from "../ui/UIManager";
-import { Logger } from "../utils/Logger";
-import { LayoutCleaner } from "../ui/modifiers/LayoutCleaner";
-import { HeaderWidgets } from "../ui/components/HeaderWidgets";
-import { ChatOverlay } from "../ui/components/ChatOverlay";
-import { BodyModifier } from "../ui/modifiers/BodyModifier";
+import { UIManager } from '../ui/UIManager';
+import { ChatOverlay } from '../ui/components/ChatOverlay';
+import { HeaderWidgets } from '../ui/components/HeaderWidgets';
+import { BodyModifier } from '../ui/modifiers/BodyModifier';
+import { LayoutCleaner } from '../ui/modifiers/LayoutCleaner';
+import { Logger } from '../utils/Logger';
 
 /**
  * Main application class.
@@ -16,16 +16,10 @@ export class App {
      * Creates an instance of the App class.
      */
     public constructor() {
-        this._logger = new Logger("App");
+        this._logger = new Logger('App');
         this._uiManager = new UIManager(
-            [
-                new LayoutCleaner(),
-                new BodyModifier()
-            ],
-            [
-                new HeaderWidgets(),
-                new ChatOverlay()
-            ]
+            [new LayoutCleaner(), new BodyModifier()],
+            [new HeaderWidgets(), new ChatOverlay()],
         );
     }
 
@@ -33,10 +27,10 @@ export class App {
      * Initializes the application.
      */
     public async initialize(): Promise<void> {
-        this._logger.info("🔧 Initializing application...")
-        
+        this._logger.info('🔧 Initializing application...');
+
         this._uiManager.initialize();
 
-        this._logger.info("✅ Application initialized.");
+        this._logger.info('✅ Application initialized.');
     }
 }

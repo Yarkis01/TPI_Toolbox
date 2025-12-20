@@ -1,7 +1,7 @@
-import { CONFIG, SELECTORS } from "../../core/Config";
-import { injectStyle } from "../../utils/DomUtils";
-import { Logger } from "../../utils/Logger";
-import { IModifier } from "../interfaces/IModifier";
+import { CONFIG, SELECTORS } from '../../core/Config';
+import { injectStyle } from '../../utils/DomUtils';
+import { Logger } from '../../utils/Logger';
+import { IModifier } from '../interfaces/IModifier';
 
 /**
  * Class representing the body modifier.
@@ -13,14 +13,14 @@ export class BodyModifier implements IModifier {
      * Creates an instance of BodyModifier.
      */
     public constructor() {
-        this._logger = new Logger("BodyModifier");
+        this._logger = new Logger('BodyModifier');
     }
 
     /**
      * @inheritdoc
      */
     public apply(): void {
-        this._logger.debug("Modifying body styles for chat integration...");
+        this._logger.debug('Modifying body styles for chat integration...');
 
         injectStyle(`
             :root {
@@ -58,6 +58,6 @@ export class BodyModifier implements IModifier {
             }
         `);
 
-        this._logger.info("✅ Body styles modified successfully.");
+        this._logger.info('✅ Body styles modified successfully.');
     }
 }

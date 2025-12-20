@@ -1,6 +1,6 @@
-import { Logger } from "../utils/Logger";
-import { IModifier } from "./interfaces/IModifier";
-import { IComponent } from "./interfaces/IComponent";
+import { Logger } from '../utils/Logger';
+import { IComponent } from './interfaces/IComponent';
+import { IModifier } from './interfaces/IModifier';
 
 /**
  * UI Manager class to handle UI modifications and cleaning.
@@ -15,31 +15,33 @@ export class UIManager {
      * @param cleaners - Array of ICleaner instances to apply to the UI.
      */
     public constructor(cleaners: IModifier[], components: IComponent[]) {
-        this._logger = new Logger("UIManager");
+        this._logger = new Logger('UIManager');
 
         this._cleaners = cleaners;
         this._components = components;
 
-        this._logger.info(`UIManager initialized with ${this._cleaners.length} cleaners and ${this._components.length} components.`);
+        this._logger.info(
+            `UIManager initialized with ${this._cleaners.length} cleaners and ${this._components.length} components.`,
+        );
     }
 
     /**
      * Initializes the UI Manager and applies all cleaners.
      */
     public initialize(): void {
-        this._logger.info("🖌️ Initializing UI Manager...");
+        this._logger.info('🖌️ Initializing UI Manager...');
 
         this._sanitize();
         this._injectComponents();
-        
-        this._logger.info("✅ UI Manager initialized.");
+
+        this._logger.info('✅ UI Manager initialized.');
     }
 
     /**
      * Sanitizes the UI by applying all registered cleaners.
      */
     private _sanitize(): void {
-        this._logger.info("🧹 Sanitizing UI...");
+        this._logger.info('🧹 Sanitizing UI...');
 
         this._cleaners.forEach((cleaner) => {
             try {
@@ -47,17 +49,17 @@ export class UIManager {
             } catch (error) {
                 this._logger.error(`Failed to apply cleaner: ${(error as Error).message}`);
             }
-        })
+        });
 
-        this._logger.info("✅ UI sanitized.");
+        this._logger.info('✅ UI sanitized.');
     }
 
     /**
      * Injects all registered UI components.
      */
     private _injectComponents(): void {
-        this._logger.info("🔌 Injecting UI components...")
-        
+        this._logger.info('🔌 Injecting UI components...');
+
         this._components.forEach((component) => {
             try {
                 component.inject();
@@ -66,6 +68,6 @@ export class UIManager {
             }
         });
 
-        this._logger.info("✅ UI components injected.");
+        this._logger.info('✅ UI components injected.');
     }
 }
