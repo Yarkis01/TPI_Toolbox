@@ -5,6 +5,7 @@ import { SettingsModal } from '../ui/components/SettingsModal';
 import { IComponent } from '../ui/interfaces/IComponent';
 import { IModifier } from '../ui/interfaces/IModifier';
 import { BodyModifier } from '../ui/modifiers/BodyModifier';
+import { EntityStatusColorizerModifier } from '../ui/modifiers/EntityStatusColorizerModifier';
 import { LayoutCleaner } from '../ui/modifiers/LayoutCleaner';
 import { RideHypeAsTextModifier } from '../ui/modifiers/RideHypeAsTextModifier';
 import { Logger } from '../utils/Logger';
@@ -37,6 +38,11 @@ export class App {
         if (this._settingsManager.isEnabled('showRideHypeAsText')) {
             this._logger.info('🚀 Enabling Ride Hype As Text modifier.');
             modifiers.push(new RideHypeAsTextModifier());
+        }
+
+        if (this._settingsManager.isEnabled('entityStatusColorizer')) {
+            this._logger.info('🚀 Enabling Entity Status Colorizer modifier.');
+            modifiers.push(new EntityStatusColorizerModifier());
         }
 
         return modifiers;

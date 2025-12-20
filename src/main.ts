@@ -1,4 +1,6 @@
 import { Logger } from './utils/Logger';
+import { App } from './core/App';
+import { IframeApp } from './core/IframeApp';
 
 (async () => {
     const logger = new Logger('TPI_Toolbox');
@@ -7,7 +9,6 @@ import { Logger } from './utils/Logger';
         logger.info('🚀 TPI Toolbox is starting...');
 
         try {
-            const { App } = await import('./core/App');
             const app = new App();
             await app.initialize();
         } catch (error) {
@@ -15,8 +16,7 @@ import { Logger } from './utils/Logger';
         }
     } else {
         logger.warn('⚠️ Detected iframe context, initializing IframeApp...');
-
-        const { IframeApp } = await import('./core/IframeApp');
+        
         const iframeApp = new IframeApp();
         await iframeApp.initialize();
     }
