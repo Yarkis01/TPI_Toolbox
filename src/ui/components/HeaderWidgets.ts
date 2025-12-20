@@ -1,7 +1,8 @@
 import { EVENTS, IDS, SELECTORS, STRINGS } from '../../core/Config';
-import { createElement } from '../../utils/DomUtils';
+import { createElement } from '../../utils/DOMUtils';
 import { Logger } from '../../utils/Logger';
 import { IComponent } from '../interfaces/IComponent';
+import './styles/_header-widgets.scss';
 
 /**
  * Class representing header widgets in the UI.
@@ -30,7 +31,7 @@ export class HeaderWidgets implements IComponent {
             {
                 id: IDS.HEADERS_WIDGETS,
             },
-            [this._createChatButton()],
+            [this._createToolboxButton(), this._createChatButton()],
         );
 
         header.appendChild(container);
@@ -52,6 +53,22 @@ export class HeaderWidgets implements IComponent {
         }
 
         return header;
+    }
+
+    private _createToolboxButton(): HTMLButtonElement {
+        return createElement(
+            'button',
+            {
+                id: IDS.TOOLBOX_BUTTON,
+                onclick: () => {
+                    document.dispatchEvent(new CustomEvent(EVENTS.TOOLBOX_TOGGLED));
+                },
+                style: {
+                    marginRight: '1em',
+                },
+            },
+            [STRINGS.TOOLBOX_BUTTON],
+        );
     }
 
     /**

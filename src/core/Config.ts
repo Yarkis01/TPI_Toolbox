@@ -21,6 +21,8 @@ export const IDS = {
     HEADERS_WIDGETS: 'tpi-header-widgets',
     CHAT_BUTTON: 'tpi-chat-button',
     CHAT_OVERLAY: 'tpi-chat-overlay',
+    TOOLBOX_BUTTON: 'tpi-toolbox-button',
+    SETTINGS_MODAL: 'tpi-settings-modal',
 } as const;
 
 /**
@@ -28,6 +30,7 @@ export const IDS = {
  */
 export const EVENTS = {
     CHAT_TOGGLED: 'tpitoolbox:chat:toggled',
+    TOOLBOX_TOGGLED: 'tpitoolbox:toolbox:toggled',
 } as const;
 
 /**
@@ -36,6 +39,7 @@ export const EVENTS = {
 export const STRINGS = {
     OPEN_CHAT_BUTTON: 'Ouvrir le Chat',
     CLOSE_CHAT_BUTTON: 'Fermer le Chat',
+    TOOLBOX_BUTTON: 'TPI Toolbox',
 } as const;
 
 /**

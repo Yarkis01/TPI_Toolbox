@@ -1,0 +1,20 @@
+@use './variables' as *;
+
+#tpi-toolbox-button {
+    background: rgba($primary, 0.2);
+    border: 1px solid rgba($primary, 0.5);
+    color: $primary;
+    padding: 0.5rem 1rem;
+    border-radius: 16px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 900;
+    transition: all 0.2s;
+
+    &:hover {
+        background: $primary;
+        color: white;
+        box-shadow: 0 3px 10px rgba($primary, 0.6);
+        transform: translateY(-1px);
+    }
+}

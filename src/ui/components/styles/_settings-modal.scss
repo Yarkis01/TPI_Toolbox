@@ -1,0 +1,205 @@
+@use './variables' as *;
+
+.tpi-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: $bg-overlay;
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: tpiFadeIn 0.2s ease-out;
+}
+
+.tpi-modal-card {
+    width: 500px;
+    max-width: 90vw;
+    max-height: 85vh;
+    background: $bg-card;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid rgba($primary, 0.3);
+
+    &__header {
+        padding: 1rem 1.5rem;
+        background: $bg-header;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid $border-color;
+
+        h2 {
+            margin: 0;
+            color: $primary;
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.2rem;
+        }
+
+        .tpi-close-btn {
+            background: none;
+            border: none;
+            color: $text-muted;
+            font-size: 1.8rem;
+            line-height: 1;
+            cursor: pointer;
+            transition: color 0.2s;
+            &:hover { color: $text-main; }
+        }
+    }
+
+    .tpi-search-bar {
+        padding: 1rem 1.5rem 0.5rem 1.5rem;
+        position: relative;
+        display: flex;
+        align-items: center;
+
+        .tpi-search-icon {
+            position: absolute;
+            left: 2.2rem;
+            opacity: 0.5;
+            font-size: 0.9rem;
+        }
+
+        .tpi-search-input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid $border-color;
+            border-radius: 6px;
+            padding: 0.6rem 0.6rem 0.6rem 2.2rem;
+            color: $text-main;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+
+            &:focus {
+                border-color: $primary;
+            }
+        }
+    }
+
+    &__body {
+        padding: 0.5rem 1.5rem 1.5rem 1.5rem;
+        overflow-y: auto;
+        flex: 1;
+        
+        &::-webkit-scrollbar { width: 6px; }
+        &::-webkit-scrollbar-thumb { 
+            background: rgba(255,255,255,0.1); 
+            border-radius: 3px; 
+        }
+    }
+
+    &__footer {
+        padding: 1rem 1.5rem;
+        background: $bg-header;
+        border-top: 1px solid $border-color;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: $text-muted;
+
+        .tpi-btn-primary {
+            background: rgba($primary, 0.2);
+            border: 1px solid rgba($primary, 0.5);
+            color: $primary;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+
+            &:hover {
+                background: $primary;
+                color: white;
+            }
+        }
+    }
+}
+
+.tpi-setting-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid $border-color;
+    animation: tpiSlideIn 0.3s ease-out;
+
+    &:last-child { border-bottom: none; }
+
+    .tpi-setting-info {
+        padding-right: 1rem;
+    }
+
+    .tpi-setting-label {
+        color: $text-main;
+        font-weight: 600;
+        margin-bottom: 0.2rem;
+    }
+
+    .tpi-setting-desc {
+        color: $text-muted;
+        font-size: 0.85rem;
+        line-height: 1.4;
+    }
+}
+
+.tpi-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+
+    input { 
+        opacity: 0; 
+        width: 0; 
+        height: 0; 
+    }
+
+    .tpi-slider {
+        position: absolute;
+        cursor: pointer;
+        inset: 0;
+        background-color: #4f545c;
+        transition: .3s;
+        border-radius: 24px;
+
+        &:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+    }
+
+    input:checked + .tpi-slider {
+        background-color: $primary;
+    }
+
+    input:focus + .tpi-slider {
+        box-shadow: 0 0 1px $primary;
+    }
+
+    input:checked + .tpi-slider:before {
+        transform: translateX(20px);
+    }
+}
+
+@keyframes tpiFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes tpiSlideIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
