@@ -1,3 +1,5 @@
+import { EntityStatusColorizerModule } from '../modules/EntityStatusColorizer/module';
+import { RideHypeAsTextModule } from '../modules/rideHypeAsText/module';
 import { Logger } from '../utils/Logger';
 import { BaseLayout } from './bootstrap/BaseLayout';
 import { ChatLayout } from './bootstrap/ChatLayout';
@@ -71,7 +73,8 @@ export class App implements IApp {
     private _initializeModules(moduleManager: ModuleManager): void {
         this._logger.info('📦 Initializing modules...');
 
-        
+        moduleManager.register(new EntityStatusColorizerModule());
+        moduleManager.register(new RideHypeAsTextModule());
 
         this._logger.info('✅ Modules initialized.');
     }
