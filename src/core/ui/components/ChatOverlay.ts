@@ -1,12 +1,11 @@
-import { CONFIG, EVENTS, IDS, SELECTORS } from '../../core/Config';
-import { createElement } from '../../utils/DomUtils';
-import { Logger } from '../../utils/Logger';
-import { IComponent } from '../interfaces/IComponent';
+import { CONFIG, EVENTS, IDS, SELECTORS } from '../../Config';
+import { createElement } from '../../../utils/DomUtils';
+import { Logger } from '../../../utils/Logger';
 
 /**
  * Class representing the chat overlay component.
  */
-export class ChatOverlay implements IComponent {
+export class ChatOverlay {
     private readonly _logger: Logger;
     private _container: HTMLElement | null;
 

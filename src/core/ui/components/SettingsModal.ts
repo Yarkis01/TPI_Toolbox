@@ -1,15 +1,14 @@
-import { CONFIG, EVENTS, IDS, STRINGS } from '../../core/Config';
-import { SettingsManager } from '../../core/settings/SettingsManager';
-import { SettingDefinition } from '../../core/settings/SettingsSchema';
-import { createElement } from '../../utils/DOMUtils';
-import { Logger } from '../../utils/Logger';
-import { IComponent } from '../interfaces/IComponent';
-import './styles/_settings-modal.scss';
+import { CONFIG, EVENTS, IDS, STRINGS } from '../../Config';
+import { SettingsManager } from '../../settings/SettingsManager';
+import { SettingDefinition } from '../../settings/SettingsSchema';
+import { createElement } from '../../../utils/DomUtils';
+import { Logger } from '../../../utils/Logger';
+import '../styles/_settings-modal.scss';
 
 /**
  * Modal for managing toolbox settings.
  */
-export class SettingsModal implements IComponent {
+export class SettingsModal {
     private readonly _logger: Logger;
     private _settingsManager: SettingsManager;
     private _container: HTMLElement | null = null;

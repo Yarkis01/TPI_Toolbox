@@ -1,4 +1,4 @@
-import { ChatModifier } from '../ui/modifiers/ChatModifier';
+import { ChatModifier } from './ui/modifiers/ChatModifier';
 import { Logger } from '../utils/Logger';
 
 /**

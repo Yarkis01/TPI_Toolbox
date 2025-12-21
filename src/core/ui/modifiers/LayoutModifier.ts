@@ -1,26 +1,25 @@
-import { CONFIG, SELECTORS } from '../../core/Config';
-import { injectStyle } from '../../utils/DomUtils';
-import { Logger } from '../../utils/Logger';
-import { IModifier } from '../interfaces/IModifier';
+import { CONFIG, SELECTORS } from '../../Config';
+import { injectStyle } from '../../../utils/DomUtils';
+import { Logger } from '../../../utils/Logger';
 
 /**
- * Class representing the body modifier.
+ * Class representing the layout modifier.
  */
-export class BodyModifier implements IModifier {
+export class LayoutModifier {
     private readonly _logger: Logger;
 
     /**
-     * Creates an instance of BodyModifier.
+     * Creates an instance of LayoutModifier.
      */
     public constructor() {
-        this._logger = new Logger('BodyModifier');
+        this._logger = new Logger('LayoutModifier');
     }
 
     /**
      * @inheritdoc
      */
     public apply(): void {
-        this._logger.debug('Modifying body styles for chat integration...');
+        this._logger.debug('Applying layout modifications...');
 
         injectStyle(`
             :root {
@@ -56,8 +55,13 @@ export class BodyModifier implements IModifier {
             @media (max-width: 1024px) {
                 :root { --tpi-chat-offset: 0px !important; }
             }
+
+            ${SELECTORS.LINK_TUTORIAL}, ${SELECTORS.DISCORD_BUTTON}, ${SELECTORS.OLD_CHAT_BUTTON}, ${SELECTORS.LOGOUT_BUTTON} {
+                display: none !important;
+                visibility: hidden !important;
+            }
         `);
 
-        this._logger.info('✅ Body styles modified successfully.');
+        this._logger.info('✅ Layout modifications applied successfully.');
     }
 }

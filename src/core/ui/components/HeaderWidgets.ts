@@ -1,13 +1,12 @@
-import { CONFIG, EVENTS, IDS, SELECTORS, STRINGS } from '../../core/Config';
-import { createElement } from '../../utils/DOMUtils';
-import { Logger } from '../../utils/Logger';
-import { IComponent } from '../interfaces/IComponent';
-import './styles/_header-widgets.scss';
+import { CONFIG, EVENTS, IDS, SELECTORS, STRINGS } from '../../Config';
+import { createElement } from '../../../utils/DomUtils';
+import { Logger } from '../../../utils/Logger';
+import '../styles/_header-widgets.scss';
 
 /**
  * Class representing header widgets in the UI.
  */
-export class HeaderWidgets implements IComponent {
+export class HeaderWidgets {
     private readonly _logger: Logger;
     private _isChatOpen: boolean;
 

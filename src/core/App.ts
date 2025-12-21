@@ -1,8 +1,9 @@
-import { UIManager } from '../ui/UIManager';
 import { Logger } from '../utils/Logger';
-import { ComponentsLoader } from './loaders/ComponentsLoader';
-import { ModifiersLoader } from './loaders/ModifiersLoader';
+import { LayoutModifier } from './ui/modifiers/LayoutModifier';
+import { ChatOverlay } from './ui/components/ChatOverlay';
 import { SettingsManager } from './settings/SettingsManager';
+import { SettingsModal } from './ui/components/SettingsModal';
+import { HeaderWidgets } from './ui/components/HeaderWidgets';
 
 /**
  * Main application class.
@@ -10,24 +11,13 @@ import { SettingsManager } from './settings/SettingsManager';
 export class App {
     private readonly _logger: Logger;
     private readonly _settingsManager: SettingsManager;
-    private readonly _modifiersLoader: ModifiersLoader;
-    private readonly _componentsLoader: ComponentsLoader;
-    private readonly _uiManager: UIManager;
 
     /**
      * Creates an instance of the App class.
      */
     public constructor() {
         this._logger = new Logger('App');
-
         this._settingsManager = new SettingsManager();
-        this._modifiersLoader = new ModifiersLoader(this._settingsManager);
-        this._componentsLoader = new ComponentsLoader(this._settingsManager);
-
-        this._uiManager = new UIManager(
-            this._modifiersLoader.loadModifiers(),
-            this._componentsLoader.loadComponents(),
-        );
     }
 
     /**
@@ -36,8 +26,33 @@ export class App {
     public async initialize(): Promise<void> {
         this._logger.info('🔧 Initializing application...');
 
-        this._uiManager.initialize();
+        this._applyLayoutModifier();
 
         this._logger.info('✅ Application initialized.');
+    }
+
+    /**
+     * Applies the layout modifier to the application.
+     */
+    private _applyLayoutModifier(): void {
+        this._logger.info('🔧 Applying layout modifier...')
+
+        // Apply layout modifications
+        const layoutModifier = new LayoutModifier()
+        layoutModifier.apply();
+
+        // Inject header widget
+        const headerWidget = new HeaderWidgets();
+        headerWidget.inject();
+
+        // Inject settings modal
+        const settingsModal = new SettingsModal(this._settingsManager);
+        settingsModal.inject();
+
+        // Inject chat overlay
+        const chatOverlay = new ChatOverlay();
+        chatOverlay.inject();
+
+        this._logger.info('✅ Layout modifier applied.');
     }
 }

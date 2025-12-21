@@ -1,12 +1,11 @@
-import { SELECTORS } from '../../core/Config';
-import { injectStyle } from '../../utils/DomUtils';
-import { Logger } from '../../utils/Logger';
-import { IModifier } from '../interfaces/IModifier';
+import { SELECTORS } from '../../Config';
+import { injectStyle } from '../../../utils/DomUtils';
+import { Logger } from '../../../utils/Logger';
 
 /**
  * Modifier to hide old chat UI elements.
  */
-export class ChatModifier implements IModifier {
+export class ChatModifier {
     private readonly _logger: Logger;
 
     /**
