@@ -1,6 +1,7 @@
 import { ChatOverlay } from '../../ui/components/ChatOverlay';
 import { HeaderWidgets } from '../../ui/components/HeaderWidgets';
 import { SettingsModal } from '../../ui/components/SettingsModal';
+import { UpdateNotification } from '../../ui/components/UpdateNotification';
 import { IComponent } from '../../ui/interfaces/IComponent';
 import { Logger } from '../../utils/Logger';
 import { SettingsManager } from '../settings/SettingsManager';
@@ -31,6 +32,7 @@ export class ComponentsLoader {
     private readonly _registry: ComponentEntry[] = [
         { key: null, create: () => new HeaderWidgets() },
         { key: null, create: () => new ChatOverlay() },
+        { key: null, create: () => new UpdateNotification() },
         { key: null, create: (settingsManager) => new SettingsModal(settingsManager) },
     ];
 
