@@ -1,26 +1,26 @@
 /**
- * Interface representing a module in the application.
+ * Interface for application modules.
  */
-export interface IModule {
+export default interface IModule {
     /**
-     * Gets the unique identifier of the module.
+     * Module unique identifier.
      */
     get id(): string;
 
     /**
-     * Gets the name of the module.
+     * Module name.
      */
     get name(): string;
 
     /**
-     * Gets the description of the module.
+     * Module description.
      */
-    get description(): string | undefined;
+    get description(): string;
 
     /**
      * Initializes the module.
      */
-    initialize(): void;
+    init(): void;
 
     /**
      * Enables the module.
@@ -34,7 +34,7 @@ export interface IModule {
 
     /**
      * Checks if the module is enabled.
-     * @return true if the module is enabled, false otherwise.
+     * @return True if the module is enabled, false otherwise.
      */
     isEnabled(): boolean;
 }

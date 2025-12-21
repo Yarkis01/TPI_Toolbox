@@ -200,6 +200,13 @@
     }
 }
 
+.tpi-modal-empty {
+    text-align: center;
+    color: $text-muted;
+    margin: 2rem 0;
+    font-size: 0.9rem;
+}
+
 @keyframes tpiFadeIn {
     from {
         opacity: 0;

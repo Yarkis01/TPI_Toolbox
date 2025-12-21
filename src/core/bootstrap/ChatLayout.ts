@@ -1,34 +1,33 @@
-import { CONFIG, EVENTS, IDS, SELECTORS } from '../../Config';
-import { createElement } from '../../../utils/DomUtils';
-import { Logger } from '../../../utils/Logger';
+import { createElement } from '../../utils/DomUtils';
+import { Logger } from '../../utils/Logger';
+import { CHAT_IFRAME, EVENTS, IDS } from '../constants/LayoutConstants';
+import IBootstrap from '../interfaces/IBootstrap';
 
 /**
- * Class representing the chat overlay component.
+ * Chat layout bootstrap process.
  */
-export class ChatOverlay {
+export class ChatLayout implements IBootstrap {
     private readonly _logger: Logger;
-    private _container: HTMLElement | null;
+    private _chatContainer: HTMLElement | null;
 
     /**
-     * Creates an instance of ChatOverlay.
+     * ChatLayout constructor.
      */
     public constructor() {
-        this._logger = new Logger('ChatOverlay');
-        this._container = null;
+        this._logger = new Logger('ChatLayout');
+        this._chatContainer = null;
     }
 
     /**
      * @inheritdoc
      */
-    public inject(): void {
-        this._logger.debug('Injecting chat overlay into the UI.');
+    public run(): void {
+        this._logger.info('💬 Setting up Chat Layout...');
 
-        this._container = this._createChatOverlay();
-        document.body.appendChild(this._container);
+        this._chatContainer = this._createChatOverlay();
+        document.body.appendChild(this._chatContainer);
 
         this._registerEvents();
-
-        this._logger.info('✅ Chat overlay injected successfully.');
     }
 
     /**
@@ -44,7 +43,7 @@ export class ChatOverlay {
                     position: 'fixed',
                     top: '0',
                     right: '0',
-                    width: CONFIG.CHAT_IFRAME_WIDTH + 'px',
+                    width: CHAT_IFRAME.WIDTH + 'px',
                     height: '100vh',
                     zIndex: '9999',
                     display: 'none',
@@ -54,7 +53,7 @@ export class ChatOverlay {
             },
             [
                 createElement('iframe', {
-                    src: CONFIG.CHAT_IFRAME_SRC,
+                    src: CHAT_IFRAME.SRC,
                     width: '100%',
                     height: '100%',
                     frameborder: '0',
@@ -70,7 +69,7 @@ export class ChatOverlay {
         document.addEventListener(EVENTS.CHAT_TOGGLED, (e: Event) => {
             const customEvent = e as CustomEvent<{ isOpen: boolean }>;
 
-            if (this._container) {
+            if (this._chatContainer) {
                 this._toggleVisibility(customEvent.detail.isOpen);
             }
         });
@@ -81,7 +80,7 @@ export class ChatOverlay {
      * @param shouldShow - Whether to show or hide the chat overlay.
      */
     private _toggleVisibility(shouldShow: boolean): void {
-        this._container!.style.display = shouldShow ? 'block' : 'none';
+        this._chatContainer!.style.display = shouldShow ? 'block' : 'none';
         this._logger.debug(`Chat overlay visibility set to: ${shouldShow ? 'VISIBLE' : 'HIDDEN'}`);
     }
 }

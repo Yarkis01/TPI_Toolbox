@@ -1,41 +1,41 @@
-import { CONFIG, EVENTS, IDS, SELECTORS, STRINGS } from '../../Config';
-import { createElement } from '../../../utils/DomUtils';
-import { Logger } from '../../../utils/Logger';
-import '../styles/_header-widgets.scss';
+import { createElement } from '../../utils/DomUtils';
+import { Logger } from '../../utils/Logger';
+import { APP_INFORMATIONS } from '../constants/AppConstants';
+import { EVENTS, IDS, SELECTORS, STRINGS } from '../constants/LayoutConstants';
+import IBootstrap from '../interfaces/IBootstrap';
+import './styles/_header.scss';
 
 /**
- * Class representing header widgets in the UI.
+ * Bootstrap class to modify the header layout.
  */
-export class HeaderWidgets {
+export class HeaderLayout implements IBootstrap {
     private readonly _logger: Logger;
-    private _isChatOpen: boolean;
+    private _isChatOpen: boolean = false;
 
     /**
-     * Creates an instance of HeaderWidgets.
+     * Creates an instance of the HeaderLayout class.
      */
     public constructor() {
-        this._logger = new Logger('HeaderWidgets');
+        this._logger = new Logger('HeaderLayout');
         this._isChatOpen = false;
     }
 
     /**
      * @inheritdoc
      */
-    public inject(): void {
-        this._logger.debug('Injecting header widgets into the UI.');
+    public run(): void {
+        this._logger.info('🏗️ Applying Header Layout...');
+
         const header = this._getHeaderContainer();
-
-        const container = createElement(
-            'div',
-            {
-                id: IDS.HEADERS_WIDGETS,
-            },
-            [this._createToolboxButton(), this._createChatButton()],
+        header.appendChild(
+            createElement(
+                'div',
+                {
+                    id: IDS.HEADERS_WIDGETS,
+                },
+                [this._createToolboxButton(), this._createChatButton()],
+            ),
         );
-
-        header.appendChild(container);
-
-        this._logger.info('✅ Header widgets injected successfully.');
     }
 
     /**
@@ -54,6 +54,10 @@ export class HeaderWidgets {
         return header;
     }
 
+    /**
+     * Creates the toolbox button.
+     * @returns The toolbox HTMLButtonElement.
+     */
     private _createToolboxButton(): HTMLButtonElement {
         return createElement(
             'button',
@@ -66,7 +70,7 @@ export class HeaderWidgets {
                     marginRight: '1em',
                 },
             },
-            [CONFIG.APP_NAME],
+            [APP_INFORMATIONS.APP_NAME],
         );
     }
 

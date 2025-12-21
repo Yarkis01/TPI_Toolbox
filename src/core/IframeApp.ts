@@ -1,37 +1,41 @@
-import { ChatModifier } from './ui/modifiers/ChatModifier';
+import { injectStyle } from '../utils/DomUtils';
 import { Logger } from '../utils/Logger';
+import IApp from './interfaces/IApp';
 
 /**
- * Application class for iframe contexts.
+ * Iframe application class.
  */
-export class IframeApp {
+export class IframeApp implements IApp {
     private readonly _logger: Logger;
 
     /**
-     * Creates an instance of the IframeApp class.
+     * IframeApp constructor.
      */
     public constructor() {
         this._logger = new Logger('IframeApp');
     }
 
     /**
-     * Initializes the iframe application.
+     * @inheritdoc
      */
-    public async initialize(): Promise<void> {
-        this._logger.info('🚀 IframeApp is initializing...');
-
-        this._applyChatCleaner();
-    }
-
-    /**
-     * Applies the chat cleaner modifier.
-     */
-    private _applyChatCleaner(): void {
+    public async start(): Promise<void> {
         this._logger.info('🧼 Applying Chat Cleaner in iframe context...');
 
         if (window.location.href.endsWith('chat.php')) {
-            const chatModifier = new ChatModifier();
-            chatModifier.apply();
+            injectStyle(`
+                button.chat-window__close {
+                    display: none !important;
+                    visibility: hidden !important;
+                }
+
+                div.chat-window__header {
+                    flex-direction: column !important;
+                }
+
+                div#chat-messages {
+                    max-height: none !important;
+                }
+            `);
         }
     }
 }

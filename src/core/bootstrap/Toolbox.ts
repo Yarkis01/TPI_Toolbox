@@ -1,39 +1,46 @@
-import { CONFIG, EVENTS, IDS, STRINGS } from '../../Config';
-import { SettingsManager } from '../../settings/SettingsManager';
-import { SettingDefinition } from '../../settings/SettingsSchema';
-import { createElement } from '../../../utils/DomUtils';
-import { Logger } from '../../../utils/Logger';
-import '../styles/_settings-modal.scss';
+import { APP_INFORMATIONS } from '../../core/constants/AppConstants';
+import IModule from '../../core/interfaces/IModule';
+import { ModuleManager } from '../../core/managers/ModuleManager';
+import { createElement } from '../../utils/DomUtils';
+import { Logger } from '../../utils/Logger';
+import { EVENTS, IDS } from '../constants/LayoutConstants';
+import IBootstrap from '../interfaces/IBootstrap';
+import './styles/_toolbox.scss';
 
 /**
- * Modal for managing toolbox settings.
+ * Modal for managing toolbox modules.
  */
-export class SettingsModal {
+export class Toolbox implements IBootstrap {
     private readonly _logger: Logger;
-    private _settingsManager: SettingsManager;
+    private readonly _moduleManager: ModuleManager;
     private _container: HTMLElement | null = null;
 
     /**
-     * Creates an instance of SettingsModal.
-     * @param settingsManager The settings manager to use.
+     * Creates an instance of the Toolbox class.
+     * @param moduleManager The module manager instance.
      */
-    public constructor(settingsManager: SettingsManager) {
+    public constructor(moduleManager: ModuleManager) {
         this._logger = new Logger('SettingsModal');
-        this._settingsManager = settingsManager;
+        this._moduleManager = moduleManager;
     }
 
     /**
-     * Injects the settings modal into the document and sets up event listeners.
+     * @inheritdoc
      */
-    public inject(): void {
+    public run(): void {
         document.addEventListener(EVENTS.TOOLBOX_TOGGLED, () => {
-            this._logger.debug('Toggling Settings Modal');
             this._toggle();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'm') {
+                this._toggle();
+            }
         });
     }
 
     /**
-     * Toggles the visibility of the settings modal.
+     * Toggles the modal open/close state.
      */
     private _toggle(): void {
         if (this._container) {
@@ -44,23 +51,25 @@ export class SettingsModal {
     }
 
     /**
-     * Opens the settings modal.
+     * Opens the modal.
      */
     private _open(): void {
+        if (this._container) return;
+
+        const content = createElement('div', { class: 'tpi-modal-card' }, [
+            this._createHeader(),
+            this._createSearchBar(),
+            this._createBody(),
+            this._createFooter(),
+        ]);
+
         this._container = createElement(
             'div',
             {
                 id: IDS.SETTINGS_MODAL,
                 class: 'tpi-modal-overlay',
             },
-            [
-                createElement('div', { class: 'tpi-modal-card' }, [
-                    this._createHeader(),
-                    this._createSearchBar(),
-                    this._createBody(),
-                    this._createFooter(),
-                ]),
-            ],
+            [content],
         );
 
         this._container.addEventListener('click', (e) => {
@@ -71,7 +80,7 @@ export class SettingsModal {
     }
 
     /**
-     * Closes the settings modal.
+     * Closes the modal.
      */
     private _close(): void {
         this._container?.remove();
@@ -79,17 +88,18 @@ export class SettingsModal {
     }
 
     /**
-     * Creates the header element for the modal.
+     * Creates the header element.
      * @returns The header HTMLElement.
      */
     private _createHeader(): HTMLElement {
         return createElement('div', { class: 'tpi-modal-card__header' }, [
-            createElement('h2', {}, [`🔧 ${CONFIG.APP_NAME}`]),
+            createElement('h2', {}, [`🔧 ${APP_INFORMATIONS.APP_NAME || 'Toolbox'}`]),
             createElement(
                 'button',
                 {
                     class: 'tpi-close-btn',
                     onclick: () => this._close(),
+                    title: 'Fermer',
                 },
                 ['×'],
             ),
@@ -97,35 +107,42 @@ export class SettingsModal {
     }
 
     /**
-     * Creates the search bar element for filtering settings.
+     * Creates the search bar element.
      * @returns The search bar HTMLElement.
      */
     private _createSearchBar(): HTMLElement {
-        const input = createElement('input', {
+        const searchInput = createElement('input', {
             type: 'text',
-            placeholder: 'Rechercher une option...',
+            placeholder: 'Chercher un module...',
             class: 'tpi-search-input',
             oninput: (e: Event) => {
                 const query = (e.target as HTMLInputElement).value.toLowerCase();
-                this._filterSettings(query);
+                this._filterModules(query);
             },
         });
 
         return createElement('div', { class: 'tpi-search-bar' }, [
             createElement('span', { class: 'tpi-search-icon' }, ['🔍']),
-            input,
+            searchInput,
         ]);
     }
 
     /**
-     * Creates the body element containing all settings.
+     * Creates the body element containing the module list.
      * @returns The body HTMLElement.
      */
     private _createBody(): HTMLElement {
-        const settingsMap = this._settingsManager.getAllSettings();
-        const settingsElements = Array.from(settingsMap.entries()).map(([def, isEnabled]) =>
-            this._createSettingRow(def, isEnabled),
-        );
+        const modules = this._moduleManager.getModules();
+
+        modules.sort((a, b) => a.name.localeCompare(b.name));
+
+        const rows = modules.map((module) => this._createModuleRow(module));
+
+        if (rows.length === 0) {
+            return createElement('div', { class: 'tpi-modal-empty' }, [
+                'Aucun module disponible 😢',
+            ]);
+        }
 
         return createElement(
             'div',
@@ -133,25 +150,25 @@ export class SettingsModal {
                 id: 'tpi-settings-list',
                 class: 'tpi-modal-card__body',
             },
-            settingsElements,
+            rows,
         );
     }
 
     /**
-     * Creates a single setting row element.
-     * @param def The setting definition.
-     * @param isEnabled Whether the setting is enabled.
-     * @returns The setting row HTMLElement.
+     * Creates a row for a module.
+     * @param module The module instance.
+     * @returns The row HTMLElement.
      */
-    private _createSettingRow(def: SettingDefinition, isEnabled: boolean): HTMLElement {
+    private _createModuleRow(module: IModule): HTMLElement {
         const checkbox = createElement('input', {
             type: 'checkbox',
             onchange: (e: Event) => {
-                const target = e.target as HTMLInputElement;
-                this._settingsManager.set(def.key, target.checked);
+                const isChecked = (e.target as HTMLInputElement).checked;
+                this._moduleManager.toggleModule(module.id, isChecked);
             },
         }) as HTMLInputElement;
-        checkbox.checked = isEnabled;
+
+        checkbox.checked = module.isEnabled();
 
         const switchLabel = createElement('label', { class: 'tpi-switch' }, [
             checkbox,
@@ -159,15 +176,15 @@ export class SettingsModal {
         ]);
 
         const textContainer = createElement('div', { class: 'tpi-setting-info' }, [
-            createElement('div', { class: 'tpi-setting-label' }, [def.label]),
-            createElement('div', { class: 'tpi-setting-desc' }, [def.description || '']),
+            createElement('div', { class: 'tpi-setting-label' }, [module.name]),
+            createElement('div', { class: 'tpi-setting-desc' }, [module.description]),
         ]);
 
         const row = createElement(
             'div',
             {
                 class: 'tpi-setting-row',
-                'data-search': `${def.label} ${def.description}`.toLowerCase(),
+                'data-search': `${module.name} ${module.description}`.toLowerCase(),
             },
             [textContainer, switchLabel],
         );
@@ -176,30 +193,28 @@ export class SettingsModal {
     }
 
     /**
-     * Creates the footer element for the modal.
+     * Creates the footer element.
      * @returns The footer HTMLElement.
      */
     private _createFooter(): HTMLElement {
         return createElement('div', { class: 'tpi-modal-card__footer' }, [
-            createElement('span', { style: { fontSize: '0.8rem', opacity: '0.5' } }, [
-                `${CONFIG.APP_NAME} v${CONFIG.APP_VERSION} by ${CONFIG.DEVELOPER_NAME}`,
-            ]),
+            createElement('span', { class: 'tpi-version' }, [`v${APP_INFORMATIONS.APP_VERSION}`]),
             createElement(
                 'button',
                 {
                     class: 'tpi-btn-primary',
-                    onclick: () => document.location.reload(),
+                    onclick: () => window.location.reload(),
                 },
-                [STRINGS.SAVE_SETTINGS_BUTTON],
+                ['Recharger la page ↻'],
             ),
         ]);
     }
 
     /**
-     * Filters settings based on the search query.
+     * Filters modules based on the search query.
      * @param query The search query.
      */
-    private _filterSettings(query: string): void {
+    private _filterModules(query: string): void {
         const list = document.getElementById('tpi-settings-list');
         if (!list) return;
 
@@ -207,7 +222,6 @@ export class SettingsModal {
         rows.forEach((row) => {
             const el = row as HTMLElement;
             const text = el.getAttribute('data-search') || '';
-
             el.style.display = text.includes(query) ? 'flex' : 'none';
         });
     }

@@ -1,25 +1,36 @@
-import { CONFIG, SELECTORS } from '../../Config';
-import { injectStyle } from '../../../utils/DomUtils';
-import { Logger } from '../../../utils/Logger';
+import { injectStyle } from '../../utils/DomUtils';
+import { Logger } from '../../utils/Logger';
+import { CHAT_IFRAME, SELECTORS } from '../constants/LayoutConstants';
+import IBootstrap from '../interfaces/IBootstrap';
 
 /**
- * Class representing the layout modifier.
+ * Bootstrap class to apply the base layout modifications.
  */
-export class LayoutModifier {
+export class BaseLayout implements IBootstrap {
     private readonly _logger: Logger;
 
     /**
-     * Creates an instance of LayoutModifier.
+     * Creates an instance of the BaseLayout class.
      */
     public constructor() {
-        this._logger = new Logger('LayoutModifier');
+        this._logger = new Logger('BaseLayout');
     }
 
     /**
      * @inheritdoc
      */
-    public apply(): void {
-        this._logger.debug('Applying layout modifications...');
+    public run(): void {
+        this._logger.info('🏗️ Applying Base Layout...');
+
+        this._editBodyClass();
+        this._removeUnnecessaryElements();
+    }
+
+    /**
+     * Edits the body class to adjust layout when chat is opened.
+     */
+    private _editBodyClass(): void {
+        this._logger.debug('🔧 Editing body class for base layout...');
 
         injectStyle(`
             :root {
@@ -27,7 +38,7 @@ export class LayoutModifier {
             }
 
             body.${SELECTORS.CHAT_OPENED} {
-                --tpi-chat-offset: ${CONFIG.CHAT_IFRAME_WIDTH}px;
+                --tpi-chat-offset: ${CHAT_IFRAME.WIDTH}px;
             }
 
             header, footer, main, main > * {
@@ -55,13 +66,20 @@ export class LayoutModifier {
             @media (max-width: 1024px) {
                 :root { --tpi-chat-offset: 0px !important; }
             }
+        `);
+    }
 
-            ${SELECTORS.LINK_TUTORIAL}, ${SELECTORS.DISCORD_BUTTON}, ${SELECTORS.OLD_CHAT_BUTTON}, ${SELECTORS.LOGOUT_BUTTON} {
+    /**
+     * Removes unnecessary elements from the layout.
+     */
+    private _removeUnnecessaryElements(): void {
+        this._logger.debug('🧹 Removing unnecessary elements from the layout...');
+
+        injectStyle(`
+            ${SELECTORS.LINK_TUTORIAL}, ${SELECTORS.DISCORD_BUTTON}, ${SELECTORS.CHAT_BUTTON}, ${SELECTORS.LOGOUT_BUTTON} {
                 display: none !important;
                 visibility: hidden !important;
             }
         `);
-
-        this._logger.info('✅ Layout modifications applied successfully.');
     }
 }
