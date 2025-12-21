@@ -1,0 +1,212 @@
+@use '../../components/styles/variables' as *;
+
+.tpi-update-toast {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 10001;
+
+    width: 420px;
+    max-width: calc(100vw - 2rem);
+
+    // Look & feel
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01)), $bg-card;
+
+    border: 1px solid rgba($primary, 0.22);
+    border-radius: 14px;
+    box-shadow:
+        0 18px 50px rgba(0, 0, 0, 0.55),
+        0 0 0 1px rgba(0, 0, 0, 0.2) inset;
+
+    padding: 0.9rem 0.95rem;
+
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+
+    // “glass” effect (si tu aimes ; sinon supprime ces 2 lignes)
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+
+    // Accent bar (gauche)
+    &::before {
+        content: '';
+        position: absolute;
+        left: 0.55rem;
+        top: 0.75rem;
+        bottom: 0.75rem;
+        width: 4px;
+        border-radius: 999px;
+        background: linear-gradient(180deg, $primary, rgba($primary, 0.25));
+        opacity: 0.9;
+    }
+
+    // Slide-in feel plus “premium”
+    transform: translateX(120%) scale(0.98);
+    opacity: 0;
+    transition:
+        transform 0.28s ease-out,
+        opacity 0.28s ease-out;
+
+    &--visible {
+        transform: translateX(0) scale(1);
+        opacity: 1;
+    }
+
+    &--hiding {
+        transform: translateX(120%) scale(0.98);
+        opacity: 0;
+    }
+
+    &__header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 0.75rem;
+
+        // décale le contenu à cause de la barre accent
+        padding-left: 0.65rem;
+    }
+
+    &__title {
+        color: $primary;
+        font-weight: 850;
+        font-size: 1rem;
+        line-height: 1.15;
+        letter-spacing: 0.1px;
+
+        flex: 1;
+        min-width: 0;
+        padding-top: 10px;
+    }
+
+    &__meta {
+        padding-left: 0.65rem;
+        color: rgba($text-muted, 0.95);
+        font-size: 0.86rem;
+        line-height: 1.35;
+    }
+
+    // Optionnel : ligne versions (si tu ajoutes le bloc TS)
+    &__versions {
+        padding-left: 0.65rem;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        flex-wrap: wrap;
+        margin-top: -0.15rem;
+    }
+
+    &__versions-label {
+        color: rgba($text-muted, 0.9);
+        font-size: 0.75rem;
+        font-weight: 700;
+    }
+
+    &__versions-arrow {
+        color: rgba($text-muted, 0.8);
+        font-size: 0.8rem;
+        margin: 0 0.05rem;
+    }
+
+    &__versions-pill {
+        font-size: 0.75rem;
+        font-weight: 800;
+        padding: 0.18rem 0.45rem;
+        border-radius: 999px;
+        border: 1px solid rgba($border-color, 0.9);
+        color: $text-main;
+        background: rgba(255, 255, 255, 0.03);
+
+        &--new {
+            border-color: rgba($primary, 0.45);
+            background: rgba($primary, 0.14);
+            color: $primary;
+        }
+    }
+
+    &__footer {
+        padding-left: 0.65rem;
+        display: flex;
+        justify-content: flex-start;
+    }
+
+    &__close {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        width: 30px;
+        height: 30px;
+
+        border-radius: 10px;
+        cursor: pointer;
+
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba($border-color, 0.9);
+        color: rgba($text-muted, 0.95);
+
+        transition:
+            background 0.15s,
+            border-color 0.15s,
+            color 0.15s,
+            transform 0.15s;
+
+        &:hover {
+            background: rgba($primary, 0.12);
+            border-color: rgba($primary, 0.45);
+            color: $text-main;
+            transform: translateY(-1px);
+        }
+
+        &:active {
+            transform: translateY(0);
+            opacity: 0.9;
+        }
+    }
+
+    &__btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 850;
+        text-decoration: none;
+
+        padding: 0.62rem 0.9rem;
+        min-height: 40px;
+
+        transition:
+            background 0.15s,
+            border-color 0.15s,
+            color 0.15s,
+            transform 0.15s;
+
+        &--primary {
+            background: rgba($primary, 0.16);
+            border: 1px solid rgba($primary, 0.5);
+            color: $primary;
+
+            &:hover {
+                background: $primary;
+                color: white;
+                transform: translateY(-1px);
+            }
+
+            &:active {
+                transform: translateY(0);
+                opacity: 0.95;
+            }
+        }
+    }
+
+    // Mobile: toast plus “plein écran” sans être agressif
+    @media (max-width: 520px) {
+        right: 0.75rem;
+        left: 0.75rem;
+        width: auto;
+    }
+}

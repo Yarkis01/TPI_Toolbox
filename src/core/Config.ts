@@ -25,6 +25,7 @@ export const IDS = {
     CHAT_OVERLAY: 'tpi-chat-overlay',
     TOOLBOX_BUTTON: 'tpi-toolbox-button',
     SETTINGS_MODAL: 'tpi-settings-modal',
+    UPDATE_TOAST: 'tpi-update-toast',
 } as const;
 
 /**
@@ -42,6 +43,10 @@ export const STRINGS = {
     OPEN_CHAT_BUTTON: 'Ouvrir le Chat',
     CLOSE_CHAT_BUTTON: 'Fermer le Chat',
     SAVE_SETTINGS_BUTTON: 'Sauvegarder & Recharger',
+
+    UPDATE_AVAILABLE_TITLE: (remoteVersion: string) => `Mise à jour ${remoteVersion} disponible`,
+    UPDATE_AVAILABLE_ACTION: 'Ouvrir GitHub',
+    UPDATE_AVAILABLE_CLOSE: 'Fermer',
 } as const;
 
 /**
@@ -50,9 +55,13 @@ export const STRINGS = {
 export const CONFIG = {
     // Constants about the application
     APP_NAME: 'TPI Toolbox',
-    APP_VERSION: '0.1.0',
+    APP_VERSION: __APP_VERSION__,
     DEVELOPER_NAME: 'Yarkis01',
     DEVELOPER_WEBSITE: 'https://github.com/Yarkis01',
+    // JSON remote contenant la dernière version publiée (GitHub)
+    REMOTE_VERSION_URL: __REMOTE_VERSION_URL__,
+    // Intervalle entre deux checks réseau (en ms)
+    UPDATE_CHECK_INTERVAL_MS: 6 * 60 * 60 * 1000, // 6h
 
     CHAT_IFRAME_SRC: 'https://www.themeparkindustries.com/tpiv4/game/chat.php',
     CHAT_IFRAME_WIDTH: 400,
