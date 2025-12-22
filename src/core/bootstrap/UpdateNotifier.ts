@@ -6,6 +6,7 @@ import { Logger } from '../../utils/Logger';
 import { APP_INFORMATIONS } from '../constants/AppConstants';
 import IBootstrap from '../interfaces/IBootstrap';
 import IVersionProvider from '../interfaces/IVersionProvider';
+import { UpdateSettingsManager } from '../managers/UpdateSettingsManager';
 import { UpdateToast } from './UpdateToast';
 import './styles/_updateToast.scss';
 
@@ -17,6 +18,7 @@ export class UpdateNotifier implements IBootstrap {
     private readonly _storage: StorageService;
     private readonly _versionProvider: IVersionProvider;
     private readonly _toast: UpdateToast;
+    private readonly _updateSettings: UpdateSettingsManager;
 
     /**
      * Creates a new UpdateNotifier.
@@ -26,10 +28,12 @@ export class UpdateNotifier implements IBootstrap {
         versionProvider?: IVersionProvider,
         storage: StorageService = new StorageService(),
         toast: UpdateToast = new UpdateToast(),
+        updateSettings: UpdateSettingsManager = new UpdateSettingsManager(storage),
     ) {
         this._logger = new Logger('UpdateNotifier');
         this._storage = storage;
         this._toast = toast;
+        this._updateSettings = updateSettings;
 
         // Allow overriding the remote version URL locally (useful for private repositories).
         const remoteUrl = this._storage.load<string>(
@@ -50,6 +54,11 @@ export class UpdateNotifier implements IBootstrap {
     }
 
     private async _checkAndNotify(): Promise<void> {
+        if (!this._updateSettings.isUpdateCheckEnabled()) {
+            this._logger.debug('Update check disabled by user preference; skipping.');
+            return;
+        }
+
         const current = APP_INFORMATIONS.APP_VERSION;
 
         const latest = await this._versionProvider.getLatestVersion();

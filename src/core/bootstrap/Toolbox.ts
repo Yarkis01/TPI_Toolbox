@@ -1,6 +1,7 @@
 import { APP_INFORMATIONS } from '../../core/constants/AppConstants';
 import IModule from '../../core/interfaces/IModule';
 import { ModuleManager } from '../../core/managers/ModuleManager';
+import { UpdateSettingsManager } from '../../core/managers/UpdateSettingsManager';
 import { createElement } from '../../utils/DomUtils';
 import { Logger } from '../../utils/Logger';
 import { EVENTS, IDS } from '../constants/LayoutConstants';
@@ -13,15 +14,20 @@ import './styles/_toolbox.scss';
 export class Toolbox implements IBootstrap {
     private readonly _logger: Logger;
     private readonly _moduleManager: ModuleManager;
+    private readonly _updateSettings: UpdateSettingsManager;
     private _container: HTMLElement | null = null;
 
     /**
      * Creates an instance of the Toolbox class.
      * @param moduleManager The module manager instance.
      */
-    public constructor(moduleManager: ModuleManager) {
+    public constructor(
+        moduleManager: ModuleManager,
+        updateSettings: UpdateSettingsManager = new UpdateSettingsManager(),
+    ) {
         this._logger = new Logger('SettingsModal');
         this._moduleManager = moduleManager;
+        this._updateSettings = updateSettings;
     }
 
     /**
@@ -136,12 +142,15 @@ export class Toolbox implements IBootstrap {
 
         modules.sort((a, b) => a.name.localeCompare(b.name));
 
-        const rows = modules.map((module) => this._createModuleRow(module));
+        const moduleRows = modules.map((module) => this._createModuleRow(module));
 
-        if (rows.length === 0) {
-            return createElement('div', { class: 'tpi-modal-empty' }, [
-                'Aucun module disponible 😢',
-            ]);
+        const rows: HTMLElement[] = [this._createUpdateCheckRow(), ...moduleRows];
+
+        // If no modules exist, keep the update setting row and show an empty hint beneath.
+        if (moduleRows.length === 0) {
+            rows.push(
+                createElement('div', { class: 'tpi-modal-empty' }, ['Aucun module disponible 😢']),
+            );
         }
 
         return createElement(
@@ -151,6 +160,42 @@ export class Toolbox implements IBootstrap {
                 class: 'tpi-modal-card__body',
             },
             rows,
+        );
+    }
+
+    /**
+     * Creates a row for enabling/disabling update checks.
+     */
+    private _createUpdateCheckRow(): HTMLElement {
+        const checkbox = createElement('input', {
+            type: 'checkbox',
+            onchange: (e: Event) => {
+                const isChecked = (e.target as HTMLInputElement).checked;
+                this._updateSettings.setUpdateCheckEnabled(isChecked);
+            },
+        }) as HTMLInputElement;
+
+        checkbox.checked = this._updateSettings.isUpdateCheckEnabled();
+
+        const switchLabel = createElement('label', { class: 'tpi-switch' }, [
+            checkbox,
+            createElement('span', { class: 'tpi-slider' }),
+        ]);
+
+        const textContainer = createElement('div', { class: 'tpi-setting-info' }, [
+            createElement('div', { class: 'tpi-setting-label' }, ['Recherche de mises à jour']),
+            createElement('div', { class: 'tpi-setting-desc' }, [
+                'Vérifie automatiquement si une nouvelle version est disponible.',
+            ]),
+        ]);
+
+        return createElement(
+            'div',
+            {
+                class: 'tpi-setting-row',
+                'data-search': 'recherche mise a jour update version github'.toLowerCase(),
+            },
+            [textContainer, switchLabel],
         );
     }
 
