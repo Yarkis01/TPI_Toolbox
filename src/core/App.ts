@@ -1,4 +1,4 @@
-import { EntityStatusColorizerModule } from '../modules/EntityStatusColorizer/module';
+import { EntityStatusColorizerModule } from '../modules/entityStatusColorizer/module';
 import { RideHypeAsTextModule } from '../modules/rideHypeAsText/module';
 import { ZoneFilterModule } from '../modules/zoneFilters/module';
 import { Logger } from '../utils/Logger';
@@ -6,6 +6,7 @@ import { BaseLayout } from './bootstrap/BaseLayout';
 import { ChatLayout } from './bootstrap/ChatLayout';
 import { HeaderLayout } from './bootstrap/HeaderLayout';
 import { Toolbox } from './bootstrap/Toolbox';
+import { UpdateNotifier } from './bootstrap/UpdateNotifier';
 import IApp from './interfaces/IApp';
 import IBootstrap from './interfaces/IBootstrap';
 import { ModuleManager } from './managers/ModuleManager';
@@ -51,6 +52,7 @@ export class App implements IApp {
             new HeaderLayout(),
             new ChatLayout(),
             new Toolbox(moduleManager),
+            new UpdateNotifier(),
         ];
 
         bootstraps.forEach((bootstrap) => {

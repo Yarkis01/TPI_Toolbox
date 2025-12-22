@@ -1,0 +1,110 @@
+@use './variables' as *;
+
+#tpi-update-toast {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 10001;
+    width: 380px;
+    max-width: calc(100vw - 32px);
+    background: rgba($bg-card, 0.95);
+    border: 1px solid rgba($primary, 0.35);
+    border-radius: 12px;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(8px);
+    overflow: hidden;
+    animation: tpiToastIn 0.22s ease-out;
+}
+
+#tpi-update-toast::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: $primary;
+}
+
+#tpi-update-toast .tpi-update-toast__content {
+    padding: 14px 14px 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#tpi-update-toast .tpi-update-toast__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+#tpi-update-toast .tpi-update-toast__title {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: $primary;
+}
+
+#tpi-update-toast .tpi-update-toast__close {
+    width: 30px;
+    height: 30px;
+    border-radius: 10px;
+    border: 1px solid rgba($primary, 0.5);
+    background: rgba(0, 0, 0, 0.15);
+    color: $text-muted;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    font-size: 16px;
+    line-height: 1;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+}
+
+#tpi-update-toast .tpi-update-toast__close:hover {
+    color: $text-main;
+    border-color: rgba($primary, 0.75);
+    background: rgba($primary, 0.12);
+}
+
+#tpi-update-toast .tpi-update-toast__message {
+    margin: 0;
+    color: $text-muted;
+    font-size: 0.9rem;
+    line-height: 1.35;
+}
+
+#tpi-update-toast .tpi-update-toast__actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#tpi-update-toast .tpi-update-toast__button {
+    background: rgba($primary, 0.18);
+    border: 1px solid rgba($primary, 0.5);
+    color: $primary;
+    padding: 0.55rem 1rem;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: all 0.15s ease;
+}
+
+#tpi-update-toast .tpi-update-toast__button:hover {
+    background: $primary;
+    color: $text-main;
+}
+
+@keyframes tpiToastIn {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
