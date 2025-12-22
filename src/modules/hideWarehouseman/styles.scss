@@ -1,0 +1,24 @@
+@use '../../core/bootstrap/styles/variables' as *;
+
+.tpi-custom-filter-group {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding-bottom: 5px;
+}
+
+.tpi-checkbox-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: $text-muted;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+
+    & input {
+        accent-color: $primary;
+        width: 16px;
+        height: 16px;
+    }
+}
