@@ -1,5 +1,6 @@
 import { EntityStatusColorizerModule } from '../modules/EntityStatusColorizer/module';
 import { RideHypeAsTextModule } from '../modules/rideHypeAsText/module';
+import { ZoneFilterModule } from '../modules/zoneFilters/module';
 import { Logger } from '../utils/Logger';
 import { BaseLayout } from './bootstrap/BaseLayout';
 import { ChatLayout } from './bootstrap/ChatLayout';
@@ -75,6 +76,7 @@ export class App implements IApp {
 
         moduleManager.register(new EntityStatusColorizerModule());
         moduleManager.register(new RideHypeAsTextModule());
+        moduleManager.register(new ZoneFilterModule());
 
         this._logger.info('✅ Modules initialized.');
     }
