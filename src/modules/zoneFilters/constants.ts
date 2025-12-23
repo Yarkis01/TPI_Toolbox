@@ -6,7 +6,7 @@ export const ZONE_SELECTORS = {
 
     CARD: 'article.owned-attraction-card',
     ZONE_BADGE: '.owned-attraction-card__zone-badge',
-    
+
     ZONE_GROUP: '.owned-attractions__zone-group',
     ZONE_HEADER_NAME: '.owned-attractions__zone-name',
 
