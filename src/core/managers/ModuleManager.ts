@@ -63,6 +63,6 @@ export class ModuleManager {
      * @returns An array of registered modules.
      */
     public getModules(): IModule[] {
-        return Array.from(this._modules.values());
+        return Array.from(this._modules.values()).toSorted((a, b) => a.name.localeCompare(b.name));
     }
 }
