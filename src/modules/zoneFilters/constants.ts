@@ -6,6 +6,10 @@ export const ZONE_SELECTORS = {
 
     CARD: 'article.owned-attraction-card',
     ZONE_BADGE: '.owned-attraction-card__zone-badge',
+    
+    ZONE_GROUP: '.owned-attractions__zone-group',
+    ZONE_HEADER_NAME: '.owned-attractions__zone-name',
+
     FILTER_CONTAINER: '.owned-attractions__filters-container',
     COUNTER: '#owned-filter-count',
     RESET_BTN: '#owned-filter-reset-btn',
@@ -14,8 +18,8 @@ export const ZONE_SELECTORS = {
     SITE_LABEL: 'owned-attractions__filter-label',
     SITE_SELECT: 'owned-attractions__filter-select',
 
-    MY_FILTER_ID: 'tpi-zone-filter',
-    MY_HIDDEN_CLASS: 'tpi-hidden-by-zone',
+    FILTER_ID: 'tpi-zone-filter',
+    HIDDEN_CLASS: 'tpi-hidden-by-zone',
 };
 
 /**
