@@ -19,14 +19,26 @@ export default defineConfig({
                 author: 'Yarkis01',
                 description: 'A toolbox for TPI enhancing user experience with various features.',
                 match: ['https://www.themeparkindustries.com/*'],
-                // Needed for resilient cross-origin update checks (CSP/CORS safe).
-                grant: ['GM_addStyle', 'GM_xmlhttpRequest'],
                 connect: ['raw.githubusercontent.com'],
+                grant: ['GM_addStyle', 'GM_getValue', 'GM_setValue', 'GM_deleteValue', 'GM_xmlhttpRequest'],
             },
         }),
     ],
     build: {
         outDir: 'dist',
         emptyOutDir: true,
+        minify: 'terser',
+        terserOptions: {
+            compress: {
+                defaults: true,
+                drop_debugger: true,
+                drop_console: false,
+            },
+            format: {
+                comments: false,
+                beautify: true,
+            },
+            mangle: false,
+        },
     },
 });

@@ -1,5 +1,7 @@
 import { EntityStatusColorizerModule } from '../modules/entityStatusColorizer/module';
+import { HideWarehousemanModule } from '../modules/hideWarehouseman/module';
 import { RideHypeAsTextModule } from '../modules/rideHypeAsText/module';
+import { SelectUntrainedModule } from '../modules/selectUntrained/module';
 import { ZoneFilterModule } from '../modules/zoneFilters/module';
 import { Logger } from '../utils/Logger';
 import { BaseLayout } from './bootstrap/BaseLayout';
@@ -79,6 +81,8 @@ export class App implements IApp {
         moduleManager.register(new EntityStatusColorizerModule());
         moduleManager.register(new RideHypeAsTextModule());
         moduleManager.register(new ZoneFilterModule());
+        moduleManager.register(new HideWarehousemanModule());
+        moduleManager.register(new SelectUntrainedModule());
 
         this._logger.info('✅ Modules initialized.');
     }
