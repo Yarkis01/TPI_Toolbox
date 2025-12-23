@@ -37,7 +37,7 @@ export class ZoneFilterModule extends BaseModule {
      */
     protected onEnable(): void {
         const container = document.querySelector(ZONE_SELECTORS.FILTER_CONTAINER);
-        if (window.location.href.includes(ZONE_SELECTORS.PAGE_MATCH) &&container) {
+        if (window.location.href.includes(ZONE_SELECTORS.PAGE_MATCH) && container) {
             this._injectStyles();
             this._scanZones();
 
@@ -191,7 +191,7 @@ export class ZoneFilterModule extends BaseModule {
 
             cards.forEach((card) => {
                 const parentGroup = card.closest(ZONE_SELECTORS.ZONE_GROUP);
-                
+
                 const isGroupHidden = parentGroup?.classList.contains(ZONE_SELECTORS.HIDDEN_CLASS);
                 const isCardHidden = window.getComputedStyle(card).display === 'none';
 
@@ -201,7 +201,7 @@ export class ZoneFilterModule extends BaseModule {
             });
 
             counterEl.textContent = visibleCount.toString();
-            this._logger.debug(`Counter updated: ${visibleCount}`); 
+            this._logger.debug(`Counter updated: ${visibleCount}`);
         }
     }
 }
