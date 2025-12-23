@@ -11,7 +11,7 @@ export default defineConfig({
                 author: 'Yarkis01',
                 description: 'A toolbox for TPI enhancing user experience with various features.',
                 match: ['https://www.themeparkindustries.com/*'],
-                grant: ['GM_addStyle'],
+                grant: ['GM_addStyle', 'GM_getValue', 'GM_setValue', 'GM_deleteValue'],
             },
         }),
     ],
