@@ -72,7 +72,7 @@ export class EntityStatusColorizerModule extends BaseModule {
 
         if (status.includes('ouvert') || status.includes('assigné') || status.includes('actif')) {
             color = STATUS_COLORS.OPEN;
-        } else if (status.includes('ferme') || status.includes('non assigné')) {
+        } else if (status.includes('ferme') || status.includes('fermé') || status.includes('non assigné')) {
             color = STATUS_COLORS.CLOSED;
         } else if (status.includes('travaux')) {
             color = STATUS_COLORS.WORK;
