@@ -13,6 +13,7 @@ export const TRAINING_SELECTORS = {
     ROW: 'tr.emp-row',
     CHECKBOX: 'input.emp-checkbox',
     STARS_CONTAINER: '.stars',
+    TRAINING_INDICATOR: 'span.badge--training',
 
     BTN_ID: 'tpi-select-untrained-btn',
 };
