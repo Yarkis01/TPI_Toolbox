@@ -151,7 +151,7 @@ export class SelectUntrainedModule extends BaseModule {
         rows.forEach((row) => {
             if (row.style.display === 'none') return;
 
-            if (this._isNotFullyTrained(row)) {
+            if (this._isNotFullyTrained(row) && !this._isAlreadyInTraining(row)) {
                 this._toggleRowCheckbox(row, true);
                 count++;
             }
@@ -179,6 +179,16 @@ export class SelectUntrainedModule extends BaseModule {
         }
 
         return result;
+    }
+
+    /**
+     * Checks if the employee is already in training.
+     * @param row The table row element.
+     * @returns True if already in training, false otherwise.
+     */
+    private _isAlreadyInTraining(row: HTMLTableRowElement): boolean {
+        const trainingElement = row.querySelector(TRAINING_SELECTORS.TRAINING_INDICATOR);
+        return trainingElement !== null;
     }
 
     /**
