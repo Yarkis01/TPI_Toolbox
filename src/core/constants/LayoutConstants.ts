@@ -7,7 +7,7 @@ export const SELECTORS = {
     CHAT_BUTTON: 'div.footer__col--chat',
     LOGOUT_BUTTON: 'a.game-header__link[href*="logout.php"]',
     CHAT_OPENED: 'tpi-chat-opened',
-    HEADER: 'div.game-header__content',
+    HEADER: 'div.dashboard-welcome',
 } as const;
 
 /**
