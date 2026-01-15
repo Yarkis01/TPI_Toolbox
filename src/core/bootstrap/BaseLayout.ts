@@ -33,15 +33,11 @@ export class BaseLayout implements IBootstrap {
         this._logger.debug('🔧 Editing body class for base layout...');
 
         injectStyle(`
-            body.${SELECTORS.CHAT_OPENED} {
-                --tpi-chat-offset: ${CHAT_IFRAME.WIDTH}px;
-            }
-
             body.${SELECTORS.CHAT_OPENED} .play-main {
                 transition: margin-right 0.3s ease-in-out, width 0.3s ease-in-out;
-                margin-right: var(--tpi-chat-offset) !important;
+                margin-right: ${CHAT_IFRAME.WIDTH}px !important;
                 width: auto !important;
-                max-width: calc(100% - var(--tpi-chat-offset)) !important;
+                max-width: calc(100% - ${CHAT_IFRAME.WIDTH}px) !important;
             }
 
             body.${SELECTORS.CHAT_OPENED} .play-main > * {
