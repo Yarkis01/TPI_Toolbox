@@ -33,38 +33,20 @@ export class BaseLayout implements IBootstrap {
         this._logger.debug('🔧 Editing body class for base layout...');
 
         injectStyle(`
-            :root {
-                --tpi-chat-offset: 0px;
-            }
-
             body.${SELECTORS.CHAT_OPENED} {
                 --tpi-chat-offset: ${CHAT_IFRAME.WIDTH}px;
             }
 
-            header, footer, main, main > * {
-                transition: width 0.3s, margin-right 0.3s !important;
-            }
-
-            body.${SELECTORS.CHAT_OPENED} > header,
-            body.${SELECTORS.CHAT_OPENED} > footer {
-                width: calc(100% - var(--tpi-chat-offset)) !important;
-                left: 0 !important;
-            }
-
-            body.${SELECTORS.CHAT_OPENED} > main {
+            body.${SELECTORS.CHAT_OPENED} .play-main {
+                transition: margin-right 0.3s ease-in-out, width 0.3s ease-in-out;
                 margin-right: var(--tpi-chat-offset) !important;
-                margin-left: 0 !important; 
-                width: auto !important; 
+                width: auto !important;
+                max-width: calc(100% - var(--tpi-chat-offset)) !important;
             }
 
-            body.${SELECTORS.CHAT_OPENED} > main > * {
-                width: auto !important; 
+            body.${SELECTORS.CHAT_OPENED} .play-main > * {
                 max-width: 100% !important;
                 box-sizing: border-box !important;
-            }
-
-            @media (max-width: 1024px) {
-                :root { --tpi-chat-offset: 0px !important; }
             }
         `);
     }
