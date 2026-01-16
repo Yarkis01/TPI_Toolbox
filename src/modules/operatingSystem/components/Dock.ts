@@ -1,4 +1,5 @@
 import './Dock.scss';
+import { APP_IDS, OS_CONFIG } from '../constants';
 
 /**
  * Interface for a dock item configuration.
@@ -45,14 +46,14 @@ export class Dock {
         const toolsIcon = `<svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>`;
 
         return [
-            { id: 'profile', icon: userIcon, label: 'Profil' },
-            { id: 'games', icon: gameIcon, label: 'Jeux' },
-            { id: 'web', icon: webIcon, label: 'Navigateur' },
-            { id: 'mail', icon: mailIcon, label: 'Messages' },
-            { id: 'chat', icon: chatIcon, label: 'Chat' },
-            { id: 'market', icon: cartIcon, label: 'Boutique' },
-            { id: 'settings', icon: settingsIcon, label: 'Paramètres' },
-            { id: 'tools', icon: toolsIcon, label: 'Outils', isActive: true },
+            { id: APP_IDS.PROFILE, icon: userIcon, label: OS_CONFIG.DOCK.LABELS.PROFILE },
+            { id: APP_IDS.GAMES, icon: gameIcon, label: OS_CONFIG.DOCK.LABELS.GAMES },
+            { id: APP_IDS.WEB, icon: webIcon, label: OS_CONFIG.DOCK.LABELS.WEB },
+            { id: APP_IDS.MAIL, icon: mailIcon, label: OS_CONFIG.DOCK.LABELS.MAIL },
+            { id: APP_IDS.CHAT, icon: chatIcon, label: OS_CONFIG.DOCK.LABELS.CHAT },
+            { id: APP_IDS.MARKET, icon: cartIcon, label: OS_CONFIG.DOCK.LABELS.MARKET },
+            { id: APP_IDS.SETTINGS, icon: settingsIcon, label: OS_CONFIG.DOCK.LABELS.SETTINGS },
+            { id: APP_IDS.TOOLS, icon: toolsIcon, label: OS_CONFIG.DOCK.LABELS.TOOLS, isActive: true },
         ];
     }
 

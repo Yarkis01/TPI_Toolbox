@@ -1,5 +1,5 @@
 import { BaseModule } from "../../core/abstract/BaseModule";
-import { SELECTORS } from "./constants";
+import { SELECTORS, APP_IDS, OS_CONFIG } from "./constants";
 import { Dock } from "./components/Dock";
 import { WindowManager } from "./components/WindowManager";
 import { WindowComponent } from "./components/Window";
@@ -7,13 +7,20 @@ import { SettingsApp } from "./apps/SettingsApp";
 import { ModuleManager } from "../../core/managers/ModuleManager";
 import { createElement } from "../../utils/DomUtils";
 
+/**
+ * Represents the operating system module.
+ */
 export class OperatingSystemModule extends BaseModule {
     private dock: Dock | null = null;
     private windowManager: WindowManager | null = null;
     private moduleManager: ModuleManager;
     private activeWindows: Map<string, WindowComponent> = new Map();
 
-    constructor(moduleManager: ModuleManager) {
+    /**
+     * Creates a new instance of the OperatingSystemModule.
+     * @param moduleManager - The module manager.
+     */
+    public constructor(moduleManager: ModuleManager) {
         super();
         this.moduleManager = moduleManager;
     }
@@ -22,21 +29,21 @@ export class OperatingSystemModule extends BaseModule {
      * @inheritdoc
      */
     public get id(): string {
-        return 'operating_system';
+        return OS_CONFIG.ID;
     }
 
     /**
      * @inheritdoc
      */
     public get name(): string {
-        return 'Système d\'exploitation';
+        return OS_CONFIG.NAME;
     }
 
     /**
      * @inheritdoc
      */
     public get description(): string {
-        return "Transforme l'interface graphique en un système d'exploitation.";
+        return OS_CONFIG.DESCRIPTION;
     }
 
     /**
@@ -59,7 +66,7 @@ export class OperatingSystemModule extends BaseModule {
         this.applyDesktopStyles();
 
         const desktopContainer = createElement('div', {
-            id: 'os-desktop',
+            id: SELECTORS.DESKTOP_CONTAINER,
             style: {
                 position: 'fixed',
                 top: '0',
@@ -114,9 +121,9 @@ export class OperatingSystemModule extends BaseModule {
         };
 
         switch (appId) {
-            case 'tools':
+            case APP_IDS.TOOLS:
                 win = this.windowManager.openWindow({
-                    title: 'Paramètres',
+                    title: OS_CONFIG.DOCK.LABELS.TOOLS, // Or specific window title if different from Dock label? Using Label for now.
                     content: new SettingsApp(this.moduleManager).render(),
                     width: 400,
                     height: 500,
@@ -124,16 +131,16 @@ export class OperatingSystemModule extends BaseModule {
                     onFocus
                 });
                 break;
-            case 'chat':
+            case APP_IDS.CHAT:
                 win = this.windowManager.openWindow({
                     title: 'Chat TPI',
                     content: createElement('iframe', {
-                        src: 'https://www.themeparkindustries.com/tpiv4/game/chat.php',
+                        src: OS_CONFIG.URL_CHAT,
                         style: {
                             width: '100%',
                             height: '100%',
                             border: 'none',
-                            backgroundColor: '#202020'
+                            backgroundColor: OS_CONFIG.STYLES.CHAT_BG
                         }
                     }),
                     width: 800,
@@ -163,8 +170,8 @@ export class OperatingSystemModule extends BaseModule {
      * Applies desktop styles to the page.
      */
     private applyDesktopStyles(): void {
-        document.body.style.backgroundColor = "#0f1110";
-        document.body.style.backgroundImage = "linear-gradient(135deg, #050505 0%, #061f10 100%)"; // Black / Dark Green
+        document.body.style.backgroundColor = OS_CONFIG.STYLES.DESKTOP_BG_COLOR;
+        document.body.style.backgroundImage = OS_CONFIG.STYLES.DESKTOP_BG;
         document.body.style.backgroundSize = "cover";
         document.body.style.height = "100vh";
         document.body.style.overflow = "hidden";
