@@ -1,4 +1,5 @@
 import { EntityStatusColorizerModule } from '../modules/EntityStatusColorizer/module';
+import { StaffBuildingColorizerModule } from '../modules/backstage/StaffBuildingColorizer/module';
 import { HideChatModule } from '../modules/hideChat/module';
 import { HideWarehousemanModule } from '../modules/hideWarehouseman/module';
 import { RideHypeAsTextModule } from '../modules/rideHypeAsText/module';
@@ -77,6 +78,7 @@ export class App implements IApp {
     private _initializeModules(moduleManager: ModuleManager): void {
         this._logger.info('📦 Initializing modules...');
 
+        moduleManager.register(new StaffBuildingColorizerModule());
         moduleManager.register(new EntityStatusColorizerModule());
         moduleManager.register(new HideChatModule())
         moduleManager.register(new RideHypeAsTextModule());
