@@ -189,15 +189,15 @@
         }
     }
 
-    input:checked+.tpi-slider {
+    input:checked + .tpi-slider {
         background-color: $primary;
     }
 
-    input:focus+.tpi-slider {
+    input:focus + .tpi-slider {
         box-shadow: 0 0 1px $primary;
     }
 
-    input:checked+.tpi-slider:before {
+    input:checked + .tpi-slider:before {
         transform: translateX(20px);
     }
 }

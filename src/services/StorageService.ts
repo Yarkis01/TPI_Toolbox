@@ -14,10 +14,12 @@ export class StorageService {
     public constructor() {
         this._logger = new Logger('StorageService');
         this._prefix = 'tpitoolbox:';
-        
+
         this._useTamperMonkey = typeof GM_getValue !== 'undefined';
         if (!this._useTamperMonkey) {
-            this._logger.warn('Tampermonkey environment not detected. Falling back to localStorage.');
+            this._logger.warn(
+                'Tampermonkey environment not detected. Falling back to localStorage.',
+            );
         }
     }
 
@@ -55,7 +57,7 @@ export class StorageService {
                 return GM_getValue<T>(fullKey, defaultValue);
             } else {
                 const serializedValue = localStorage.getItem(fullKey);
-                
+
                 if (serializedValue === null) {
                     return defaultValue;
                 }

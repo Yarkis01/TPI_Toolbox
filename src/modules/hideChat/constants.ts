@@ -3,7 +3,7 @@
  */
 export const CHAT_SELECTORS = {
     PAGE_MATCH: 'dashboard.php',
-    CHAT_DIV: ".dashboard-chatbox",
+    CHAT_DIV: '.dashboard-chatbox',
 };
 
 /**

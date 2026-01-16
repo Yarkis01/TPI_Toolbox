@@ -1,6 +1,6 @@
-import { WarehouseColorizerModule } from '../modules/backstage/warehouseColorizer/module';
 import { EntityStatusColorizerModule } from '../modules/EntityStatusColorizer/module';
 import { StaffBuildingColorizerModule } from '../modules/backstage/StaffBuildingColorizer/module';
+import { WarehouseColorizerModule } from '../modules/backstage/warehouseColorizer/module';
 import { HideChatModule } from '../modules/hideChat/module';
 import { HideWarehousemanModule } from '../modules/hideWarehouseman/module';
 import { RideHypeAsTextModule } from '../modules/rideHypeAsText/module';
@@ -82,7 +82,7 @@ export class App implements IApp {
         moduleManager.register(new StaffBuildingColorizerModule());
         moduleManager.register(new WarehouseColorizerModule());
         moduleManager.register(new EntityStatusColorizerModule());
-        moduleManager.register(new HideChatModule())
+        moduleManager.register(new HideChatModule());
         moduleManager.register(new RideHypeAsTextModule());
         moduleManager.register(new ZoneFilterModule());
         moduleManager.register(new HideWarehousemanModule());

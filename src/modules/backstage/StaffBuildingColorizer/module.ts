@@ -1,5 +1,5 @@
 import { BaseModule } from '../../../core/abstract/BaseModule';
-import { PAGE_CONFIGS, CAPACITY_COLORS, CAPACITY_EVALUATION } from './constants';
+import { CAPACITY_COLORS, CAPACITY_EVALUATION, PAGE_CONFIGS } from './constants';
 
 /**
  * Module to colorize the staff building card and add mood visualization.
@@ -25,7 +25,7 @@ export class StaffBuildingColorizerModule extends BaseModule {
      * @inheritdoc
      */
     public get description(): string {
-        return "Ajoute une bordure colorée selon la capacité du bâtiment.";
+        return 'Ajoute une bordure colorée selon la capacité du bâtiment.';
     }
 
     /**
@@ -289,7 +289,7 @@ export class StaffBuildingColorizerModule extends BaseModule {
             right: '0',
             height: '100%',
             width: `${100 - percentage}%`,
-            background: 'rgba(255,255,255,0.75)'
+            background: 'rgba(255,255,255,0.75)',
         });
 
         return mask;
@@ -309,8 +309,9 @@ export class StaffBuildingColorizerModule extends BaseModule {
             top: '0',
             height: '100%',
             width: '100%',
-            background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 60%)',
-            pointerEvents: 'none'
+            background:
+                'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 60%)',
+            pointerEvents: 'none',
         });
 
         return gloss;
