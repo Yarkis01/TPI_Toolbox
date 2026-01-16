@@ -292,7 +292,6 @@ export class WarehouseColorizerModule extends BaseModule {
         Object.assign(bar.style, {
             width: '100%',
             height: '14px',
-            borderRadius: '999px',
             overflow: 'hidden',
             position: 'relative',
             display: 'flex',
