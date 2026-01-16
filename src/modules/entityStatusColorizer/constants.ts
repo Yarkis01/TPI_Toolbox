@@ -30,4 +30,10 @@ export const PAGE_CONFIGS = [
         getStatus: (el: HTMLElement) =>
             el.querySelector('.booth-row__status')?.textContent?.toLowerCase() || '',
     },
+    {
+        urlFragment: 'spectacles.php',
+        selector: 'article.spectacle-card',
+        getStatus: (el: HTMLElement) =>
+            el.querySelector('.spectacle-card__status')?.textContent?.toLowerCase() || '',
+    },
 ];
