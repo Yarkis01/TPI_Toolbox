@@ -3,6 +3,7 @@ import { StaffBuildingColorizerModule } from '../modules/backstage/StaffBuilding
 import { WarehouseColorizerModule } from '../modules/backstage/warehouseColorizer/module';
 import { HideChatModule } from '../modules/hideChat/module';
 import { HideWarehousemanModule } from '../modules/hideWarehouseman/module';
+import { OperatingSystemModule } from '../modules/operatingSystem/module';
 import { RideHypeAsTextModule } from '../modules/rideHypeAsText/module';
 import { SelectUntrainedModule } from '../modules/selectUntrained/module';
 import { ZoneFilterModule } from '../modules/zoneFilters/module';
@@ -38,7 +39,11 @@ export class App implements IApp {
         const settingsManager = new SettingsManager();
         const moduleManager = new ModuleManager(settingsManager);
 
-        this._runBootstrapProcesses(moduleManager);
+        if (!settingsManager.getModuleState("operating_system", false)) {
+            this._logger.info("OS is disabled, running bootstrap processes.")
+            this._runBootstrapProcesses(moduleManager);
+        }
+
         this._initializeModules(moduleManager);
 
         this._logger.info('🚀 Toolbox Started.');
@@ -87,6 +92,7 @@ export class App implements IApp {
         moduleManager.register(new ZoneFilterModule());
         moduleManager.register(new HideWarehousemanModule());
         moduleManager.register(new SelectUntrainedModule());
+        moduleManager.register(new OperatingSystemModule(moduleManager));
 
         this._logger.info('✅ Modules initialized.');
     }

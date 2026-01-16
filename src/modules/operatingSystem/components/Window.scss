@@ -1,0 +1,267 @@
+.os-window {
+    position: absolute;
+    background: rgba(30, 30, 30, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 12px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-width: 300px;
+    min-height: 200px;
+    transition: transform 0.2s, opacity 0.2s;
+
+    animation: window-open 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: auto;
+
+    &.minimized {
+        transform: scale(0.8) translateY(200px);
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    &.resizing {
+        transition: none !important;
+        user-select: none;
+
+        iframe {
+            pointer-events: none;
+        }
+    }
+
+    .window-header {
+        height: 38px;
+        background: rgba(255, 255, 255, 0.05);
+        display: flex;
+        align-items: center;
+        padding: 0 16px;
+        user-select: none;
+        cursor: default;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        flex-shrink: 0;
+
+        .window-controls {
+            display: flex;
+            gap: 8px;
+            margin-right: 16px;
+
+            .control-btn {
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                border: none;
+                cursor: pointer;
+                position: relative;
+
+                &::before {
+                    content: '';
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    opacity: 0;
+                    color: rgba(0, 0, 0, 0.5);
+                    font-size: 8px;
+                    font-weight: bold;
+                    transition: opacity 0.1s;
+                }
+
+                &:hover::before {
+                    opacity: 1;
+                }
+
+                &.close {
+                    background-color: #ff5f57;
+                    border: 1px solid #e0443e;
+
+                    &:hover::before {
+                        content: '✕';
+                    }
+                }
+
+                &.minimize {
+                    background-color: #febc2e;
+                    border: 1px solid #dba522;
+
+                    &:hover::before {
+                        content: '−';
+                    }
+                }
+
+                &.maximize {
+                    background-color: #28c840;
+                    border: 1px solid #1aa52e;
+
+                    &:hover::before {
+                        content: '+';
+                    }
+                }
+            }
+        }
+
+        .window-title {
+            flex: 1;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 13px;
+            font-weight: 500;
+            margin-right: 50px;
+        }
+    }
+
+    .window-content {
+        flex: 1;
+        overflow: auto;
+        padding: 0;
+        color: #e0e0e0;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+
+        &::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+    }
+
+    /* Resize Handles */
+    .resize-handle {
+        position: absolute;
+        z-index: 100;
+
+        &.n {
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            cursor: n-resize;
+        }
+
+        &.s {
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            cursor: s-resize;
+        }
+
+        &.e {
+            top: 0;
+            bottom: 0;
+            right: 0;
+            width: 5px;
+            cursor: e-resize;
+        }
+
+        &.w {
+            top: 0;
+            bottom: 0;
+            left: 0;
+            width: 5px;
+            cursor: w-resize;
+        }
+
+        &.ne {
+            top: 0;
+            right: 0;
+            width: 10px;
+            height: 10px;
+            cursor: ne-resize;
+            z-index: 101;
+        }
+
+        &.se {
+            bottom: 0;
+            right: 0;
+            width: 10px;
+            height: 10px;
+            cursor: se-resize;
+            z-index: 101;
+        }
+
+        &.sw {
+            bottom: 0;
+            left: 0;
+            width: 10px;
+            height: 10px;
+            cursor: sw-resize;
+            z-index: 101;
+        }
+
+        &.nw {
+            top: 0;
+            left: 0;
+            width: 10px;
+            height: 10px;
+            cursor: nw-resize;
+            z-index: 101;
+        }
+    }
+}
+
+@keyframes window-open {
+    from {
+        transform: scale(0.95);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.os-settings-override.tpi-modal-card {
+    width: 100% !important;
+    max-width: none !important;
+    height: 100% !important;
+    max-height: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+
+    .tpi-modal-card__header {
+        display: none !important;
+    }
+
+    .tpi-modal-card__body {
+        padding: 10px 16px;
+    }
+
+    .tpi-search-bar {
+        padding: 10px 16px;
+
+        input {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+
+            &:focus {
+                border-color: #10b981;
+            }
+        }
+    }
+
+    .tpi-setting-row {
+        border-bottom-color: rgba(255, 255, 255, 0.05);
+
+        .tpi-setting-label {
+            color: #eee;
+        }
+
+        .tpi-setting-desc {
+            color: #aaa;
+        }
+    }
+
+    .tpi-modal-card__footer {
+        background: rgba(0, 0, 0, 0.2);
+        border-top-color: rgba(255, 255, 255, 0.05);
+    }
+}
