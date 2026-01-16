@@ -1,3 +1,4 @@
+import { WarehouseColorizerModule } from '../modules/backstage/warehouseColorizer/module';
 import { EntityStatusColorizerModule } from '../modules/EntityStatusColorizer/module';
 import { HideWarehousemanModule } from '../modules/hideWarehouseman/module';
 import { RideHypeAsTextModule } from '../modules/rideHypeAsText/module';
@@ -76,6 +77,7 @@ export class App implements IApp {
     private _initializeModules(moduleManager: ModuleManager): void {
         this._logger.info('📦 Initializing modules...');
 
+        moduleManager.register(new WarehouseColorizerModule());
         moduleManager.register(new EntityStatusColorizerModule());
         moduleManager.register(new RideHypeAsTextModule());
         moduleManager.register(new ZoneFilterModule());
