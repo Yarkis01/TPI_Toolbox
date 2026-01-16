@@ -1,0 +1,101 @@
+.owned-restaurants__filters-container {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    align-items: center;
+    margin-left: auto;
+    flex-wrap: wrap;
+
+    background-color: rgba(53, 179, 175, 0.08);
+    padding: 0.75rem 1rem;
+    border: 1px solid rgba(53, 179, 175, 0.3);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+    @media (max-width: 768px) {
+        margin-left: 0;
+        margin-top: 1rem;
+        width: 100%;
+    }
+}
+
+.owned-attractions__filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.tpi-checkbox-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #8e9297;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.25rem;
+}
+
+.owned-attractions__filter-select {
+    background-color: rgb(30, 35, 48);
+    border: 1px solid rgba(53, 179, 175, 0.4);
+    color: white;
+    padding: 0.5rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 180px;
+
+    &:hover,
+    &:focus {
+        border-color: #35b3af;
+        box-shadow: 0 0 0 2px rgba(53, 179, 175, 0.2);
+    }
+
+    option {
+        background-color: #1e2330;
+        color: white;
+    }
+}
+
+.owned-attractions__filter-actions {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.5rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(53, 179, 175, 0.2);
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: stretch;
+        text-align: center;
+    }
+}
+
+.owned-attractions__filter-count {
+    color: #8e9297;
+    font-size: 0.85rem;
+
+    span {
+        color: #35b3af;
+        font-weight: 600;
+    }
+}
+
+.owned-attractions__filter-reset {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: rgba(239, 68, 68, 0.2);
+        color: #f87171;
+    }
+}

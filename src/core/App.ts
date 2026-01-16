@@ -3,6 +3,7 @@ import { StaffBuildingColorizerModule } from '../modules/backstage/StaffBuilding
 import { WarehouseColorizerModule } from '../modules/backstage/warehouseColorizer/module';
 import { HideChatModule } from '../modules/hideChat/module';
 import { HideWarehousemanModule } from '../modules/hideWarehouseman/module';
+import { RestaurentFilterModule } from '../modules/Restaurent/RestaurentFilters/module';
 import { RideHypeAsTextModule } from '../modules/rideHypeAsText/module';
 import { SelectUntrainedModule } from '../modules/selectUntrained/module';
 import { ZoneFilterModule } from '../modules/zoneFilters/module';
@@ -86,6 +87,7 @@ export class App implements IApp {
         moduleManager.register(new RideHypeAsTextModule());
         moduleManager.register(new ZoneFilterModule());
         moduleManager.register(new HideWarehousemanModule());
+        moduleManager.register(new RestaurentFilterModule());
         moduleManager.register(new SelectUntrainedModule());
 
         this._logger.info('✅ Modules initialized.');
