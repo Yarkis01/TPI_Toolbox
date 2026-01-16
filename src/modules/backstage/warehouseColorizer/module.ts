@@ -1,5 +1,5 @@
 import { BaseModule } from '../../../core/abstract/BaseModule';
-import { PAGE_CONFIGS, CAPACITY_COLORS, CAPACITY_EVALUATION } from './constants';
+import { CAPACITY_COLORS, CAPACITY_EVALUATION, PAGE_CONFIGS } from './constants';
 
 /**
  * Module to colorize the warehouse card based on storage capacity and add a stacked fill bar
@@ -39,7 +39,7 @@ export class WarehouseColorizerModule extends BaseModule {
 
         const warehouseCard = this._findWarehouseCard();
         if (!warehouseCard) {
-            this._logger.debug("Warehouse card not found (#expand-entrepot-restaurant-btn).");
+            this._logger.debug('Warehouse card not found (#expand-entrepot-restaurant-btn).');
             return;
         }
 
@@ -100,7 +100,9 @@ export class WarehouseColorizerModule extends BaseModule {
      * @param warehouseCard - The warehouse card element.
      * @returns The current and maximum capacity, or null if unavailable/invalid.
      */
-    private _extractCapacityData(warehouseCard: HTMLElement): { current: number; max: number } | null {
+    private _extractCapacityData(
+        warehouseCard: HTMLElement,
+    ): { current: number; max: number } | null {
         const badge = warehouseCard.querySelector<HTMLElement>('.backstage-card__badge');
         if (!badge) {
             return null;
@@ -211,7 +213,7 @@ export class WarehouseColorizerModule extends BaseModule {
      * @returns The spaces for foodtrucks, fastfoods, sitDown, or null if missing/invalid.
      */
     private _extractRestaurantTypesSpaces(
-        warehouseCard: HTMLElement
+        warehouseCard: HTMLElement,
     ): { foodtrucks: number; fastfoods: number; sitDown: number } | null {
         const mapping: Array<{
             key: 'foodtrucks' | 'fastfoods' | 'sitDown';
@@ -219,7 +221,7 @@ export class WarehouseColorizerModule extends BaseModule {
         }> = [
             { key: 'foodtrucks', labelStartsWith: 'espace necessaire aux foodtrucks' },
             { key: 'fastfoods', labelStartsWith: 'espace necessaire aux fastfoods' },
-            { key: 'sitDown', labelStartsWith: 'espace necessaire aux restaurants' }
+            { key: 'sitDown', labelStartsWith: 'espace necessaire aux restaurants' },
         ];
 
         const result: Partial<Record<'foodtrucks' | 'fastfoods' | 'sitDown', number>> = {};
@@ -272,14 +274,14 @@ export class WarehouseColorizerModule extends BaseModule {
      */
     private _createRestaurantTypesFillBar(
         spaces: { foodtrucks: number; fastfoods: number; sitDown: number },
-        maxCapacity: number
+        maxCapacity: number,
     ): HTMLElement {
         const wrap = document.createElement('div');
         wrap.setAttribute('data-warehouse-types-fill-bar', '1');
 
         Object.assign(wrap.style, {
             width: '100%',
-            margin: '6px 0 12px 0'
+            margin: '6px 0 12px 0',
         });
 
         const foodPct = this._toPercent(spaces.foodtrucks, maxCapacity);
@@ -296,7 +298,7 @@ export class WarehouseColorizerModule extends BaseModule {
             position: 'relative',
             display: 'flex',
             background: 'rgba(0,0,0,0.08)',
-            boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.12)'
+            boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.12)',
         });
 
         const makeSeg = (pct: number, color: string): HTMLElement => {
@@ -307,7 +309,7 @@ export class WarehouseColorizerModule extends BaseModule {
                 background: color,
                 flexGrow: String(pct),
                 flexBasis: `${pct}%`,
-                minWidth: pct > 0 ? '6px' : '0px'
+                minWidth: pct > 0 ? '6px' : '0px',
             });
 
             return seg;
@@ -324,7 +326,7 @@ export class WarehouseColorizerModule extends BaseModule {
             background: 'transparent',
             flexGrow: String(emptyPct),
             flexBasis: `${emptyPct}%`,
-            minWidth: '0px'
+            minWidth: '0px',
         });
 
         bar.appendChild(foodSeg);
@@ -336,7 +338,7 @@ export class WarehouseColorizerModule extends BaseModule {
         Object.assign(legend.style, {
             marginTop: '8px',
             fontSize: '12px',
-            opacity: '0.9'
+            opacity: '0.9',
         });
 
         legend.textContent = `Foodtrucks: ${foodPct}% • Fastfoods: ${fastPct}% • Restaurants: ${sitPct}%`;
