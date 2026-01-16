@@ -1,3 +1,4 @@
+import { WarehouseColorizerModule } from '../modules/backstage/warehouseColorizer/module';
 import { EntityStatusColorizerModule } from '../modules/EntityStatusColorizer/module';
 import { HideChatModule } from '../modules/hideChat/module';
 import { HideWarehousemanModule } from '../modules/hideWarehouseman/module';
@@ -77,6 +78,7 @@ export class App implements IApp {
     private _initializeModules(moduleManager: ModuleManager): void {
         this._logger.info('📦 Initializing modules...');
 
+        moduleManager.register(new WarehouseColorizerModule());
         moduleManager.register(new EntityStatusColorizerModule());
         moduleManager.register(new HideChatModule())
         moduleManager.register(new RideHypeAsTextModule());
