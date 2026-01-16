@@ -1,4 +1,4 @@
-import { WindowComponent, WindowOptions } from "./Window";
+import { WindowComponent, WindowOptions } from './Window';
 
 /**
  * Class for the window manager.
@@ -31,7 +31,7 @@ export class WindowManager {
             onFocus: () => {
                 this.focusWindow(win);
                 if (options.onFocus) options.onFocus();
-            }
+            },
         });
 
         this.windows.push(win);
@@ -47,7 +47,7 @@ export class WindowManager {
      * Closes all windows.
      */
     public closeAll(): void {
-        [...this.windows].forEach(w => w.close());
+        [...this.windows].forEach((w) => w.close());
         this.windows = [];
     }
 
@@ -56,7 +56,7 @@ export class WindowManager {
      * @param win - The window component to remove.
      */
     private removeWindow(win: WindowComponent): void {
-        this.windows = this.windows.filter(w => w !== win);
+        this.windows = this.windows.filter((w) => w !== win);
     }
 
     /**
@@ -67,7 +67,7 @@ export class WindowManager {
         this.highestZ++;
         win.element.style.zIndex = this.highestZ.toString();
 
-        this.windows.forEach(w => {
+        this.windows.forEach((w) => {
             if (w === win) w.element.classList.add('active-window');
             else w.element.classList.remove('active-window');
         });

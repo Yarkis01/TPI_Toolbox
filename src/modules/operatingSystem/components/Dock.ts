@@ -1,5 +1,5 @@
-import './Dock.scss';
 import { APP_IDS, OS_CONFIG } from '../constants';
+import './Dock.scss';
 
 /**
  * Interface for a dock item configuration.
@@ -53,7 +53,12 @@ export class Dock {
             { id: APP_IDS.CHAT, icon: chatIcon, label: OS_CONFIG.DOCK.LABELS.CHAT },
             { id: APP_IDS.MARKET, icon: cartIcon, label: OS_CONFIG.DOCK.LABELS.MARKET },
             { id: APP_IDS.SETTINGS, icon: settingsIcon, label: OS_CONFIG.DOCK.LABELS.SETTINGS },
-            { id: APP_IDS.TOOLS, icon: toolsIcon, label: OS_CONFIG.DOCK.LABELS.TOOLS, isActive: true },
+            {
+                id: APP_IDS.TOOLS,
+                icon: toolsIcon,
+                label: OS_CONFIG.DOCK.LABELS.TOOLS,
+                isActive: true,
+            },
         ];
     }
 
@@ -65,7 +70,7 @@ export class Dock {
         const dockContainer = document.createElement('div');
         dockContainer.className = 'os-dock-container';
 
-        this.items.forEach(item => {
+        this.items.forEach((item) => {
             const itemElement = document.createElement('div');
             itemElement.className = `dock-item ${item.isActive ? 'active' : ''}`;
             itemElement.dataset.id = item.id;
@@ -101,7 +106,9 @@ export class Dock {
     public setActive(id: string): void {
         const el = this.container.querySelector(`.dock-item[data-id="${id}"]`);
         if (el) {
-            this.container.querySelectorAll('.dock-item').forEach(e => e.classList.remove('active'));
+            this.container
+                .querySelectorAll('.dock-item')
+                .forEach((e) => e.classList.remove('active'));
             el.classList.add('active');
         }
     }

@@ -37,7 +37,8 @@ export class WindowComponent {
     private resizeStartTop: number = 0;
 
     private isMaximized: boolean = false;
-    private preMaximizeState: { left: string, top: string, width: string, height: string } | null = null;
+    private preMaximizeState: { left: string; top: string; width: string; height: string } | null =
+        null;
     private isMinimized: boolean = false;
 
     private minWidth = 300;
@@ -75,17 +76,26 @@ export class WindowComponent {
         const closeBtn = document.createElement('div');
         closeBtn.className = 'control-btn close';
         closeBtn.title = 'Fermer';
-        closeBtn.onclick = (e) => { e.stopPropagation(); this.close(); };
+        closeBtn.onclick = (e) => {
+            e.stopPropagation();
+            this.close();
+        };
 
         const minBtn = document.createElement('div');
         minBtn.className = 'control-btn minimize';
         minBtn.title = 'Réduire';
-        minBtn.onclick = (e) => { e.stopPropagation(); this.minimize(); };
+        minBtn.onclick = (e) => {
+            e.stopPropagation();
+            this.minimize();
+        };
 
         const maxBtn = document.createElement('div');
         maxBtn.className = 'control-btn maximize';
         maxBtn.title = 'Agrandir';
-        maxBtn.onclick = (e) => { e.stopPropagation(); this.toggleMaximize(); };
+        maxBtn.onclick = (e) => {
+            e.stopPropagation();
+            this.toggleMaximize();
+        };
 
         controls.appendChild(closeBtn);
         controls.appendChild(minBtn);
@@ -123,7 +133,7 @@ export class WindowComponent {
     private createResizeHandles(win: HTMLElement): void {
         const directions = ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'];
 
-        directions.forEach(dir => {
+        directions.forEach((dir) => {
             const handle = document.createElement('div');
             handle.className = `resize-handle ${dir}`;
             handle.addEventListener('mousedown', (e) => this.startResize(e, dir));
@@ -179,7 +189,7 @@ export class WindowComponent {
             left: this.element.style.left,
             top: this.element.style.top,
             width: this.element.style.width,
-            height: this.element.style.height
+            height: this.element.style.height,
         };
 
         this.element.style.left = '0';
@@ -318,7 +328,6 @@ export class WindowComponent {
 
         const dir = this.resizeDirection;
 
-
         if (dir.includes('e')) {
             newWidth = this.resizeStartWidth + deltaX;
         } else if (dir.includes('w')) {
@@ -335,12 +344,14 @@ export class WindowComponent {
 
         if (newWidth < this.minWidth) {
             newWidth = this.minWidth;
-            if (dir.includes('w')) newLeft = this.resizeStartLeft + (this.resizeStartWidth - this.minWidth);
+            if (dir.includes('w'))
+                newLeft = this.resizeStartLeft + (this.resizeStartWidth - this.minWidth);
         }
 
         if (newHeight < this.minHeight) {
             newHeight = this.minHeight;
-            if (dir.includes('n')) newTop = this.resizeStartTop + (this.resizeStartHeight - this.minHeight);
+            if (dir.includes('n'))
+                newTop = this.resizeStartTop + (this.resizeStartHeight - this.minHeight);
         }
 
         if (dir.includes('e') || dir.includes('w')) {

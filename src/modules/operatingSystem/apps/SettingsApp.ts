@@ -1,8 +1,8 @@
-import { ModuleManager } from "../../../core/managers/ModuleManager";
-import { createElement } from "../../../utils/DomUtils";
-import IModule from "../../../core/interfaces/IModule";
-import { APP_INFORMATIONS } from "../../../core/constants/AppConstants";
 import '../../../core/bootstrap/styles/_toolbox.scss';
+import { APP_INFORMATIONS } from '../../../core/constants/AppConstants';
+import IModule from '../../../core/interfaces/IModule';
+import { ModuleManager } from '../../../core/managers/ModuleManager';
+import { createElement } from '../../../utils/DomUtils';
 
 /**
  * Class for the settings app.
@@ -25,7 +25,7 @@ export class SettingsApp {
     public render(): HTMLElement {
         const container = createElement('div', {
             class: 'tpi-modal-card os-settings-override',
-            style: { display: 'flex', flexDirection: 'column', height: '100%' }
+            style: { display: 'flex', flexDirection: 'column', height: '100%' },
         });
 
         container.appendChild(this.createSearchBar());
@@ -61,18 +61,22 @@ export class SettingsApp {
      * @returns The body.
      */
     private createBody(): HTMLElement {
-        const modules = this.moduleManager.getModules().sort((a, b) => a.name.localeCompare(b.name));
+        const modules = this.moduleManager
+            .getModules()
+            .sort((a, b) => a.name.localeCompare(b.name));
         const list = createElement('div', {
             id: 'os-settings-list',
-            class: 'tpi-modal-card__body'
+            class: 'tpi-modal-card__body',
         });
 
         if (modules.length === 0) {
-            list.appendChild(createElement('div', { class: 'tpi-modal-empty' }, ['Aucun module disponible 😢']));
+            list.appendChild(
+                createElement('div', { class: 'tpi-modal-empty' }, ['Aucun module disponible 😢']),
+            );
             return list;
         }
 
-        modules.forEach(mod => {
+        modules.forEach((mod) => {
             list.appendChild(this.createModuleRow(mod));
         });
 

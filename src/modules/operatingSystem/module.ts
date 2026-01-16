@@ -1,11 +1,11 @@
-import { BaseModule } from "../../core/abstract/BaseModule";
-import { SELECTORS, APP_IDS, OS_CONFIG } from "./constants";
-import { Dock } from "./components/Dock";
-import { WindowManager } from "./components/WindowManager";
-import { WindowComponent } from "./components/Window";
-import { SettingsApp } from "./apps/SettingsApp";
-import { ModuleManager } from "../../core/managers/ModuleManager";
-import { createElement } from "../../utils/DomUtils";
+import { BaseModule } from '../../core/abstract/BaseModule';
+import { ModuleManager } from '../../core/managers/ModuleManager';
+import { createElement } from '../../utils/DomUtils';
+import { SettingsApp } from './apps/SettingsApp';
+import { Dock } from './components/Dock';
+import { WindowComponent } from './components/Window';
+import { WindowManager } from './components/WindowManager';
+import { APP_IDS, OS_CONFIG, SELECTORS } from './constants';
 
 /**
  * Represents the operating system module.
@@ -50,18 +50,15 @@ export class OperatingSystemModule extends BaseModule {
      * @inheritdoc
      */
     protected onEnable(): void {
-        if (!window.location.href.includes("game"))
-            return;
+        if (!window.location.href.includes('game')) return;
 
-        this._logger.info("Enabling OS Mode...");
+        this._logger.info('Enabling OS Mode...');
 
         const leftMenu = document.querySelector(SELECTORS.LEFT_MENU);
-        if (leftMenu)
-            (leftMenu as HTMLElement).style.display = 'none';
+        if (leftMenu) (leftMenu as HTMLElement).style.display = 'none';
 
         const gameContainer = document.querySelector(SELECTORS.GAME_CONTAINER);
-        if (gameContainer)
-            (gameContainer as HTMLElement).style.display = 'none';
+        if (gameContainer) (gameContainer as HTMLElement).style.display = 'none';
 
         this.applyDesktopStyles();
 
@@ -74,8 +71,8 @@ export class OperatingSystemModule extends BaseModule {
                 width: '100%',
                 height: '100%',
                 pointerEvents: 'none',
-                zIndex: '100'
-            }
+                zIndex: '100',
+            },
         });
         document.body.appendChild(desktopContainer);
 
@@ -128,7 +125,7 @@ export class OperatingSystemModule extends BaseModule {
                     width: 400,
                     height: 500,
                     onClose,
-                    onFocus
+                    onFocus,
                 });
                 break;
             case APP_IDS.CHAT:
@@ -140,23 +137,25 @@ export class OperatingSystemModule extends BaseModule {
                             width: '100%',
                             height: '100%',
                             border: 'none',
-                            backgroundColor: OS_CONFIG.STYLES.CHAT_BG
-                        }
+                            backgroundColor: OS_CONFIG.STYLES.CHAT_BG,
+                        },
                     }),
                     width: 800,
                     height: 600,
                     onClose,
-                    onFocus
+                    onFocus,
                 });
                 break;
             default:
                 win = this.windowManager.openWindow({
                     title: `Application: ${appId}`,
-                    content: createElement('div', { style: { padding: '20px' } }, [`Contenu pour ${appId} (Placeholder)`]),
+                    content: createElement('div', { style: { padding: '20px' } }, [
+                        `Contenu pour ${appId} (Placeholder)`,
+                    ]),
                     width: 500,
                     height: 300,
                     onClose,
-                    onFocus
+                    onFocus,
                 });
                 break;
         }
@@ -172,8 +171,8 @@ export class OperatingSystemModule extends BaseModule {
     private applyDesktopStyles(): void {
         document.body.style.backgroundColor = OS_CONFIG.STYLES.DESKTOP_BG_COLOR;
         document.body.style.backgroundImage = OS_CONFIG.STYLES.DESKTOP_BG;
-        document.body.style.backgroundSize = "cover";
-        document.body.style.height = "100vh";
-        document.body.style.overflow = "hidden";
+        document.body.style.backgroundSize = 'cover';
+        document.body.style.height = '100vh';
+        document.body.style.overflow = 'hidden';
     }
 }

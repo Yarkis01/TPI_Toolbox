@@ -2,9 +2,9 @@
  * Selectors for the operating system module.
  */
 export const SELECTORS = {
-    LEFT_MENU: "#left-menu",
-    GAME_CONTAINER: "main.play-main",
-    DESKTOP_CONTAINER: "os-desktop"
+    LEFT_MENU: '#left-menu',
+    GAME_CONTAINER: 'main.play-main',
+    DESKTOP_CONTAINER: 'os-desktop',
 } as const;
 
 /**
@@ -30,9 +30,9 @@ export const OS_CONFIG = {
     DESCRIPTION: "Transforme l'interface graphique en un système d'exploitation.",
     URL_CHAT: 'https://www.themeparkindustries.com/tpiv4/game/chat.php',
     STYLES: {
-        DESKTOP_BG: "linear-gradient(135deg, #050505 0%, #061f10 100%)",
-        DESKTOP_BG_COLOR: "#0f1110",
-        CHAT_BG: '#202020'
+        DESKTOP_BG: 'linear-gradient(135deg, #050505 0%, #061f10 100%)',
+        DESKTOP_BG_COLOR: '#0f1110',
+        CHAT_BG: '#202020',
     },
     DOCK: {
         LABELS: {
@@ -44,6 +44,6 @@ export const OS_CONFIG = {
             MARKET: 'Boutique',
             SETTINGS: 'Paramètres',
             TOOLS: 'Outils',
-        }
-    }
+        },
+    },
 } as const;

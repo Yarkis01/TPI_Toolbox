@@ -39,8 +39,8 @@ export class App implements IApp {
         const settingsManager = new SettingsManager();
         const moduleManager = new ModuleManager(settingsManager);
 
-        if (!settingsManager.getModuleState("operating_system", false)) {
-            this._logger.info("OS is disabled, running bootstrap processes.")
+        if (!settingsManager.getModuleState('operating_system', false)) {
+            this._logger.info('OS is disabled, running bootstrap processes.');
             this._runBootstrapProcesses(moduleManager);
         }
 
