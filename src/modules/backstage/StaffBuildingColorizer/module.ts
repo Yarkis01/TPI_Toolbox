@@ -266,11 +266,9 @@ export class StaffBuildingColorizerModule extends BaseModule {
             width: '70%',
             height: '10px',
             margin: '0 8px',
-            borderRadius: '999px',
-            background: 'linear-gradient(90deg, #ff3b30 0%, #34c759 100%)',
+            background: 'linear-gradient(90deg, #ff0d00ff 0%, #00ff40ff 100%)',
             position: 'relative',
             overflow: 'hidden',
-            boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.15)'
         });
 
         return barWrap;
