@@ -1,6 +1,6 @@
 import { BaseModule } from '../../../core/abstract/BaseModule';
 import { createElement } from '../../../utils/DomUtils';
-import { ZONE_IMAGES_URL, ZONE_SELECTORS, ZONE_STRINGS } from './constants';
+import { ZONE_IMAGES_URL, ZONE_SELECTORS, ZONE_STRINGS, STATUS_STRINGS } from './constants';
 import './style.scss';
 
 /**
@@ -9,6 +9,7 @@ import './style.scss';
 export class RestaurentFilterModule extends BaseModule {
     private _zones: Set<string> = new Set();
     private _selectElement: HTMLSelectElement | null = null;
+    private _statusSelectElement: HTMLSelectElement | null = null;
     private _filterGroup: HTMLElement | null = null;
     private _styleElement: HTMLStyleElement | null = null;
 
@@ -37,7 +38,6 @@ export class RestaurentFilterModule extends BaseModule {
      * @inheritdoc
      */
     protected onEnable(): void {
-        this._injectStyles();
         this.processRestaurantCards().then(() => {
             if (this._zones.size > 0) {
                 this._groupRestaurants();
@@ -70,29 +70,12 @@ export class RestaurentFilterModule extends BaseModule {
         // Reset references
         this._filterGroup = null;
         this._selectElement = null;
+        this._statusSelectElement = null;
         this._styleElement = null;
         this._zones.clear();
     }
 
-    /**
-     * Injects necessary CSS styles to hide elements.
-     */
-    private _injectStyles(): void {
-        this._styleElement = document.createElement('style');
-        this._styleElement.innerHTML = `
-            .${ZONE_SELECTORS.HIDDEN_CLASS} {
-                display: none !important;
-            }
-            .owned-restaurant-card {
-                margin-bottom: 10px !important;
-            }
-            /* Styles for zone headers if not present */
-            .owned-attractions__zone-header-overlay {
-                background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.6) 100%);
-            }
-        `;
-        document.head.appendChild(this._styleElement);
-    }
+
 
     /**
      * Scans restaurant cards and extracts zones.
@@ -128,7 +111,7 @@ export class RestaurentFilterModule extends BaseModule {
             }
         }
 
-        const finalZoneName = zoneName || 'Autre';
+        const finalZoneName = zoneName || 'Sans zone';
 
         // Add to set and update dataset
         if (finalZoneName) {
@@ -164,7 +147,7 @@ export class RestaurentFilterModule extends BaseModule {
 
         cards.forEach((card) => {
             const zone = (card as HTMLElement).dataset.zoneName;
-            if (zone && zone !== 'Autre') {
+            if (zone) {
                 if (!groups[zone]) groups[zone] = [];
                 groups[zone].push(card as HTMLElement);
             } else {
@@ -211,21 +194,26 @@ export class RestaurentFilterModule extends BaseModule {
             'data-zone-name': zoneName
         });
 
-        const imageUrl = this._getZoneImage(zoneName);
+        let backgroundStyle = '';
+        if (zoneName === 'Sans zone') {
+            backgroundStyle = 'background-color: rgba(53, 179, 175, 0.08);'; // Dark styling for no zone
+        } else {
+            const imageUrl = this._getZoneImage(zoneName);
+            backgroundStyle = `background-image: url('${imageUrl}');`;
+        }
 
         const header = createElement('div', {
-            class: 'owned-attractions__zone-header',
-            style: `background-image: url('${imageUrl}'); background-size: cover; background-position: center; position: relative; height: 100px; display: flex; align-items: flex-end; padding: 1rem; border-radius: 8px 8px 0 0; margin-bottom: 0; overflow: hidden;`
+            class: `${ZONE_SELECTORS.ZONE_HEADER} owned-attractions__zone-header`, // Keeping original class for potential other styles, plus new one
+            style: backgroundStyle
         }, [
-            createElement('div', { class: 'owned-attractions__zone-header-overlay', style: 'position: absolute; inset: 0; background: rgba(0,0,0,0.4); z-index: 1;' }),
-            createElement('div', { class: 'owned-attractions__zone-header-content', style: 'position: relative; z-index: 2;' }, [
-                createElement('h3', { class: 'owned-attractions__zone-name', style: 'color: white; margin: 0; font-size: 1.5rem; text-shadow: 0 2px 4px rgba(0,0,0,0.5);' }, [zoneName])
+            createElement('div', { class: `${ZONE_SELECTORS.ZONE_HEADER_OVERLAY} owned-attractions__zone-header-overlay` }),
+            createElement('div', { class: `${ZONE_SELECTORS.ZONE_HEADER_CONTENT} owned-attractions__zone-header-content` }, [
+                createElement('h3', { class: `${ZONE_SELECTORS.ZONE_NAME} owned-attractions__zone-name` }, [zoneName])
             ])
         ]);
 
         const cardsContainer = createElement('div', {
-            class: 'owned-attractions__zone-attractions',
-            style: 'display: grid; gap: 1rem; padding: 1rem; background: rgba(0,0,0,0.2); border-radius: 0 0 8px 8px;'
+            class: `${ZONE_SELECTORS.ZONE_ATTRACTIONS_CONTAINER} owned-attractions__zone-attractions`,
         });
 
         cards.forEach(card => cardsContainer.appendChild(card));
@@ -306,7 +294,17 @@ export class RestaurentFilterModule extends BaseModule {
 
         if (container && !document.getElementById(ZONE_SELECTORS.FILTER_ID)) {
             this._filterGroup = this._createFilterGroup();
+
+            // Append Zone Filter
             container.appendChild(this._filterGroup);
+
+            // Create and Append Status Filter
+            const statusFilterGroup = this._createStatusFilterGroup();
+            if (this._filterGroup.nextSibling) {
+                container.insertBefore(statusFilterGroup, this._filterGroup.nextSibling);
+            } else {
+                container.appendChild(statusFilterGroup);
+            }
 
             // Inject Actions if missing
             if (!document.querySelector('.owned-attractions__filter-actions')) {
@@ -393,23 +391,55 @@ export class RestaurentFilterModule extends BaseModule {
     }
 
     /**
+     * Creates the status filter dropdown group.
+     * @returns The status filter group element.
+     */
+    private _createStatusFilterGroup(): HTMLElement {
+        const label = createElement(
+            'label',
+            {
+                for: ZONE_SELECTORS.STATUS_FILTER_ID,
+                class: ZONE_SELECTORS.SITE_LABEL,
+            },
+            [STATUS_STRINGS.LABEL],
+        );
+
+        this._statusSelectElement = createElement('select', {
+            id: ZONE_SELECTORS.STATUS_FILTER_ID,
+            class: ZONE_SELECTORS.SITE_SELECT,
+        });
+
+        this._statusSelectElement.add(new Option(STATUS_STRINGS.DEFAULT_OPTION, ''));
+        this._statusSelectElement.add(new Option(STATUS_STRINGS.OPEN, 'open'));
+        this._statusSelectElement.add(new Option(STATUS_STRINGS.CLOSED, 'closed'));
+        this._statusSelectElement.add(new Option(STATUS_STRINGS.WORK, 'work'));
+
+        return createElement(
+            'div',
+            {
+                class: ZONE_SELECTORS.SITE_FILTER_GROUP,
+            },
+            [label, this._statusSelectElement],
+        );
+    }
+
+    /**
      * Creates the filter actions container (Counter + Reset).
      * @returns The actions element.
      */
     private _createFilterActions(): HTMLElement {
         return createElement('div', {
-            class: 'owned-attractions__filter-actions',
-            style: { width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid rgba(53, 179, 175, 0.3)' }
+            class: `${ZONE_SELECTORS.FILTER_ACTIONS} owned-attractions__filter-actions`,
         }, [
             createElement('div', { class: 'owned-attractions__filter-count' }, [
                 createElement('span', { id: 'owned-filter-count' }, ['0']),
-                ' restaurant(s) displayed'
+                ' restaurant(s) affiché(s)'
             ]),
             createElement('button', {
                 type: 'button',
                 class: 'owned-attractions__filter-reset',
                 id: 'owned-filter-reset-btn'
-            }, ['Reset filters'])
+            }, ['Réinitialiser les filtres'])
         ]);
     }
 
@@ -426,9 +456,16 @@ export class RestaurentFilterModule extends BaseModule {
             if (resetBtn) {
                 resetBtn.addEventListener('click', () => {
                     if (this._selectElement) this._selectElement.value = '';
+                    if (this._statusSelectElement) this._statusSelectElement.value = '';
                     this._applyFilter();
                 });
             }
+        }
+
+        if (this._statusSelectElement) {
+            this._statusSelectElement.addEventListener('change', () => {
+                this._applyFilter();
+            });
         }
     }
 
@@ -437,12 +474,42 @@ export class RestaurentFilterModule extends BaseModule {
      */
     private _applyFilter(): void {
         const selectedZone = this._selectElement?.value || '';
+        const selectedStatus = this._statusSelectElement?.value || '';
         const groups = document.querySelectorAll('.tpi-restaurant-zone-group');
 
         groups.forEach((group) => {
             const groupZone = (group as HTMLElement).dataset.zoneName || '';
+            let hasVisibleChildren = false;
 
-            if (selectedZone === '' || groupZone === selectedZone) {
+            // Process children
+            const cards = group.querySelectorAll('.owned-restaurant-card');
+            cards.forEach(card => {
+                const cardStatus = this._getRestaurantStatus(card as HTMLElement);
+                let isVisible = true;
+
+                // Zone Check (Implicit by group, but safer to check if needed, mostly redundant due to group hiding optimization, but we need to hide individual cards if status doesn't match)
+                // Actually, if we filter by status, we might hide some cards inside a visible zone.
+
+                // Status Check
+                if (selectedStatus && selectedStatus !== '') {
+                    if (selectedStatus === 'work') {
+                        if (!cardStatus.includes('travaux') && !cardStatus.includes('work')) isVisible = false;
+                    } else if (selectedStatus === 'open') {
+                        if (!cardStatus.includes('open') && !cardStatus.includes('ouvert') && !cardStatus.includes('assigné')) isVisible = false;
+                    } else if (selectedStatus === 'closed') {
+                        if (!cardStatus.includes('closed') && !cardStatus.includes('fermé') && !cardStatus.includes('ferme')) isVisible = false;
+                    }
+                }
+
+                if (isVisible) {
+                    (card as HTMLElement).style.display = '';
+                    hasVisibleChildren = true;
+                } else {
+                    (card as HTMLElement).style.display = 'none';
+                }
+            });
+
+            if ((selectedZone === '' || groupZone === selectedZone) && hasVisibleChildren) {
                 group.classList.remove(ZONE_SELECTORS.HIDDEN_CLASS);
             } else {
                 group.classList.add(ZONE_SELECTORS.HIDDEN_CLASS);
@@ -452,7 +519,31 @@ export class RestaurentFilterModule extends BaseModule {
         // Handle no-zone elements
         const noZoneContainer = document.querySelector('.tpi-restaurant-no-zone-group');
         if (noZoneContainer) {
-            if (selectedZone === '') {
+            let hasVisibleChildren = false;
+            const cards = noZoneContainer.querySelectorAll('.owned-restaurant-card');
+            cards.forEach(card => {
+                const cardStatus = this._getRestaurantStatus(card as HTMLElement);
+                let isVisible = true;
+
+                if (selectedStatus && selectedStatus !== '') {
+                    if (selectedStatus === 'work') {
+                        if (!cardStatus.includes('travaux') && !cardStatus.includes('work')) isVisible = false;
+                    } else if (selectedStatus === 'open') {
+                        if (!cardStatus.includes('open') && !cardStatus.includes('ouvert') && !cardStatus.includes('assigné')) isVisible = false;
+                    } else if (selectedStatus === 'closed') {
+                        if (!cardStatus.includes('closed') && !cardStatus.includes('fermé') && !cardStatus.includes('ferme')) isVisible = false;
+                    }
+                }
+
+                if (isVisible) {
+                    (card as HTMLElement).style.display = '';
+                    hasVisibleChildren = true;
+                } else {
+                    (card as HTMLElement).style.display = 'none';
+                }
+            });
+
+            if (selectedZone === '' && hasVisibleChildren) {
                 noZoneContainer.classList.remove(ZONE_SELECTORS.HIDDEN_CLASS);
             } else {
                 noZoneContainer.classList.add(ZONE_SELECTORS.HIDDEN_CLASS);
@@ -460,6 +551,20 @@ export class RestaurentFilterModule extends BaseModule {
         }
 
         this._updateCounter();
+    }
+
+    /**
+     * Helper to get restaurant status string.
+     */
+    private _getRestaurantStatus(el: HTMLElement): string {
+        const statusText = el.querySelector('.owned-restaurant-card__status')?.textContent?.toLowerCase();
+        if (statusText) return statusText;
+
+        const toggle = el.querySelector('.owned-restaurant-card__toggle-input') as HTMLInputElement;
+        if (toggle) {
+            return toggle.checked ? 'open' : 'closed';
+        }
+        return '';
     }
 
     /**

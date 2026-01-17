@@ -18,14 +18,36 @@ export const ZONE_SELECTORS = {
     COUNTER: '#owned-filter-count',
     // Reusing global reset if it exists
     RESET_BTN: '#owned-filter-reset-btn',
+    STATUS_FILTER_ID: 'tpi-restaurant-status-filter',
+    // New Classes for Refactoring
+    ZONE_HEADER: 'tpi-zone-header',
+    ZONE_HEADER_OVERLAY: 'tpi-zone-header-overlay',
+    ZONE_HEADER_CONTENT: 'tpi-zone-header-content',
+    ZONE_NAME: 'tpi-zone-name',
+    ZONE_ATTRACTIONS_CONTAINER: 'tpi-zone-attractions',
+    FILTER_ACTIONS: 'tpi-filter-actions',
+    NO_ZONE_GROUP: 'tpi-restaurant-no-zone-group', // Already used string, checking consistency
+    FILTERS_CONTAINER_HEADER: 'tpi-filters-container--header',
+    FILTERS_CONTAINER_SECTION: 'tpi-filters-container--section',
+};
+
+/**
+ * Strings used in the status filters module.
+ */
+export const STATUS_STRINGS = {
+    LABEL: 'Filtrer par statut',
+    DEFAULT_OPTION: 'Tous les statuts',
+    OPEN: 'Ouvert',
+    CLOSED: 'Fermé',
+    WORK: 'En travaux',
 };
 
 /**
  * Strings used in the zone filters module.
  */
 export const ZONE_STRINGS = {
-    LABEL: 'Filter by zone',
-    DEFAULT_OPTION: 'All zones',
+    LABEL: 'Filtrer par zone',
+    DEFAULT_OPTION: 'Toutes les zones',
 };
 
 /**

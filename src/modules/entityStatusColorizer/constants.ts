@@ -20,9 +20,17 @@ export const PAGE_CONFIGS = [
     },
     {
         urlFragment: 'restaurants.php',
-        selector: 'article.owned-restaurant-card',
-        getStatus: (el: HTMLElement) =>
-            el.querySelector('.owned-restaurant-card__status')?.textContent?.toLowerCase() || '',
+        selector: '.owned-restaurant-card',
+        getStatus: (el: HTMLElement) => {
+            const statusText = el.querySelector('.owned-restaurant-card__status')?.textContent?.toLowerCase();
+            if (statusText) return statusText;
+
+            const toggle = el.querySelector('.owned-restaurant-card__toggle-input') as HTMLInputElement;
+            if (toggle) {
+                return toggle.checked ? 'open' : 'closed';
+            }
+            return '';
+        },
     },
     {
         urlFragment: 'entrance.php',

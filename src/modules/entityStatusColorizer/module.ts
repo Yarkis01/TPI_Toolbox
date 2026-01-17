@@ -70,11 +70,12 @@ export class EntityStatusColorizerModule extends BaseModule {
     private _getBorderByStatus(status: string): string | null {
         let color: string | null = null;
 
-        if (status.includes('ouvert') || status.includes('assigné') || status.includes('actif')) {
+        if (status.includes('ouvert') || status.includes('open') || status.includes('assigné') || status.includes('actif')) {
             color = STATUS_COLORS.OPEN;
         } else if (
             status.includes('ferme') ||
             status.includes('fermé') ||
+            status.includes('closed') ||
             status.includes('non assigné')
         ) {
             color = STATUS_COLORS.CLOSED;
