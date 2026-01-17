@@ -23,11 +23,7 @@ export class IFrameApp {
      */
     public constructor(url: string, options: IFrameAppOptions = {}) {
         this.url = url;
-        this.options = {
-            removeSelectors: ['#left-menu', 'div.dashboard-welcome'],
-            backgroundColor: '#202020',
-            ...options
-        };
+        this.options = options;
     }
 
     /**

@@ -129,9 +129,19 @@ export class OperatingSystemModule extends BaseModule {
                     onFocus,
                 });
                 break;
+            case APP_IDS.BROWSER:
+                win = this.windowManager.openWindow({
+                    title: OS_CONFIG.DOCK.LABELS.BROWSER,
+                    content: new IFrameApp(OS_CONFIG.URL_BROWSER).render(),
+                    width: 800,
+                    height: 600,
+                    onClose,
+                    onFocus,
+                });
+                break;
             case APP_IDS.CHAT:
                 win = this.windowManager.openWindow({
-                    title: 'Chat',
+                    title: OS_CONFIG.DOCK.LABELS.CHAT,
                     content: new IFrameApp(OS_CONFIG.URL_CHAT, {
                         backgroundColor: OS_CONFIG.STYLES.CHAT_BG
                     }).render(),
@@ -144,9 +154,11 @@ export class OperatingSystemModule extends BaseModule {
             case APP_IDS.PROFILE:
                 win = this.windowManager.openWindow({
                     title: OS_CONFIG.DOCK.LABELS.PROFILE,
-                    content: new IFrameApp(OS_CONFIG.URL_PROFILE).render(),
-                    width: 1000,
-                    height: 700,
+                    content: new IFrameApp(OS_CONFIG.URL_PROFILE, {
+                        removeSelectors: ['#left-menu', 'div.dashboard-welcome']
+                    }).render(),
+                    width: 800,
+                    height: 600,
                     onClose,
                     onFocus,
                 });
@@ -157,8 +169,8 @@ export class OperatingSystemModule extends BaseModule {
                     content: createElement('div', { style: { padding: '20px' } }, [
                         `Contenu pour ${appId} (Placeholder)`,
                     ]),
-                    width: 100,
-                    height: 300,
+                    width: 800,
+                    height: 600,
                     onClose,
                     onFocus,
                 });
