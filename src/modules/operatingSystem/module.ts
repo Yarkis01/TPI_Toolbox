@@ -111,6 +111,7 @@ export class OperatingSystemModule extends BaseModule {
         const onClose = () => {
             this.activeWindows.delete(appId);
             this.dock?.setAppOpen(appId, false);
+            this.dock?.removeActive(appId);
         };
 
         const onFocus = () => {

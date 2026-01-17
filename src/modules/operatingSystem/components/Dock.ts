@@ -107,6 +107,17 @@ export class Dock {
     }
 
     /**
+     * Removes the active state from a dock item.
+     * @param id - The ID of the dock item to remove active state from.
+     */
+    public removeActive(id: string): void {
+        const el = this.container.querySelector(`.dock-item[data-id="${id}"]`);
+        if (el) {
+            el.classList.remove('active');
+        }
+    }
+
+    /**
      * Sets the open state of a dock item.
      * @param id - The ID of the dock item to set as open.
      * @param isOpen - Whether the dock item should be open.
