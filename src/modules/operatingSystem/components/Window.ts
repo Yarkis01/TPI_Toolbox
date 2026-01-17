@@ -13,7 +13,6 @@ export interface WindowOptions {
 
     onClose?: () => void;
     onFocus?: () => void;
-    onMinimize?: () => void;
 }
 
 /**
@@ -39,7 +38,6 @@ export class WindowComponent {
     private isMaximized: boolean = false;
     private preMaximizeState: { left: string; top: string; width: string; height: string } | null =
         null;
-    private isMinimized: boolean = false;
 
     private minWidth = 300;
     private minHeight = 200;
@@ -81,14 +79,6 @@ export class WindowComponent {
             this.close();
         };
 
-        const minBtn = document.createElement('div');
-        minBtn.className = 'control-btn minimize';
-        minBtn.title = 'Réduire';
-        minBtn.onclick = (e) => {
-            e.stopPropagation();
-            this.minimize();
-        };
-
         const maxBtn = document.createElement('div');
         maxBtn.className = 'control-btn maximize';
         maxBtn.title = 'Agrandir';
@@ -98,7 +88,6 @@ export class WindowComponent {
         };
 
         controls.appendChild(closeBtn);
-        controls.appendChild(minBtn);
         controls.appendChild(maxBtn);
 
         const title = document.createElement('div');
@@ -170,8 +159,6 @@ export class WindowComponent {
      * Toggles the maximized state of the window.
      */
     public toggleMaximize(): void {
-        if (this.isMinimized) this.unminimize();
-
         if (this.isMaximized) {
             this.restore();
         } else {
@@ -217,28 +204,6 @@ export class WindowComponent {
         this.element.classList.remove('maximized');
         this.isMaximized = false;
         this.preMaximizeState = null;
-    }
-
-    /**
-     * Minimizes the window.
-     */
-    public minimize(): void {
-        if (this.isMinimized) return;
-
-        this.isMinimized = true;
-        this.element.classList.add('minimized');
-        if (this.options.onMinimize) this.options.onMinimize();
-    }
-
-    /**
-     * Unminimizes the window.
-     */
-    public unminimize(): void {
-        if (!this.isMinimized) return;
-
-        this.isMinimized = false;
-        this.element.classList.remove('minimized');
-        this.focus();
     }
 
     /**

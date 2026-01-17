@@ -100,7 +100,6 @@ export class OperatingSystemModule extends BaseModule {
         if (this.activeWindows.has(appId)) {
             const win = this.activeWindows.get(appId);
             if (win) {
-                win.unminimize();
                 win.focus();
                 this.dock.setActive(appId);
                 return;
