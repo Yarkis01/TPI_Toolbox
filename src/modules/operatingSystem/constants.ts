@@ -37,9 +37,6 @@ export const OS_CONFIG = {
     DOCK: {
         LABELS: {
             PROFILE: 'Bureau',
-            GAMES: 'Jeux',
-            WEB: 'Navigateur',
-            MAIL: 'Messages',
             CHAT: 'Chat',
             MARKET: 'Boutique',
             TOOLS: 'TPI Toolbox',
