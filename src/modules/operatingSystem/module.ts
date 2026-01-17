@@ -118,64 +118,50 @@ export class OperatingSystemModule extends BaseModule {
             this.dock?.setActive(appId);
         };
 
-        switch (appId) {
-            case APP_IDS.TOOLS:
-                win = this.windowManager.openWindow({
-                    title: OS_CONFIG.DOCK.LABELS.TOOLS,
-                    content: new SettingsApp(this.moduleManager).render(),
-                    width: 800,
-                    height: 600,
-                    onClose,
-                    onFocus,
-                });
-                break;
-            case APP_IDS.BROWSER:
-                win = this.windowManager.openWindow({
-                    title: OS_CONFIG.DOCK.LABELS.BROWSER,
-                    content: new IFrameApp(OS_CONFIG.URL_BROWSER).render(),
-                    width: 800,
-                    height: 600,
-                    onClose,
-                    onFocus,
-                });
-                break;
-            case APP_IDS.CHAT:
-                win = this.windowManager.openWindow({
-                    title: OS_CONFIG.DOCK.LABELS.CHAT,
-                    content: new IFrameApp(OS_CONFIG.URL_CHAT, {
-                        backgroundColor: OS_CONFIG.STYLES.CHAT_BG
-                    }).render(),
-                    width: 800,
-                    height: 600,
-                    onClose,
-                    onFocus,
-                });
-                break;
-            case APP_IDS.PROFILE:
-                win = this.windowManager.openWindow({
-                    title: OS_CONFIG.DOCK.LABELS.PROFILE,
-                    content: new IFrameApp(OS_CONFIG.URL_PROFILE, {
-                        removeSelectors: ['#left-menu', 'div.dashboard-welcome']
-                    }).render(),
-                    width: 800,
-                    height: 600,
-                    onClose,
-                    onFocus,
-                });
-                break;
-            default:
-                win = this.windowManager.openWindow({
-                    title: `Application: ${appId}`,
-                    content: createElement('div', { style: { padding: '20px' } }, [
-                        `Contenu pour ${appId} (Placeholder)`,
-                    ]),
-                    width: 800,
-                    height: 600,
-                    onClose,
-                    onFocus,
-                });
-                break;
-        }
+        const getAppConfig = () => {
+            switch (appId) {
+                case APP_IDS.TOOLS:
+                    return {
+                        title: OS_CONFIG.DOCK.LABELS.TOOLS,
+                        content: new SettingsApp(this.moduleManager).render(),
+                    };
+                case APP_IDS.BROWSER:
+                    return {
+                        title: OS_CONFIG.DOCK.LABELS.BROWSER,
+                        content: new IFrameApp(OS_CONFIG.URL_BROWSER).render(),
+                    };
+                case APP_IDS.CHAT:
+                    return {
+                        title: OS_CONFIG.DOCK.LABELS.CHAT,
+                        content: new IFrameApp(OS_CONFIG.URL_CHAT, {
+                            backgroundColor: OS_CONFIG.STYLES.CHAT_BG,
+                        }).render(),
+                    };
+                case APP_IDS.PROFILE:
+                    return {
+                        title: OS_CONFIG.DOCK.LABELS.PROFILE,
+                        content: new IFrameApp(OS_CONFIG.URL_PROFILE, {
+                            removeSelectors: ['#left-menu', 'div.dashboard-welcome'],
+                        }).render(),
+                    };
+                default:
+                    return {
+                        title: `Application: ${appId}`,
+                        content: createElement('div', { style: { padding: '20px' } }, [`Contenu pour ${appId} (Placeholder)`]),
+                    };
+            }
+        };
+
+        const { title, content } = getAppConfig();
+
+        win = this.windowManager.openWindow({
+            title,
+            content,
+            width: 800,
+            height: 600,
+            onClose,
+            onFocus,
+        });
 
         this.activeWindows.set(appId, win);
         this.dock.setAppOpen(appId, true);
