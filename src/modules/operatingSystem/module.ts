@@ -122,8 +122,8 @@ export class OperatingSystemModule extends BaseModule {
                 win = this.windowManager.openWindow({
                     title: OS_CONFIG.DOCK.LABELS.TOOLS,
                     content: new SettingsApp(this.moduleManager).render(),
-                    width: 400,
-                    height: 500,
+                    width: 800,
+                    height: 600,
                     onClose,
                     onFocus,
                 });
@@ -156,7 +156,7 @@ export class OperatingSystemModule extends BaseModule {
                     content: createElement('div', { style: { padding: '20px' } }, [
                         `Contenu pour ${appId} (Placeholder)`,
                     ]),
-                    width: 500,
+                    width: 100,
                     height: 300,
                     onClose,
                     onFocus,
