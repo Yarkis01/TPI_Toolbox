@@ -17,7 +17,6 @@ export const APP_IDS = {
     MAIL: 'mail',
     CHAT: 'chat',
     MARKET: 'market',
-    SETTINGS: 'settings',
     TOOLS: 'tools',
 } as const;
 
@@ -29,6 +28,7 @@ export const OS_CONFIG = {
     NAME: "Système d'exploitation",
     DESCRIPTION: "Transforme l'interface graphique en un système d'exploitation.",
     URL_CHAT: 'https://www.themeparkindustries.com/tpiv4/game/chat.php',
+    URL_PROFILE: 'https://www.themeparkindustries.com/tpiv4/game/monbureau.php',
     STYLES: {
         DESKTOP_BG: 'linear-gradient(135deg, #050505 0%, #061f10 100%)',
         DESKTOP_BG_COLOR: '#0f1110',
@@ -36,14 +36,13 @@ export const OS_CONFIG = {
     },
     DOCK: {
         LABELS: {
-            PROFILE: 'Profil',
+            PROFILE: 'Bureau',
             GAMES: 'Jeux',
             WEB: 'Navigateur',
             MAIL: 'Messages',
             CHAT: 'Chat',
             MARKET: 'Boutique',
-            SETTINGS: 'Paramètres',
-            TOOLS: 'Outils',
+            TOOLS: 'TPI Toolbox',
         },
     },
 } as const;

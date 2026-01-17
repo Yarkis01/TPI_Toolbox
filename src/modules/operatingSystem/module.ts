@@ -2,6 +2,7 @@ import { BaseModule } from '../../core/abstract/BaseModule';
 import { ModuleManager } from '../../core/managers/ModuleManager';
 import { createElement } from '../../utils/DomUtils';
 import { SettingsApp } from './apps/SettingsApp';
+import { IFrameApp } from './apps/IFrameApp';
 import { Dock } from './components/Dock';
 import { WindowComponent } from './components/Window';
 import { WindowManager } from './components/WindowManager';
@@ -120,7 +121,7 @@ export class OperatingSystemModule extends BaseModule {
         switch (appId) {
             case APP_IDS.TOOLS:
                 win = this.windowManager.openWindow({
-                    title: OS_CONFIG.DOCK.LABELS.TOOLS, // Or specific window title if different from Dock label? Using Label for now.
+                    title: OS_CONFIG.DOCK.LABELS.TOOLS,
                     content: new SettingsApp(this.moduleManager).render(),
                     width: 400,
                     height: 500,
@@ -130,18 +131,22 @@ export class OperatingSystemModule extends BaseModule {
                 break;
             case APP_IDS.CHAT:
                 win = this.windowManager.openWindow({
-                    title: 'Chat TPI',
-                    content: createElement('iframe', {
-                        src: OS_CONFIG.URL_CHAT,
-                        style: {
-                            width: '100%',
-                            height: '100%',
-                            border: 'none',
-                            backgroundColor: OS_CONFIG.STYLES.CHAT_BG,
-                        },
-                    }),
+                    title: 'Chat',
+                    content: new IFrameApp(OS_CONFIG.URL_CHAT, {
+                        backgroundColor: OS_CONFIG.STYLES.CHAT_BG
+                    }).render(),
                     width: 800,
                     height: 600,
+                    onClose,
+                    onFocus,
+                });
+                break;
+            case APP_IDS.PROFILE:
+                win = this.windowManager.openWindow({
+                    title: OS_CONFIG.DOCK.LABELS.PROFILE,
+                    content: new IFrameApp(OS_CONFIG.URL_PROFILE).render(),
+                    width: 1000,
+                    height: 700,
                     onClose,
                     onFocus,
                 });
