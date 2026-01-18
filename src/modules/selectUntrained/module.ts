@@ -75,7 +75,7 @@ export class SelectUntrainedModule extends BaseModule {
     private async _handleSelectionClick(): Promise<void> {
         try {
             await this._ensureMultiSelectMode();
-            this._performSelection();
+            await this._performSelection();
         } catch (error) {
             this._logger.error("Impossible d'activer le mode multi-sélection");
         }
@@ -144,20 +144,22 @@ export class SelectUntrainedModule extends BaseModule {
     /**
      * Executes the actual logic of checking boxes.
      */
-    private _performSelection(): void {
+    private async _performSelection(): Promise<void> {
         const rows = document.querySelectorAll<HTMLTableRowElement>(TRAINING_SELECTORS.ROW);
         let count = 0;
 
-        rows.forEach((row) => {
-            if (row.style.display === 'none') return;
+        for (const row of Array.from(rows)) {
+            if (row.style.display === 'none') continue;
 
             if (this._isNotFullyTrained(row) && !this._isAlreadyInTraining(row)) {
                 this._toggleRowCheckbox(row, true);
                 count++;
+                await new Promise((resolve) => setTimeout(resolve, 150));
             }
-        });
+        }
 
         this._logger.info(`${count} employés non formés sélectionnés.`);
+        alert(`${count} employés non formés sélectionnés.`);
     }
 
     /**
