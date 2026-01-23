@@ -149,6 +149,11 @@ export class OperatingSystemModule extends BaseModule {
                         title: OS_CONFIG.DOCK.LABELS.MAIL,
                         content: new IFrameApp(OS_CONFIG.URL_MAIL).render(),
                     };
+                case APP_IDS.INVEST:
+                    return {
+                        title: OS_CONFIG.DOCK.LABELS.INVEST,
+                        content: new IFrameApp(OS_CONFIG.URL_INVEST).render(),
+                    };
                 default:
                     return {
                         title: `Application: ${appId}`,
