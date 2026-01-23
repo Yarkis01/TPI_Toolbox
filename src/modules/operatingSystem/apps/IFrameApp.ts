@@ -7,6 +7,7 @@ export interface IFrameAppOptions {
     removeSelectors?: string[];
     customStyles?: Partial<CSSStyleDeclaration>;
     backgroundColor?: string;
+    forceFullWidth?: boolean;
 }
 
 /**
@@ -56,9 +57,14 @@ export class IFrameApp {
             const doc = iframe.contentDocument || iframe.contentWindow?.document;
             if (!doc) return;
 
+            let styleContent = '';
+
             if (this.options.removeSelectors && this.options.removeSelectors.length > 0) {
-                const styleContent = `
-                    ${this.options.removeSelectors.join(', ')} { display: none !important; }
+                styleContent += `${this.options.removeSelectors.join(', ')} { display: none !important; }`;
+            }
+
+            if (this.options.forceFullWidth) {
+                styleContent += `
                     body .play-main, body.dashboard-page .play-main, body.monbureau-page .play-main {
                         margin-left: 0 !important;
                         width: 100% !important;
@@ -70,6 +76,9 @@ export class IFrameApp {
                         body.dashboard-page .play-main { margin-left: 0 !important; width: 100% !important; }
                     }
                 `;
+            }
+
+            if (styleContent) {
                 injectStyle(styleContent, doc);
             }
         } catch (e) {

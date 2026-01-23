@@ -41,6 +41,7 @@ export class Dock {
         const chatIcon = `<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>`;
         const mailIcon = `<svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>`;
         const investIcon = `<svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>`;
+        const parkIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 19V8C2 6.34315 3.34315 5 5 5C5.85772 5 6.63136 5.35995 7.17812 5.93703M6 5.17071V19M22.0001 10.5C22.0001 12.9853 19.9854 15 17.5001 15C16.2057 15 15.039 14.4535 14.2181 13.5788L7.1792 5.93817M22.0001 10.5C22.0001 8.01472 19.9854 6 17.5001 6C16.0864 6 14.825 6.65184 14 7.67134M22.0001 10.5L22 19M10 9.00011V19M14 13.3421V19M18 14.9725V19M18 6.02746V11"></path></svg>`;
         const toolsIcon = `<svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>`;
 
         return [
@@ -48,6 +49,7 @@ export class Dock {
             { id: APP_IDS.INVEST, icon: investIcon, label: OS_CONFIG.DOCK.LABELS.INVEST },
             { id: APP_IDS.MAIL, icon: mailIcon, label: OS_CONFIG.DOCK.LABELS.MAIL },
             { id: APP_IDS.BROWSER, icon: webIcon, label: OS_CONFIG.DOCK.LABELS.BROWSER },
+            { id: APP_IDS.MY_PARK, icon: parkIcon, label: OS_CONFIG.DOCK.LABELS.MY_PARK },
             { id: APP_IDS.CHAT, icon: chatIcon, label: OS_CONFIG.DOCK.LABELS.CHAT },
             { id: APP_IDS.TOOLS, icon: toolsIcon, label: OS_CONFIG.DOCK.LABELS.TOOLS },
         ];

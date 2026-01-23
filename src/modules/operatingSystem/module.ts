@@ -142,20 +142,31 @@ export class OperatingSystemModule extends BaseModule {
                         title: OS_CONFIG.DOCK.LABELS.PROFILE,
                         content: new IFrameApp(OS_CONFIG.URL_PROFILE, {
                             removeSelectors: ['#left-menu', 'div.dashboard-welcome'],
+                            forceFullWidth: true,
                         }).render(),
                     };
                 case APP_IDS.MAIL:
                     return {
                         title: OS_CONFIG.DOCK.LABELS.MAIL,
                         content: new IFrameApp(OS_CONFIG.URL_MAIL, {
-                            removeSelectors: ['#left-menu'],
+                            removeSelectors: ['#left-menu', 'div.dashboard-welcome'],
+                            forceFullWidth: true,
                         }).render(),
                     };
                 case APP_IDS.INVEST:
                     return {
                         title: OS_CONFIG.DOCK.LABELS.INVEST,
                         content: new IFrameApp(OS_CONFIG.URL_INVEST, {
-                            removeSelectors: ['#left-menu'],
+                            removeSelectors: ['#left-menu', 'div.dashboard-welcome'],
+                            forceFullWidth: true,
+                        }).render(),
+                    };
+                case APP_IDS.MY_PARK:
+                    return {
+                        title: OS_CONFIG.DOCK.LABELS.MY_PARK,
+                        content: new IFrameApp(OS_CONFIG.URL_MY_PARK, {
+                            removeSelectors: ["a.left-menu__item:nth-child(1)", "a.left-menu__item:nth-child(2)", "div.left-menu__separator", "div.dashboard-welcome", "div.left-menu__footer"],
+                            forceFullWidth: false,
                         }).render(),
                     };
                 default:
