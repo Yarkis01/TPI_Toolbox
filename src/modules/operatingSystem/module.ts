@@ -16,6 +16,7 @@ export class OperatingSystemModule extends BaseModule {
     private windowManager: WindowManager | null = null;
     private moduleManager: ModuleManager;
     private activeWindows: Map<string, WindowComponent> = new Map();
+    private _messageHandler: (event: MessageEvent) => void;
 
     /**
      * Creates a new instance of the OperatingSystemModule.
@@ -24,6 +25,7 @@ export class OperatingSystemModule extends BaseModule {
     public constructor(moduleManager: ModuleManager) {
         super();
         this.moduleManager = moduleManager;
+        this._messageHandler = this.handleMessage.bind(this);
     }
 
     /**
@@ -54,6 +56,8 @@ export class OperatingSystemModule extends BaseModule {
         if (!window.location.href.includes('game')) return;
 
         this._logger.info('Enabling OS Mode...');
+
+        window.addEventListener('message', this._messageHandler);
 
         const leftMenu = document.querySelector(SELECTORS.LEFT_MENU);
         if (leftMenu) (leftMenu as HTMLElement).style.display = 'none';
@@ -87,6 +91,7 @@ export class OperatingSystemModule extends BaseModule {
      * @inheritdoc
      */
     protected onDisable(): void {
+        window.removeEventListener('message', this._messageHandler);
         window.location.reload();
     }
 
@@ -199,6 +204,38 @@ export class OperatingSystemModule extends BaseModule {
         this.activeWindows.set(appId, win);
         this.dock.setAppOpen(appId, true);
         this.dock.setActive(appId);
+    }
+
+    /**
+     * Handles messages received from iframes.
+     * @param event - The message event.
+     */
+    private handleMessage(event: MessageEvent): void {
+        if (event.data?.type === 'TPI_TOOLBOX_REFRESH_OTHERS') {
+            this._logger.info('Received request to refresh other windows via MessageEvent.');
+            this.refreshOtherWindows(event.source as Window);
+        }
+    }
+
+    /**
+     * Refreshes all open windows except the one that initiated the request.
+     * @param sourceWindow - The window that initiated the request.
+     */
+    private refreshOtherWindows(sourceWindow: Window): void {
+        this.activeWindows.forEach((winComponent: WindowComponent, appId: string) => {
+            const iframe = winComponent.element.querySelector('iframe');
+            if (iframe && iframe.contentWindow) {
+                if (iframe.contentWindow !== sourceWindow) {
+                    this._logger.info(`Refreshing window: ${appId}`);
+                    try {
+                        const src = iframe.src;
+                        iframe.src = src;
+                    } catch (error) {
+                        this._logger.error(`Failed to refresh window ${appId}: ${(error as Error).message}`);
+                    }
+                }
+            }
+        });
     }
 
     /**

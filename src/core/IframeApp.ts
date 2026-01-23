@@ -22,7 +22,7 @@ export class IframeApp implements IApp {
      * @inheritdoc
      */
     public async start(): Promise<void> {
-        this._logger.info('🔧 IframeApp Starting...');
+        this._logger.info(`🔧 IframeApp Starting on: ${window.location.href}`);
 
         const settingsManager = new SettingsManager();
 
@@ -43,12 +43,49 @@ export class IframeApp implements IApp {
 
                 div.chat-window__header {
                     flex-direction: column !important;
+                    height: auto !important;
                 }
 
                 div#chat-messages {
                     max-height: none !important;
                 }
             `);
+        }
+
+        this._monitorAdvanceDayButton();
+    }
+
+    /**
+     * Monitors the advance day button for clicks.
+     */
+    private _monitorAdvanceDayButton(): void {
+        if (!window.location.href.includes('new_day.php')) {
+            return;
+        }
+
+        const setupButtonListener = () => {
+            const button = document.getElementById('new-day-advance-btn');
+            if (button) {
+                button.addEventListener('click', () => {
+                    const checkInterval = setInterval(() => {
+                        const loader = document.getElementById('simulation-loader');
+                        if (!loader || loader.style.display === 'none') {
+                            clearInterval(checkInterval);
+                            window.parent.postMessage({ type: 'TPI_TOOLBOX_REFRESH_OTHERS' }, '*');
+                        }
+                    }, 100);
+
+                    setTimeout(() => clearInterval(checkInterval), 10000);
+                });
+            } else {
+                setTimeout(setupButtonListener, 500);
+            }
+        };
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', setupButtonListener);
+        } else {
+            setupButtonListener();
         }
     }
 
