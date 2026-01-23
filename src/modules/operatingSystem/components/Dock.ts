@@ -45,9 +45,9 @@ export class Dock {
 
         return [
             { id: APP_IDS.PROFILE, icon: userIcon, label: OS_CONFIG.DOCK.LABELS.PROFILE },
+            { id: APP_IDS.INVEST, icon: investIcon, label: OS_CONFIG.DOCK.LABELS.INVEST },
             { id: APP_IDS.MAIL, icon: mailIcon, label: OS_CONFIG.DOCK.LABELS.MAIL },
             { id: APP_IDS.BROWSER, icon: webIcon, label: OS_CONFIG.DOCK.LABELS.BROWSER },
-            { id: APP_IDS.INVEST, icon: investIcon, label: OS_CONFIG.DOCK.LABELS.INVEST },
             { id: APP_IDS.CHAT, icon: chatIcon, label: OS_CONFIG.DOCK.LABELS.CHAT },
             { id: APP_IDS.TOOLS, icon: toolsIcon, label: OS_CONFIG.DOCK.LABELS.TOOLS },
         ];

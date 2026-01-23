@@ -147,12 +147,16 @@ export class OperatingSystemModule extends BaseModule {
                 case APP_IDS.MAIL:
                     return {
                         title: OS_CONFIG.DOCK.LABELS.MAIL,
-                        content: new IFrameApp(OS_CONFIG.URL_MAIL).render(),
+                        content: new IFrameApp(OS_CONFIG.URL_MAIL, {
+                            removeSelectors: ['#left-menu'],
+                        }).render(),
                     };
                 case APP_IDS.INVEST:
                     return {
                         title: OS_CONFIG.DOCK.LABELS.INVEST,
-                        content: new IFrameApp(OS_CONFIG.URL_INVEST).render(),
+                        content: new IFrameApp(OS_CONFIG.URL_INVEST, {
+                            removeSelectors: ['#left-menu'],
+                        }).render(),
                     };
                 default:
                     return {
