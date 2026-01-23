@@ -46,6 +46,14 @@ export class WindowComponent {
      * Creates a new WindowComponent instance.
      * @param options - The options for the window.
      */
+    private snapPreview: HTMLElement | null = null;
+    private activeSnapType: 'left' | 'right' | 'top' | null = null;
+    private snapThreshold = 20; // px distance from edge to trigger snap
+
+    /**
+     * Creates a new WindowComponent instance.
+     * @param options - The options for the window.
+     */
     public constructor(options: WindowOptions) {
         this.options = options;
         this.element = this.render();
@@ -145,6 +153,7 @@ export class WindowComponent {
      */
     public close(): void {
         this.element.remove();
+        if (this.snapPreview) this.snapPreview.remove();
         if (this.options.onClose) this.options.onClose();
     }
 
@@ -172,12 +181,7 @@ export class WindowComponent {
     public maximize(): void {
         if (this.isMaximized) return;
 
-        this.preMaximizeState = {
-            left: this.element.style.left,
-            top: this.element.style.top,
-            width: this.element.style.width,
-            height: this.element.style.height,
-        };
+        this.saveState();
 
         this.element.style.left = '0';
         this.element.style.top = '0';
@@ -207,6 +211,18 @@ export class WindowComponent {
     }
 
     /**
+     * Saves the current window state (position and size).
+     */
+    private saveState(): void {
+        this.preMaximizeState = {
+            left: this.element.style.left,
+            top: this.element.style.top,
+            width: this.element.style.width,
+            height: this.element.style.height,
+        };
+    }
+
+    /**
      * Makes the window draggable.
      */
     private makeDraggable(): void {
@@ -214,7 +230,15 @@ export class WindowComponent {
 
         header.addEventListener('mousedown', (e) => {
             if ((e.target as HTMLElement).closest('.window-controls')) return;
-            if (this.isMaximized) return;
+
+            if (this.isMaximized) {
+                const ratio = e.clientX / this.element.offsetWidth;
+                this.restore();
+
+                const newWidth = parseFloat(this.element.style.width);
+                this.element.style.left = `${e.clientX - newWidth * ratio}px`;
+                this.element.style.top = `${e.clientY - 10}px`;
+            }
 
             this.isDragging = true;
             this.dragOffsetX = e.clientX - this.element.offsetLeft;
@@ -226,14 +250,11 @@ export class WindowComponent {
 
         document.addEventListener('mousemove', (e) => {
             if (this.isDragging) {
-                if (this.isMaximized) {
-                    this.isDragging = false;
-                    this.element.classList.remove('resizing');
-                    return;
-                }
                 e.preventDefault();
                 this.element.style.left = `${e.clientX - this.dragOffsetX}px`;
                 this.element.style.top = `${e.clientY - this.dragOffsetY}px`;
+
+                this.checkSnapZone(e);
             }
 
             if (this.isResizing) {
@@ -245,11 +266,116 @@ export class WindowComponent {
             if (this.isDragging) {
                 this.isDragging = false;
                 this.element.classList.remove('resizing');
+
+                if (this.activeSnapType) {
+                    this.snapTo(this.activeSnapType);
+                    this.hideSnapPreview();
+                }
             }
             if (this.isResizing) {
                 this.stopResize();
             }
         });
+    }
+
+    /**
+     * Creates or retrieves the snap preview element.
+     * @returns The snap preview element.
+     */
+    private getPreviewElement(): HTMLElement {
+        if (!this.snapPreview) {
+            this.snapPreview = document.createElement('div');
+            this.snapPreview.className = 'window-snap-preview';
+            document.body.appendChild(this.snapPreview);
+        }
+        return this.snapPreview;
+    }
+
+    /**
+     * Checks if the window is within a snap zone.
+     * @param e - The mouse event.
+     */
+    private checkSnapZone(e: MouseEvent): void {
+        const x = e.clientX;
+        const y = e.clientY;
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+
+        if (y < this.snapThreshold) {
+            this.showSnapPreview('top');
+        } else if (x < this.snapThreshold) {
+            this.showSnapPreview('left');
+        } else if (x > w - this.snapThreshold) {
+            this.showSnapPreview('right');
+        } else {
+            this.hideSnapPreview();
+        }
+    }
+
+    /**
+     * Shows the snap preview for a specific zone.
+     * @param type - The type of snap zone (left, right, top).
+     */
+    private showSnapPreview(type: 'left' | 'right' | 'top'): void {
+        if (this.activeSnapType === type) return;
+
+        this.activeSnapType = type;
+        const preview = this.getPreviewElement();
+        preview.classList.add('active');
+
+        preview.style.top = '';
+        preview.style.left = '';
+        preview.style.right = '';
+        preview.style.bottom = '';
+        preview.style.width = '';
+        preview.style.height = '';
+
+        if (type === 'top') {
+            preview.style.top = '10px';
+            preview.style.left = '10px';
+            preview.style.width = 'calc(100% - 20px)';
+            preview.style.height = 'calc(100% - 20px)';
+        } else if (type === 'left') {
+            preview.style.top = '10px';
+            preview.style.left = '10px';
+            preview.style.width = 'calc(50% - 15px)';
+            preview.style.height = 'calc(100% - 20px)';
+        } else if (type === 'right') {
+            preview.style.top = '10px';
+            preview.style.right = '10px';
+            preview.style.width = 'calc(50% - 15px)';
+            preview.style.height = 'calc(100% - 20px)';
+        }
+    }
+
+    /**
+     * Hides the snap preview.
+     */
+    private hideSnapPreview(): void {
+        this.activeSnapType = null;
+        if (this.snapPreview) {
+            this.snapPreview.classList.remove('active');
+        }
+    }
+
+    /**
+     * Snaps the window to a specific zone.
+     * @param type - The type of snap zone (left, right, top).
+     */
+    private snapTo(type: 'left' | 'right' | 'top'): void {
+        if (type === 'top') {
+            this.maximize();
+            return;
+        }
+        this.element.style.top = '0';
+        this.element.style.height = '100%';
+        this.element.style.width = '50%';
+        this.element.style.borderRadius = '0';
+        if (type === 'left') {
+            this.element.style.left = '0';
+        } else if (type === 'right') {
+            this.element.style.left = '50%';
+        }
     }
 
     /**
