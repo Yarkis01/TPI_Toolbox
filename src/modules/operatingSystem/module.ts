@@ -144,6 +144,11 @@ export class OperatingSystemModule extends BaseModule {
                             removeSelectors: ['#left-menu', 'div.dashboard-welcome'],
                         }).render(),
                     };
+                case APP_IDS.MAIL:
+                    return {
+                        title: OS_CONFIG.DOCK.LABELS.MAIL,
+                        content: new IFrameApp(OS_CONFIG.URL_MAIL).render(),
+                    };
                 default:
                     return {
                         title: `Application: ${appId}`,

@@ -13,8 +13,6 @@ export const SELECTORS = {
 export const APP_IDS = {
     PROFILE: 'profile',
     BROWSER: 'web',
-    GAMES: 'games',
-    WEB: 'web',
     MAIL: 'mail',
     CHAT: 'chat',
     MARKET: 'market',
@@ -31,6 +29,7 @@ export const OS_CONFIG = {
     URL_CHAT: 'https://www.themeparkindustries.com/tpiv4/game/chat.php',
     URL_PROFILE: 'https://www.themeparkindustries.com/tpiv4/game/monbureau.php',
     URL_BROWSER: 'https://www.themeparkindustries.com/tpiv4/game/park/fake/gogole.php',
+    URL_MAIL: 'https://www.themeparkindustries.com/tpiv4/game/mail.php',
     STYLES: {
         DESKTOP_BG: 'linear-gradient(135deg, #050505 0%, #061f10 100%)',
         DESKTOP_BG_COLOR: '#0f1110',
@@ -40,6 +39,7 @@ export const OS_CONFIG = {
         LABELS: {
             PROFILE: 'Bureau',
             BROWSER: 'Gogole',
+            MAIL: 'Mail',
             CHAT: 'Chat',
             MARKET: 'Boutique',
             TOOLS: 'TPI Toolbox',
