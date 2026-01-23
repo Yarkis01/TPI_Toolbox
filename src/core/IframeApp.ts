@@ -1,6 +1,9 @@
 import { injectStyle } from '../utils/DomUtils';
 import { Logger } from '../utils/Logger';
 import IApp from './interfaces/IApp';
+import { ModuleManager } from './managers/ModuleManager';
+import { SettingsManager } from './managers/SettingsManager';
+import { registerCommonModules } from './ModuleRegistry';
 
 /**
  * Iframe application class.
@@ -19,6 +22,16 @@ export class IframeApp implements IApp {
      * @inheritdoc
      */
     public async start(): Promise<void> {
+        this._logger.info('🔧 IframeApp Starting...');
+
+        const settingsManager = new SettingsManager();
+
+        if (settingsManager.getModuleState("operating_system", false)) {
+            this._logger.info('🔧 Operating System Module is enabled. Enabling...');
+            const moduleManager = new ModuleManager(settingsManager);
+            this._initializeModules(moduleManager);
+        }
+
         this._logger.info('🧼 Applying Chat Cleaner in iframe context...');
 
         if (window.location.href.endsWith('chat.php')) {
@@ -37,5 +50,17 @@ export class IframeApp implements IApp {
                 }
             `);
         }
+    }
+
+    /**
+     * Initializes application modules.
+     * @param moduleManager The module manager instance.
+     */
+    private _initializeModules(moduleManager: ModuleManager): void {
+        this._logger.info('📦 Initializing modules in Iframe...');
+
+        registerCommonModules(moduleManager);
+
+        this._logger.info('✅ Modules initialized in Iframe.');
     }
 }
