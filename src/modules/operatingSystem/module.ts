@@ -169,6 +169,14 @@ export class OperatingSystemModule extends BaseModule {
                             forceFullWidth: false,
                         }).render(),
                     };
+                case APP_IDS.NEXT_DAY:
+                    return {
+                        title: OS_CONFIG.DOCK.LABELS.NEXT_DAY,
+                        content: new IFrameApp(OS_CONFIG.URL_NEXT_DAY, {
+                            removeSelectors: ['#left-menu', 'div.dashboard-welcome'],
+                            forceFullWidth: true,
+                        }).render(),
+                    };
                 default:
                     return {
                         title: `Application: ${appId}`,

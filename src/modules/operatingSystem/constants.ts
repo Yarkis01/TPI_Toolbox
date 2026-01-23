@@ -16,6 +16,7 @@ export const APP_IDS = {
     MAIL: 'mail',
     INVEST: 'invest',
     MY_PARK: 'my_park',
+    NEXT_DAY: 'next_day',
     CHAT: 'chat',
     MARKET: 'market',
     TOOLS: 'tools',
@@ -34,6 +35,7 @@ export const OS_CONFIG = {
     URL_MAIL: 'https://www.themeparkindustries.com/tpiv4/game/mail.php',
     URL_INVEST: 'https://www.themeparkindustries.com/tpiv4/game/invest.php',
     URL_MY_PARK: 'https://www.themeparkindustries.com/tpiv4/game/park/overview.php',
+    URL_NEXT_DAY: 'https://www.themeparkindustries.com/tpiv4/game/new_day.php',
     STYLES: {
         DESKTOP_BG: 'linear-gradient(135deg, #050505 0%, #061f10 100%)',
         DESKTOP_BG_COLOR: '#0f1110',
@@ -46,6 +48,7 @@ export const OS_CONFIG = {
             MAIL: 'Mail',
             INVEST: 'Investissements',
             MY_PARK: 'Mes parcs',
+            NEXT_DAY: 'Jour suivant',
             CHAT: 'Chat',
             MARKET: 'Boutique',
             TOOLS: 'TPI Toolbox',
