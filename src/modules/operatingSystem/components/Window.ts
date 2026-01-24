@@ -44,6 +44,9 @@ export class WindowComponent {
 
     private iframeFocusOverlay: HTMLElement | null = null;
 
+    private boundMouseMoveHandler: ((e: MouseEvent) => void) | null = null;
+    private boundMouseUpHandler: (() => void) | null = null;
+
     /**
      * Creates a new WindowComponent instance.
      * @param options - The options for the window.
@@ -161,6 +164,7 @@ export class WindowComponent {
      * Closes the window.
      */
     public close(): void {
+        this.cleanup();
         this.element.remove();
         if (this.snapPreview) this.snapPreview.remove();
         if (this.options.onClose) this.options.onClose();
@@ -231,24 +235,25 @@ export class WindowComponent {
         };
     }
 
+    private dragStartX = 0;
+    private dragStartY = 0;
+    private wasMaximizedOnDragStart = false;
+    private hasMovedEnough = false;
+    private readonly dragThreshold = 5;
+
     /**
      * Makes the window draggable.
      */
     private makeDraggable(): void {
         const header = this.element.querySelector('.window-header') as HTMLElement;
-        let dragStartX = 0;
-        let dragStartY = 0;
-        let wasMaximizedOnDragStart = false;
-        let hasMovedEnough = false;
-        const dragThreshold = 5;
 
         header.addEventListener('mousedown', (e) => {
             if ((e.target as HTMLElement).closest('.window-controls')) return;
 
-            wasMaximizedOnDragStart = this.isMaximized;
-            hasMovedEnough = false;
-            dragStartX = e.clientX;
-            dragStartY = e.clientY;
+            this.wasMaximizedOnDragStart = this.isMaximized;
+            this.hasMovedEnough = false;
+            this.dragStartX = e.clientX;
+            this.dragStartY = e.clientY;
 
             this.isDragging = true;
             this.dragOffsetX = e.clientX - this.element.offsetLeft;
@@ -258,57 +263,84 @@ export class WindowComponent {
             this.focus();
         });
 
-        document.addEventListener('mousemove', (e) => {
-            if (this.isDragging) {
-                e.preventDefault();
+        this.boundMouseMoveHandler = this.handleMouseMove.bind(this);
+        this.boundMouseUpHandler = this.handleMouseUp.bind(this);
 
-                if (!hasMovedEnough) {
-                    const deltaX = Math.abs(e.clientX - dragStartX);
-                    const deltaY = Math.abs(e.clientY - dragStartY);
-                    if (deltaX > dragThreshold || deltaY > dragThreshold) {
-                        hasMovedEnough = true;
+        document.addEventListener('mousemove', this.boundMouseMoveHandler);
+        document.addEventListener('mouseup', this.boundMouseUpHandler);
+    }
 
-                        if (wasMaximizedOnDragStart && this.isMaximized) {
-                            const ratio = dragStartX / this.element.offsetWidth;
-                            this.restore();
+    /**
+     * Handles mouse move events for dragging and resizing.
+     * @param e - The mouse event.
+     */
+    private handleMouseMove(e: MouseEvent): void {
+        if (this.isDragging) {
+            e.preventDefault();
 
-                            const newWidth = parseFloat(this.element.style.width);
-                            this.element.style.left = `${e.clientX - newWidth * ratio}px`;
-                            this.element.style.top = `${e.clientY - 10}px`;
+            if (!this.hasMovedEnough) {
+                const deltaX = Math.abs(e.clientX - this.dragStartX);
+                const deltaY = Math.abs(e.clientY - this.dragStartY);
+                if (deltaX > this.dragThreshold || deltaY > this.dragThreshold) {
+                    this.hasMovedEnough = true;
 
-                            this.dragOffsetX = newWidth * ratio;
-                            this.dragOffsetY = 10;
-                        }
-                    } else {
-                        return;
+                    if (this.wasMaximizedOnDragStart && this.isMaximized) {
+                        const ratio = this.dragStartX / this.element.offsetWidth;
+                        this.restore();
+
+                        const newWidth = parseFloat(this.element.style.width);
+                        this.element.style.left = `${e.clientX - newWidth * ratio}px`;
+                        this.element.style.top = `${e.clientY - 10}px`;
+
+                        this.dragOffsetX = newWidth * ratio;
+                        this.dragOffsetY = 10;
                     }
-                }
-
-                this.element.style.left = `${e.clientX - this.dragOffsetX}px`;
-                this.element.style.top = `${e.clientY - this.dragOffsetY}px`;
-
-                this.checkSnapZone(e);
-            }
-
-            if (this.isResizing) {
-                this.handleResize(e);
-            }
-        });
-
-        document.addEventListener('mouseup', () => {
-            if (this.isDragging) {
-                this.isDragging = false;
-                this.element.classList.remove('resizing');
-
-                if (this.activeSnapType) {
-                    this.snapTo(this.activeSnapType);
-                    this.hideSnapPreview();
+                } else {
+                    return;
                 }
             }
-            if (this.isResizing) {
-                this.stopResize();
+
+            this.element.style.left = `${e.clientX - this.dragOffsetX}px`;
+            this.element.style.top = `${e.clientY - this.dragOffsetY}px`;
+
+            this.checkSnapZone(e);
+        }
+
+        if (this.isResizing) {
+            this.handleResize(e);
+        }
+    }
+
+    /**
+     * Handles mouse up events for dragging and resizing.
+     */
+    private handleMouseUp(): void {
+        if (this.isDragging) {
+            this.isDragging = false;
+            this.element.classList.remove('resizing');
+
+            if (this.activeSnapType) {
+                this.snapTo(this.activeSnapType);
+                this.hideSnapPreview();
             }
-        });
+        }
+        if (this.isResizing) {
+            this.stopResize();
+        }
+    }
+
+    /**
+     * Cleans up event listeners when the window is destroyed.
+     */
+    private cleanup(): void {
+        if (this.boundMouseMoveHandler) {
+            document.removeEventListener('mousemove', this.boundMouseMoveHandler);
+            this.boundMouseMoveHandler = null;
+        }
+        if (this.boundMouseUpHandler) {
+            document.removeEventListener('mouseup', this.boundMouseUpHandler);
+            this.boundMouseUpHandler = null;
+        }
     }
 
     /**

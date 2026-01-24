@@ -55,3 +55,11 @@ export const OS_CONFIG = {
         },
     },
 } as const;
+
+/**
+ * Settings keys for the operating system module.
+ */
+export const SETTINGS_KEYS = {
+    REDUCE_EFFECTS: 'os_reduce_effects',
+} as const;
+

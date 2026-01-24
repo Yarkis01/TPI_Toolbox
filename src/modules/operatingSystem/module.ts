@@ -1,12 +1,13 @@
 import { BaseModule } from '../../core/abstract/BaseModule';
 import { ModuleManager } from '../../core/managers/ModuleManager';
+import { StorageService } from '../../services/StorageService';
 import { createElement } from '../../utils/DomUtils';
 import { SettingsApp } from './apps/SettingsApp';
 import { IFrameApp } from './apps/IFrameApp';
 import { Dock } from './components/Dock';
 import { WindowComponent } from './components/Window';
 import { WindowManager } from './components/WindowManager';
-import { APP_IDS, OS_CONFIG, SELECTORS } from './constants';
+import { APP_IDS, OS_CONFIG, SELECTORS, SETTINGS_KEYS } from './constants';
 
 /**
  * Represents the operating system module.
@@ -66,6 +67,7 @@ export class OperatingSystemModule extends BaseModule {
         if (gameContainer) (gameContainer as HTMLElement).style.display = 'none';
 
         this.applyDesktopStyles();
+        this.applyReducedEffectsFromStorage();
 
         const desktopContainer = createElement('div', {
             id: SELECTORS.DESKTOP_CONTAINER,
@@ -85,6 +87,18 @@ export class OperatingSystemModule extends BaseModule {
 
         this.dock = new Dock((itemId) => this.handleAppLaunch(itemId));
         this.dock.mount(document.body);
+    }
+
+    /**
+     * Applies reduced visual effects setting from storage.
+     */
+    private applyReducedEffectsFromStorage(): void {
+        const storageService = new StorageService();
+        const reduceEffects = storageService.load<boolean>(SETTINGS_KEYS.REDUCE_EFFECTS, false);
+        if (reduceEffects) {
+            document.body.classList.add('os-reduce-effects');
+            this._logger.info('Reduced visual effects enabled.');
+        }
     }
 
     /**
