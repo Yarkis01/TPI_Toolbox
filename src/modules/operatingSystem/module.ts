@@ -270,8 +270,7 @@ export class OperatingSystemModule extends BaseModule {
                 if (iframe.contentWindow !== sourceWindow) {
                     this._logger.info(`Refreshing window: ${appId}`);
                     try {
-                        const src = iframe.src;
-                        iframe.src = src;
+                        iframe.contentWindow.location.reload();
                     } catch (error) {
                         this._logger.error(`Failed to refresh window ${appId}: ${(error as Error).message}`);
                     }
