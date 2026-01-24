@@ -61,5 +61,27 @@ export const OS_CONFIG = {
  */
 export const SETTINGS_KEYS = {
     REDUCE_EFFECTS: 'os_reduce_effects',
+    SESSION_STATE: 'os_session_state',
 } as const;
+
+/**
+ * Interface for a saved window state.
+ */
+export interface SavedWindowState {
+    appId: string;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    zIndex: number;
+    isMaximized: boolean;
+}
+
+/**
+ * Interface for the saved session state.
+ */
+export interface SessionState {
+    windows: SavedWindowState[];
+    focusedAppId: string | null;
+}
 

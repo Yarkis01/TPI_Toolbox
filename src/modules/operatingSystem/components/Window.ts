@@ -13,6 +13,7 @@ export interface WindowOptions {
 
     onClose?: () => void;
     onFocus?: () => void;
+    onMoveOrResize?: () => void;
 }
 
 /**
@@ -178,6 +179,36 @@ export class WindowComponent {
     }
 
     /**
+     * Gets the current state of the window for persistence.
+     * @returns The window state object.
+     */
+    public getWindowState(): { x: number; y: number; width: number; height: number; zIndex: number; isMaximized: boolean } {
+        return {
+            x: this.element.offsetLeft,
+            y: this.element.offsetTop,
+            width: this.element.offsetWidth,
+            height: this.element.offsetHeight,
+            zIndex: parseInt(this.element.style.zIndex || '100', 10),
+            isMaximized: this.isMaximized,
+        };
+    }
+
+    /**
+     * Applies a saved state to the window.
+     * @param state - The state to apply.
+     */
+    public applyState(state: { x: number; y: number; width: number; height: number; isMaximized: boolean }): void {
+        if (state.isMaximized) {
+            this.maximize();
+        } else {
+            this.element.style.left = `${state.x}px`;
+            this.element.style.top = `${state.y}px`;
+            this.element.style.width = `${state.width}px`;
+            this.element.style.height = `${state.height}px`;
+        }
+    }
+
+    /**
      * Toggles the maximized state of the window.
      */
     public toggleMaximize(): void {
@@ -315,9 +346,12 @@ export class WindowComponent {
      * Handles mouse up events for dragging and resizing.
      */
     private handleMouseUp(): void {
+        let didMoveOrResize = false;
+
         if (this.isDragging) {
             this.isDragging = false;
             this.element.classList.remove('resizing');
+            didMoveOrResize = true;
 
             if (this.activeSnapType) {
                 this.snapTo(this.activeSnapType);
@@ -326,6 +360,11 @@ export class WindowComponent {
         }
         if (this.isResizing) {
             this.stopResize();
+            didMoveOrResize = true;
+        }
+
+        if (didMoveOrResize && this.options.onMoveOrResize) {
+            this.options.onMoveOrResize();
         }
     }
 

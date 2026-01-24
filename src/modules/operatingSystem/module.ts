@@ -7,7 +7,7 @@ import { IFrameApp } from './apps/IFrameApp';
 import { Dock } from './components/Dock';
 import { WindowComponent } from './components/Window';
 import { WindowManager } from './components/WindowManager';
-import { APP_IDS, OS_CONFIG, SELECTORS, SETTINGS_KEYS } from './constants';
+import { APP_IDS, OS_CONFIG, SavedWindowState, SELECTORS, SessionState, SETTINGS_KEYS } from './constants';
 
 /**
  * Represents the operating system module.
@@ -18,6 +18,7 @@ export class OperatingSystemModule extends BaseModule {
     private moduleManager: ModuleManager;
     private activeWindows: Map<string, WindowComponent> = new Map();
     private _messageHandler: (event: MessageEvent) => void;
+    private storageService: StorageService;
 
     /**
      * Creates a new instance of the OperatingSystemModule.
@@ -26,6 +27,7 @@ export class OperatingSystemModule extends BaseModule {
     public constructor(moduleManager: ModuleManager) {
         super();
         this.moduleManager = moduleManager;
+        this.storageService = new StorageService();
         this._messageHandler = this.handleMessage.bind(this);
     }
 
@@ -87,14 +89,15 @@ export class OperatingSystemModule extends BaseModule {
 
         this.dock = new Dock((itemId) => this.handleAppLaunch(itemId));
         this.dock.mount(document.body);
+
+        this.restoreSession();
     }
 
     /**
      * Applies reduced visual effects setting from storage.
      */
     private applyReducedEffectsFromStorage(): void {
-        const storageService = new StorageService();
-        const reduceEffects = storageService.load<boolean>(SETTINGS_KEYS.REDUCE_EFFECTS, false);
+        const reduceEffects = this.storageService.load<boolean>(SETTINGS_KEYS.REDUCE_EFFECTS, false);
         if (reduceEffects) {
             document.body.classList.add('os-reduce-effects');
             this._logger.info('Reduced visual effects enabled.');
@@ -131,93 +134,40 @@ export class OperatingSystemModule extends BaseModule {
             this.activeWindows.delete(appId);
             this.dock?.setAppOpen(appId, false);
             this.dock?.removeActive(appId);
+            this.saveSession();
         };
 
         const onFocus = () => {
             this.dock?.setActive(appId);
+            this.saveSession();
         };
 
-        const getAppConfig = () => {
-            switch (appId) {
-                case APP_IDS.TOOLS:
-                    return {
-                        title: OS_CONFIG.DOCK.LABELS.TOOLS,
-                        content: new SettingsApp(this.moduleManager).render(),
-                    };
-                case APP_IDS.BROWSER:
-                    return {
-                        title: OS_CONFIG.DOCK.LABELS.BROWSER,
-                        content: new IFrameApp(OS_CONFIG.URL_BROWSER).render(),
-                    };
-                case APP_IDS.CHAT:
-                    return {
-                        title: OS_CONFIG.DOCK.LABELS.CHAT,
-                        content: new IFrameApp(OS_CONFIG.URL_CHAT, {
-                            backgroundColor: OS_CONFIG.STYLES.CHAT_BG,
-                        }).render(),
-                    };
-                case APP_IDS.PROFILE:
-                    return {
-                        title: OS_CONFIG.DOCK.LABELS.PROFILE,
-                        content: new IFrameApp(OS_CONFIG.URL_PROFILE, {
-                            removeSelectors: ['#left-menu', 'div.dashboard-welcome'],
-                            forceFullWidth: true,
-                        }).render(),
-                    };
-                case APP_IDS.MAIL:
-                    return {
-                        title: OS_CONFIG.DOCK.LABELS.MAIL,
-                        content: new IFrameApp(OS_CONFIG.URL_MAIL, {
-                            removeSelectors: ['#left-menu', 'div.dashboard-welcome'],
-                            forceFullWidth: true,
-                        }).render(),
-                    };
-                case APP_IDS.INVEST:
-                    return {
-                        title: OS_CONFIG.DOCK.LABELS.INVEST,
-                        content: new IFrameApp(OS_CONFIG.URL_INVEST, {
-                            removeSelectors: ['#left-menu', 'div.dashboard-welcome'],
-                            forceFullWidth: true,
-                        }).render(),
-                    };
-                case APP_IDS.MY_PARK:
-                    return {
-                        title: OS_CONFIG.DOCK.LABELS.MY_PARK,
-                        content: new IFrameApp(OS_CONFIG.URL_MY_PARK, {
-                            removeSelectors: ["a.left-menu__item:nth-child(1)", "a.left-menu__item:nth-child(2)", "div.left-menu__separator", "div.dashboard-welcome", "div.left-menu__footer"],
-                            forceFullWidth: false,
-                        }).render(),
-                    };
-                case APP_IDS.NEXT_DAY:
-                    return {
-                        title: OS_CONFIG.DOCK.LABELS.NEXT_DAY,
-                        content: new IFrameApp(OS_CONFIG.URL_NEXT_DAY, {
-                            removeSelectors: ['#left-menu', 'div.dashboard-welcome'],
-                            forceFullWidth: true,
-                        }).render(),
-                    };
-                default:
-                    return {
-                        title: `Application: ${appId}`,
-                        content: createElement('div', { style: { padding: '20px' } }, [`Contenu pour ${appId} (Placeholder)`]),
-                    };
-            }
+        const onMoveOrResize = () => {
+            this.saveSession();
         };
 
-        const { title, content } = getAppConfig();
+        let appConfig = this.getAppConfig(appId);
+        if (!appConfig) {
+            appConfig = {
+                title: `Application: ${appId}`,
+                content: createElement('div', { style: { padding: '20px' } }, [`Contenu pour ${appId} (Placeholder)`]),
+            };
+        }
 
         win = this.windowManager.openWindow({
-            title,
-            content,
+            title: appConfig.title,
+            content: appConfig.content,
             width: 800,
             height: 600,
             onClose,
             onFocus,
+            onMoveOrResize,
         });
 
         this.activeWindows.set(appId, win);
         this.dock.setAppOpen(appId, true);
         this.dock.setActive(appId);
+        this.saveSession();
     }
 
     /**
@@ -302,5 +252,181 @@ export class OperatingSystemModule extends BaseModule {
         document.body.style.backgroundSize = 'cover';
         document.body.style.height = '100vh';
         document.body.style.overflow = 'hidden';
+    }
+
+    /**
+     * Saves the current session state to storage.
+     */
+    private saveSession(): void {
+        const windows: SavedWindowState[] = [];
+        let focusedAppId: string | null = null;
+
+        this.activeWindows.forEach((win, appId) => {
+            const state = win.getWindowState();
+            windows.push({
+                appId,
+                x: state.x,
+                y: state.y,
+                width: state.width,
+                height: state.height,
+                zIndex: state.zIndex,
+                isMaximized: state.isMaximized,
+            });
+
+            if (win.element.classList.contains('active-window')) {
+                focusedAppId = appId;
+            }
+        });
+
+        const session: SessionState = { windows, focusedAppId };
+        this.storageService.save(SETTINGS_KEYS.SESSION_STATE, session);
+        this._logger.info(`Session saved: ${windows.length} window(s)`);
+    }
+
+    /**
+     * Restores the session state from storage.
+     */
+    private restoreSession(): void {
+        const session = this.storageService.load<SessionState | null>(SETTINGS_KEYS.SESSION_STATE, null);
+        if (!session || !session.windows || session.windows.length === 0) {
+            this._logger.info('No session to restore.');
+            return;
+        }
+
+        this._logger.info(`Restoring session: ${session.windows.length} window(s)`);
+
+        const sortedWindows = [...session.windows].sort((a, b) => a.zIndex - b.zIndex);
+
+        sortedWindows.forEach((savedState) => {
+            this.openWindowWithState(savedState);
+        });
+
+        if (session.focusedAppId && this.activeWindows.has(session.focusedAppId)) {
+            const focusedWin = this.activeWindows.get(session.focusedAppId);
+            if (focusedWin) {
+                focusedWin.focus();
+            }
+        }
+    }
+
+    /**
+     * Opens a window with a saved state.
+     * @param savedState - The saved window state.
+     */
+    private openWindowWithState(savedState: SavedWindowState): void {
+        if (!this.windowManager || !this.dock) return;
+
+        if (this.activeWindows.has(savedState.appId)) return;
+
+        const onClose = () => {
+            this.activeWindows.delete(savedState.appId);
+            this.dock?.setAppOpen(savedState.appId, false);
+            this.dock?.removeActive(savedState.appId);
+            this.saveSession();
+        };
+
+        const onFocus = () => {
+            this.dock?.setActive(savedState.appId);
+            this.saveSession();
+        };
+
+        const onMoveOrResize = () => {
+            this.saveSession();
+        };
+
+        const appConfig = this.getAppConfig(savedState.appId);
+        if (!appConfig) return;
+
+        const win = this.windowManager.openWindow({
+            title: appConfig.title,
+            content: appConfig.content,
+            width: savedState.width,
+            height: savedState.height,
+            x: savedState.x,
+            y: savedState.y,
+            onClose,
+            onFocus,
+            onMoveOrResize,
+        });
+
+        win.applyState({
+            x: savedState.x,
+            y: savedState.y,
+            width: savedState.width,
+            height: savedState.height,
+            isMaximized: savedState.isMaximized,
+        });
+
+        this.activeWindows.set(savedState.appId, win);
+        this.dock.setAppOpen(savedState.appId, true);
+    }
+
+    /**
+     * Gets the app configuration for a given app ID.
+     * @param appId - The app ID.
+     * @returns The app configuration or null if not found.
+     */
+    private getAppConfig(appId: string): { title: string; content: HTMLElement } | null {
+        switch (appId) {
+            case APP_IDS.TOOLS:
+                return {
+                    title: OS_CONFIG.DOCK.LABELS.TOOLS,
+                    content: new SettingsApp(this.moduleManager).render(),
+                };
+            case APP_IDS.BROWSER:
+                return {
+                    title: OS_CONFIG.DOCK.LABELS.BROWSER,
+                    content: new IFrameApp(OS_CONFIG.URL_BROWSER).render(),
+                };
+            case APP_IDS.CHAT:
+                return {
+                    title: OS_CONFIG.DOCK.LABELS.CHAT,
+                    content: new IFrameApp(OS_CONFIG.URL_CHAT, {
+                        backgroundColor: OS_CONFIG.STYLES.CHAT_BG,
+                    }).render(),
+                };
+            case APP_IDS.PROFILE:
+                return {
+                    title: OS_CONFIG.DOCK.LABELS.PROFILE,
+                    content: new IFrameApp(OS_CONFIG.URL_PROFILE, {
+                        removeSelectors: ['#left-menu', 'div.dashboard-welcome'],
+                        forceFullWidth: true,
+                    }).render(),
+                };
+            case APP_IDS.MAIL:
+                return {
+                    title: OS_CONFIG.DOCK.LABELS.MAIL,
+                    content: new IFrameApp(OS_CONFIG.URL_MAIL, {
+                        removeSelectors: ['#left-menu', 'div.dashboard-welcome'],
+                        forceFullWidth: true,
+                    }).render(),
+                };
+            case APP_IDS.INVEST:
+                return {
+                    title: OS_CONFIG.DOCK.LABELS.INVEST,
+                    content: new IFrameApp(OS_CONFIG.URL_INVEST, {
+                        removeSelectors: ['#left-menu', 'div.dashboard-welcome'],
+                        forceFullWidth: true,
+                    }).render(),
+                };
+            case APP_IDS.MY_PARK:
+                return {
+                    title: OS_CONFIG.DOCK.LABELS.MY_PARK,
+                    content: new IFrameApp(OS_CONFIG.URL_MY_PARK, {
+                        removeSelectors: ["a.left-menu__item:nth-child(1)", "a.left-menu__item:nth-child(2)", "div.left-menu__separator", "div.dashboard-welcome", "div.left-menu__footer"],
+                        forceFullWidth: false,
+                    }).render(),
+                };
+            case APP_IDS.NEXT_DAY:
+                return {
+                    title: OS_CONFIG.DOCK.LABELS.NEXT_DAY,
+                    content: new IFrameApp(OS_CONFIG.URL_NEXT_DAY, {
+                        removeSelectors: ['#left-menu', 'div.dashboard-welcome'],
+                        forceFullWidth: true,
+                    }).render(),
+                };
+            default:
+                return null;
+        }
     }
 }
