@@ -1,4 +1,9 @@
 @use './variables' as *;
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Inter:wght@300;400;500;600;700&display=swap');
+
+body {
+    font-family: 'Inter', sans-serif;
+}
 
 .tpi-modal-overlay {
     position: fixed;
@@ -189,15 +194,15 @@
         }
     }
 
-    input:checked + .tpi-slider {
+    input:checked+.tpi-slider {
         background-color: $primary;
     }
 
-    input:focus + .tpi-slider {
+    input:focus+.tpi-slider {
         box-shadow: 0 0 1px $primary;
     }
 
-    input:checked + .tpi-slider:before {
+    input:checked+.tpi-slider:before {
         transform: translateX(20px);
     }
 }
