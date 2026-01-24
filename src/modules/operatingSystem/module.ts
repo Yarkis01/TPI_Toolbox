@@ -211,10 +211,52 @@ export class OperatingSystemModule extends BaseModule {
      * @param event - The message event.
      */
     private handleMessage(event: MessageEvent): void {
-        if (event.data?.type === 'TPI_TOOLBOX_REFRESH_OTHERS') {
+        if (event.data?.type === 'TPI_TOOLBOX_LOADING_START') {
+            this._logger.info('Received loading start signal.');
+            this.setLoadingOnOtherWindows(event.source as Window, true);
+        } else if (event.data?.type === 'TPI_TOOLBOX_LOADING_END') {
+            this._logger.info('Received loading end signal.');
+            this.setLoadingOnOtherWindows(event.source as Window, false);
+        } else if (event.data?.type === 'TPI_TOOLBOX_REFRESH_OTHERS') {
             this._logger.info('Received request to refresh other windows via MessageEvent.');
             this.refreshOtherWindows(event.source as Window);
         }
+    }
+
+    /**
+     * Shows or hides loading overlay on all windows except the source.
+     * @param sourceWindow - The window that initiated the request.
+     * @param isLoading - Whether to show or hide the loading overlay.
+     */
+    private setLoadingOnOtherWindows(sourceWindow: Window, isLoading: boolean): void {
+        this.activeWindows.forEach((winComponent: WindowComponent, appId: string) => {
+            const iframe = winComponent.element.querySelector('iframe');
+            if (iframe && iframe.contentWindow) {
+                if (iframe.contentWindow !== sourceWindow) {
+                    const content = winComponent.element.querySelector('.window-content');
+                    if (content) {
+                        let loader = content.querySelector('.window-loading-overlay') as HTMLElement;
+
+                        if (isLoading) {
+                            if (!loader) {
+                                loader = document.createElement('div');
+                                loader.className = 'window-loading-overlay';
+                                loader.innerHTML = `
+                                    <div class="loading-spinner"></div>
+                                    <span>Chargement en cours...</span>
+                                `;
+                                content.appendChild(loader);
+                            }
+                            loader.classList.add('active');
+                            this._logger.info(`Showing loader on window: ${appId}`);
+                        } else if (loader) {
+                            loader.classList.remove('active');
+                            this._logger.info(`Hiding loader on window: ${appId}`);
+                        }
+                    }
+                }
+            }
+        });
     }
 
     /**

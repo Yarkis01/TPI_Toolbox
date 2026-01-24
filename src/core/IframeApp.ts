@@ -28,8 +28,11 @@ export class IframeApp implements IApp {
 
         if (settingsManager.getModuleState("operating_system", false)) {
             this._logger.info('🔧 Operating System Module is enabled. Enabling...');
+
             const moduleManager = new ModuleManager(settingsManager);
             this._initializeModules(moduleManager);
+
+            this._monitorAdvanceDayButton();
         }
 
         this._logger.info('🧼 Applying Chat Cleaner in iframe context...');
@@ -51,8 +54,6 @@ export class IframeApp implements IApp {
                 }
             `);
         }
-
-        this._monitorAdvanceDayButton();
     }
 
     /**
@@ -67,15 +68,22 @@ export class IframeApp implements IApp {
             const button = document.getElementById('new-day-advance-btn');
             if (button) {
                 button.addEventListener('click', () => {
+                    window.parent.postMessage({ type: 'TPI_TOOLBOX_LOADING_START' }, '*');
+
                     const checkInterval = setInterval(() => {
                         const loader = document.getElementById('simulation-loader');
                         if (!loader || loader.style.display === 'none') {
                             clearInterval(checkInterval);
+
+                            window.parent.postMessage({ type: 'TPI_TOOLBOX_LOADING_END' }, '*');
                             window.parent.postMessage({ type: 'TPI_TOOLBOX_REFRESH_OTHERS' }, '*');
                         }
                     }, 100);
 
-                    setTimeout(() => clearInterval(checkInterval), 10000);
+                    setTimeout(() => {
+                        clearInterval(checkInterval);
+                        window.parent.postMessage({ type: 'TPI_TOOLBOX_LOADING_END' }, '*');
+                    }, 10000);
                 });
             } else {
                 setTimeout(setupButtonListener, 500);

@@ -141,6 +141,38 @@
             z-index: 10;
             cursor: pointer;
         }
+
+        .window-loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 20;
+            background: rgba(20, 20, 20, 0.9);
+            backdrop-filter: blur(4px);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            font-weight: 500;
+
+            &.active {
+                display: flex;
+            }
+
+            .loading-spinner {
+                width: 40px;
+                height: 40px;
+                border: 3px solid rgba(255, 255, 255, 0.1);
+                border-top-color: #10b981;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
+        }
     }
 
     &.active-window .window-content .iframe-focus-overlay {
@@ -231,6 +263,12 @@
     to {
         transform: scale(1);
         opacity: 1;
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
     }
 }
 
