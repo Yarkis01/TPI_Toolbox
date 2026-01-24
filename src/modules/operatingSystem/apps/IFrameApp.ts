@@ -1,4 +1,5 @@
 import { createElement, injectStyle } from "../../../utils/DomUtils";
+import { Logger } from "../../../utils/Logger";
 
 /**
  * Options for the IFrameApp.
@@ -16,6 +17,7 @@ export interface IFrameAppOptions {
 export class IFrameApp {
     private url: string;
     private options: IFrameAppOptions;
+    private logger: Logger;
 
     /**
      * Creates a new instance of the IFrameApp.
@@ -25,6 +27,7 @@ export class IFrameApp {
     public constructor(url: string, options: IFrameAppOptions = {}) {
         this.url = url;
         this.options = options;
+        this.logger = new Logger('OS - IFrameApp');
     }
 
     /**
@@ -82,7 +85,7 @@ export class IFrameApp {
                 injectStyle(styleContent, doc);
             }
         } catch (e) {
-            console.warn(`[IFrameApp] Cannot modify iframe content for ${this.url}. Possible CORS restriction.`);
+            this.logger.error(`Cannot modify iframe content for ${this.url}. Possible CORS restriction.`);
         }
     }
 }

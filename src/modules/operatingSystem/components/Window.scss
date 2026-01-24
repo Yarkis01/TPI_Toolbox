@@ -131,6 +131,20 @@
             background: rgba(255, 255, 255, 0.2);
             border-radius: 4px;
         }
+
+        .iframe-focus-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 10;
+            cursor: pointer;
+        }
+    }
+
+    &.active-window .window-content .iframe-focus-overlay {
+        display: none;
     }
 
     /* Resize Handles */

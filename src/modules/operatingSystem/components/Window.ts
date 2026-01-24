@@ -42,6 +42,8 @@ export class WindowComponent {
     private minWidth = 300;
     private minHeight = 200;
 
+    private iframeFocusOverlay: HTMLElement | null = null;
+
     /**
      * Creates a new WindowComponent instance.
      * @param options - The options for the window.
@@ -101,7 +103,6 @@ export class WindowComponent {
         const title = document.createElement('div');
         title.className = 'window-title';
         title.innerText = this.options.title;
-        header.addEventListener('dblclick', () => this.toggleMaximize());
 
         header.appendChild(controls);
         header.appendChild(title);
@@ -109,6 +110,14 @@ export class WindowComponent {
         const content = document.createElement('div');
         content.className = 'window-content';
         content.appendChild(this.options.content);
+
+        this.iframeFocusOverlay = document.createElement('div');
+        this.iframeFocusOverlay.className = 'iframe-focus-overlay';
+        this.iframeFocusOverlay.addEventListener('mousedown', (e) => {
+            e.stopPropagation();
+            this.focus();
+        });
+        content.appendChild(this.iframeFocusOverlay);
 
         win.appendChild(header);
         win.appendChild(content);
@@ -227,18 +236,19 @@ export class WindowComponent {
      */
     private makeDraggable(): void {
         const header = this.element.querySelector('.window-header') as HTMLElement;
+        let dragStartX = 0;
+        let dragStartY = 0;
+        let wasMaximizedOnDragStart = false;
+        let hasMovedEnough = false;
+        const dragThreshold = 5;
 
         header.addEventListener('mousedown', (e) => {
             if ((e.target as HTMLElement).closest('.window-controls')) return;
 
-            if (this.isMaximized) {
-                const ratio = e.clientX / this.element.offsetWidth;
-                this.restore();
-
-                const newWidth = parseFloat(this.element.style.width);
-                this.element.style.left = `${e.clientX - newWidth * ratio}px`;
-                this.element.style.top = `${e.clientY - 10}px`;
-            }
+            wasMaximizedOnDragStart = this.isMaximized;
+            hasMovedEnough = false;
+            dragStartX = e.clientX;
+            dragStartY = e.clientY;
 
             this.isDragging = true;
             this.dragOffsetX = e.clientX - this.element.offsetLeft;
@@ -251,6 +261,29 @@ export class WindowComponent {
         document.addEventListener('mousemove', (e) => {
             if (this.isDragging) {
                 e.preventDefault();
+
+                if (!hasMovedEnough) {
+                    const deltaX = Math.abs(e.clientX - dragStartX);
+                    const deltaY = Math.abs(e.clientY - dragStartY);
+                    if (deltaX > dragThreshold || deltaY > dragThreshold) {
+                        hasMovedEnough = true;
+
+                        if (wasMaximizedOnDragStart && this.isMaximized) {
+                            const ratio = dragStartX / this.element.offsetWidth;
+                            this.restore();
+
+                            const newWidth = parseFloat(this.element.style.width);
+                            this.element.style.left = `${e.clientX - newWidth * ratio}px`;
+                            this.element.style.top = `${e.clientY - 10}px`;
+
+                            this.dragOffsetX = newWidth * ratio;
+                            this.dragOffsetY = 10;
+                        }
+                    } else {
+                        return;
+                    }
+                }
+
                 this.element.style.left = `${e.clientX - this.dragOffsetX}px`;
                 this.element.style.top = `${e.clientY - this.dragOffsetY}px`;
 
