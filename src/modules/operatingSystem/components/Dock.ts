@@ -43,6 +43,7 @@ export class Dock {
         const investIcon = `<svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>`;
         const parkIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 19V8C2 6.34315 3.34315 5 5 5C5.85772 5 6.63136 5.35995 7.17812 5.93703M6 5.17071V19M22.0001 10.5C22.0001 12.9853 19.9854 15 17.5001 15C16.2057 15 15.039 14.4535 14.2181 13.5788L7.1792 5.93817M22.0001 10.5C22.0001 8.01472 19.9854 6 17.5001 6C16.0864 6 14.825 6.65184 14 7.67134M22.0001 10.5L22 19M10 9.00011V19M14 13.3421V19M18 14.9725V19M18 6.02746V11"></path></svg>`;
         const nextDayIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>`;
+        const rankingIcon = `<svg viewBox="0 0 256 256" style="fill: none; stroke: currentColor;"><path vector-effect="non-scaling-stroke" d="M232,64H208V48a8,8,0,0,0-8-8H56a8,8,0,0,0-8,8V64H24A16,16,0,0,0,8,80V96a40,40,0,0,0,40,40h3.65A80.13,80.13,0,0,0,120,191.61V216H96a8,8,0,0,0,0,16h64a8,8,0,0,0,0-16H136V191.58c31.94-3.23,58.44-25.64,68.08-55.58H208a40,40,0,0,0,40-40V80A16,16,0,0,0,232,64ZM48,120A24,24,0,0,1,24,96V80H48v32q0,4,.39,8ZM232,96a24,24,0,0,1-24,24h-.5a81.81,81.81,0,0,0,.5-8.9V80h24Z"></path></svg>`;
         const toolsIcon = `<svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>`;
 
         return [
@@ -52,6 +53,7 @@ export class Dock {
             { id: APP_IDS.BROWSER, icon: webIcon, label: OS_CONFIG.DOCK.LABELS.BROWSER },
             { id: APP_IDS.MY_PARK, icon: parkIcon, label: OS_CONFIG.DOCK.LABELS.MY_PARK },
             { id: APP_IDS.NEXT_DAY, icon: nextDayIcon, label: OS_CONFIG.DOCK.LABELS.NEXT_DAY },
+            { id: APP_IDS.RANKING, icon: rankingIcon, label: OS_CONFIG.DOCK.LABELS.RANKING },
             { id: APP_IDS.CHAT, icon: chatIcon, label: OS_CONFIG.DOCK.LABELS.CHAT },
             { id: APP_IDS.TOOLS, icon: toolsIcon, label: OS_CONFIG.DOCK.LABELS.TOOLS },
         ];

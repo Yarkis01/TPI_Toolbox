@@ -434,6 +434,14 @@ export class OperatingSystemModule extends BaseModule {
                         forceFullWidth: true,
                     }).render(),
                 };
+            case APP_IDS.RANKING:
+                return {
+                    title: OS_CONFIG.DOCK.LABELS.RANKING,
+                    content: new IFrameApp(OS_CONFIG.URL_RANKING, {
+                        removeSelectors: ['#left-menu', 'div.dashboard-welcome'],
+                        forceFullWidth: true,
+                    }).render(),
+                };
             default:
                 return null;
         }

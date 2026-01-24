@@ -17,8 +17,8 @@ export const APP_IDS = {
     INVEST: 'invest',
     MY_PARK: 'my_park',
     NEXT_DAY: 'next_day',
+    RANKING: 'ranking',
     CHAT: 'chat',
-    MARKET: 'market',
     TOOLS: 'tools',
 } as const;
 
@@ -36,6 +36,7 @@ export const OS_CONFIG = {
     URL_INVEST: 'https://www.themeparkindustries.com/tpiv4/game/invest.php',
     URL_MY_PARK: 'https://www.themeparkindustries.com/tpiv4/game/park/overview.php',
     URL_NEXT_DAY: 'https://www.themeparkindustries.com/tpiv4/game/new_day.php',
+    URL_RANKING: 'https://www.themeparkindustries.com/tpiv4/game/classement.php',
     STYLES: {
         DESKTOP_BG: 'linear-gradient(135deg, #050505 0%, #061f10 100%)',
         DESKTOP_BG_COLOR: '#0f1110',
@@ -49,8 +50,8 @@ export const OS_CONFIG = {
             INVEST: 'Investissements',
             MY_PARK: 'Mes parcs',
             NEXT_DAY: 'Jour suivant',
+            RANKING: 'Classement',
             CHAT: 'Chat',
-            MARKET: 'Boutique',
             TOOLS: 'TPI Toolbox',
         },
     },
@@ -62,6 +63,7 @@ export const OS_CONFIG = {
 export const SETTINGS_KEYS = {
     REDUCE_EFFECTS: 'os_reduce_effects',
     RESTORE_SESSION: 'os_restore_session',
+    SESSION_STATE: 'os_session_state',
 } as const;
 
 /**
