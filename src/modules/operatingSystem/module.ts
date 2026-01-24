@@ -258,6 +258,9 @@ export class OperatingSystemModule extends BaseModule {
      * Saves the current session state to storage.
      */
     private saveSession(): void {
+        const restoreEnabled = this.storageService.load<boolean>(SETTINGS_KEYS.RESTORE_SESSION, true);
+        if (!restoreEnabled) return;
+
         const windows: SavedWindowState[] = [];
         let focusedAppId: string | null = null;
 
@@ -287,6 +290,12 @@ export class OperatingSystemModule extends BaseModule {
      * Restores the session state from storage.
      */
     private restoreSession(): void {
+        const restoreEnabled = this.storageService.load<boolean>(SETTINGS_KEYS.RESTORE_SESSION, true);
+        if (!restoreEnabled) {
+            this._logger.info('Session restore is disabled.');
+            return;
+        }
+
         const session = this.storageService.load<SessionState | null>(SETTINGS_KEYS.SESSION_STATE, null);
         if (!session || !session.windows || session.windows.length === 0) {
             this._logger.info('No session to restore.');

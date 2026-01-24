@@ -61,7 +61,7 @@ export const OS_CONFIG = {
  */
 export const SETTINGS_KEYS = {
     REDUCE_EFFECTS: 'os_reduce_effects',
-    SESSION_STATE: 'os_session_state',
+    RESTORE_SESSION: 'os_restore_session',
 } as const;
 
 /**

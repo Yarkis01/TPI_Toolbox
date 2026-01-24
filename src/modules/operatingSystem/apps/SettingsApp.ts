@@ -102,9 +102,11 @@ export class SettingsApp {
         section.appendChild(
             createElement('div', { class: 'tpi-settings-section-header' }, ['Performances'])
         );
+
+        // Reduce visual effects toggle
         const reduceEffectsEnabled = this.storageService.load<boolean>(SETTINGS_KEYS.REDUCE_EFFECTS, false);
 
-        const checkbox = createElement('input', {
+        const reduceCheckbox = createElement('input', {
             type: 'checkbox',
             onchange: (e: Event) => {
                 const isChecked = (e.target as HTMLInputElement).checked;
@@ -113,30 +115,66 @@ export class SettingsApp {
             },
         }) as HTMLInputElement;
 
-        checkbox.checked = reduceEffectsEnabled;
+        reduceCheckbox.checked = reduceEffectsEnabled;
 
-        const switchLabel = createElement('label', { class: 'tpi-switch' }, [
-            checkbox,
+        const reduceSwitchLabel = createElement('label', { class: 'tpi-switch' }, [
+            reduceCheckbox,
             createElement('span', { class: 'tpi-slider' }),
         ]);
 
-        const textContainer = createElement('div', { class: 'tpi-setting-info' }, [
+        const reduceTextContainer = createElement('div', { class: 'tpi-setting-info' }, [
             createElement('div', { class: 'tpi-setting-label' }, ['Réduire les effets visuels']),
             createElement('div', { class: 'tpi-setting-desc' }, [
                 'Désactive les effets de flou et transparence pour améliorer les performances.',
             ]),
         ]);
 
-        const row = createElement(
+        const reduceRow = createElement(
             'div',
             {
                 class: 'tpi-setting-row',
                 'data-search': 'réduire effets visuels performance flou transparence blur',
             },
-            [textContainer, switchLabel],
+            [reduceTextContainer, reduceSwitchLabel],
         );
 
-        section.appendChild(row);
+        section.appendChild(reduceRow);
+
+        // Restore session toggle
+        const restoreSessionEnabled = this.storageService.load<boolean>(SETTINGS_KEYS.RESTORE_SESSION, true);
+
+        const restoreCheckbox = createElement('input', {
+            type: 'checkbox',
+            onchange: (e: Event) => {
+                const isChecked = (e.target as HTMLInputElement).checked;
+                this.storageService.save(SETTINGS_KEYS.RESTORE_SESSION, isChecked);
+            },
+        }) as HTMLInputElement;
+
+        restoreCheckbox.checked = restoreSessionEnabled;
+
+        const restoreSwitchLabel = createElement('label', { class: 'tpi-switch' }, [
+            restoreCheckbox,
+            createElement('span', { class: 'tpi-slider' }),
+        ]);
+
+        const restoreTextContainer = createElement('div', { class: 'tpi-setting-info' }, [
+            createElement('div', { class: 'tpi-setting-label' }, ['Restaurer les fenêtres']),
+            createElement('div', { class: 'tpi-setting-desc' }, [
+                'Sauvegarde et restaure automatiquement les fenêtres ouvertes au rechargement.',
+            ]),
+        ]);
+
+        const restoreRow = createElement(
+            'div',
+            {
+                class: 'tpi-setting-row',
+                'data-search': 'restaurer fenêtres session sauvegarde reload',
+            },
+            [restoreTextContainer, restoreSwitchLabel],
+        );
+
+        section.appendChild(restoreRow);
 
         return section;
     }
