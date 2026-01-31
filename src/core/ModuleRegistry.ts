@@ -7,6 +7,7 @@ import { RideHypeAsTextModule } from '../modules/rideHypeAsText/module';
 import { SelectUntrainedModule } from '../modules/selectUntrained/module';
 import { ZoneFilterModule } from '../modules/zoneFilters/module';
 import { ModuleManager } from './managers/ModuleManager';
+import { OperatingSystemModule } from '../modules/operatingSystem/module';
 
 /**
  * Registers the common functional modules into the module manager.
@@ -23,4 +24,5 @@ export function registerCommonModules(moduleManager: ModuleManager): void {
     moduleManager.register(new ZoneFilterModule());
     moduleManager.register(new HideWarehousemanModule());
     moduleManager.register(new SelectUntrainedModule());
+    moduleManager.register(new OperatingSystemModule(moduleManager));
 }

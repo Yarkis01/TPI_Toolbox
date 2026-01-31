@@ -56,6 +56,13 @@ export class OperatingSystemModule extends BaseModule {
      * @inheritdoc
      */
     protected onEnable(): void {
+        const isIframe = window.self !== window.top;
+
+        if (isIframe) {
+            this._setupIframeTriggers();
+            return;
+        }
+
         if (!window.location.href.includes('game')) return;
 
         this._logger.info('Enabling OS Mode...');
@@ -444,6 +451,113 @@ export class OperatingSystemModule extends BaseModule {
                 };
             default:
                 return null;
+        }
+    }
+
+    /**
+     * Sets up event listeners for iframe triggers.
+     */
+    private _setupIframeTriggers(): void {
+        interface TriggerConfig {
+            selector: string;
+            urlPart?: string;
+            strategy: 'element-hide' | 'unload-or-reenable';
+            targetSelector?: string;
+        }
+
+        const triggers: TriggerConfig[] = [
+            {
+                urlPart: 'new_day.php',
+                selector: '#new-day-advance-btn',
+                strategy: 'element-hide',
+                targetSelector: '#simulation-loader'
+            },
+            {
+                selector: '#transfer-confirm-btn',
+                strategy: 'unload-or-reenable'
+            }
+        ];
+
+        const tryAttachListener = (config: TriggerConfig) => {
+            if (config.urlPart && !window.location.href.includes(config.urlPart)) return;
+
+            const element = document.querySelector(config.selector);
+            if (element && element instanceof HTMLElement) {
+                this._logger.info(`✅ Found trigger element: ${config.selector}`);
+                element.addEventListener('click', () => {
+                    this.monitorAsyncAction(config.strategy, element as HTMLButtonElement, config.targetSelector);
+                });
+            } else {
+                setTimeout(() => tryAttachListener(config), 1000);
+            }
+        };
+
+        triggers.forEach(config => {
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', () => tryAttachListener(config));
+            } else {
+                tryAttachListener(config);
+            }
+        });
+    }
+
+    /**
+     * Monitors an async action (like a button click) and signals loading states.
+     * @param strategy - The strategy to detect completion.
+     * @param button - The button that was clicked.
+     * @param targetSelector - (Optional) Selector to watch for hiding (for 'element-hide').
+     */
+    private monitorAsyncAction(
+        strategy: 'element-hide' | 'unload-or-reenable',
+        button: HTMLButtonElement,
+        targetSelector?: string
+    ): void {
+        window.parent.postMessage({ type: 'TPI_TOOLBOX_LOADING_START' }, '*');
+        this._logger.info(`Starting async monitoring: ${strategy}`);
+
+        let isFinalized = false;
+        let cleanup: () => void = () => { };
+
+        const finalize = (success: boolean) => {
+            if (isFinalized) return;
+            isFinalized = true;
+            cleanup();
+
+            window.parent.postMessage({ type: 'TPI_TOOLBOX_LOADING_END' }, '*');
+            if (success) {
+                window.parent.postMessage({ type: 'TPI_TOOLBOX_REFRESH_OTHERS' }, '*');
+                this._logger.info('✅ Action completed successfully.');
+            } else {
+                this._logger.warn('⚠️ Action failed or timed out.');
+            }
+        };
+
+        const timeoutId = setTimeout(() => finalize(false), 10000);
+
+        if (strategy === 'element-hide' && targetSelector) {
+            const interval = setInterval(() => {
+                const target = document.querySelector(targetSelector) as HTMLElement;
+                if (!target || target.style.display === 'none') {
+                    finalize(true);
+                }
+            }, 100);
+            cleanup = () => { clearInterval(interval); clearTimeout(timeoutId); };
+        }
+        else if (strategy === 'unload-or-reenable') {
+            const onUnload = () => finalize(true);
+            window.addEventListener('beforeunload', onUnload);
+
+            const interval = setInterval(() => {
+                if (!button.disabled) {
+                    finalize(false);
+                }
+            }, 200);
+
+            cleanup = () => {
+                clearInterval(interval);
+                clearTimeout(timeoutId);
+                window.removeEventListener('beforeunload', onUnload);
+            };
         }
     }
 }

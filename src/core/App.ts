@@ -78,7 +78,6 @@ export class App implements IApp {
         this._logger.info('📦 Initializing modules...');
 
         registerCommonModules(moduleManager);
-        moduleManager.register(new OperatingSystemModule(moduleManager));
 
         this._logger.info('✅ Modules initialized.');
     }
