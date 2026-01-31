@@ -32,7 +32,7 @@ export class IframeApp implements IApp {
             const moduleManager = new ModuleManager(settingsManager);
             this._initializeModules(moduleManager);
 
-            this._monitorAdvanceDayButton();
+            this._setupRefreshTriggers();
         }
 
         this._logger.info('🧼 Applying Chat Cleaner in iframe context...');
@@ -59,42 +59,115 @@ export class IframeApp implements IApp {
     /**
      * Monitors the advance day button for clicks.
      */
-    private _monitorAdvanceDayButton(): void {
-        if (!window.location.href.includes('new_day.php')) {
-            return;
+    /**
+     * Sets up triggers for refreshing other windows.
+     */
+    private _setupRefreshTriggers(): void {
+        interface TriggerConfig {
+            urlPart?: string;
+            selector: string;
+            handler: (element: HTMLElement) => void;
         }
 
-        const setupButtonListener = () => {
-            const button = document.getElementById('new-day-advance-btn');
-            if (button) {
-                button.addEventListener('click', () => {
-                    window.parent.postMessage({ type: 'TPI_TOOLBOX_LOADING_START' }, '*');
+        const triggers: TriggerConfig[] = [
+            // New Day Advance Button
+            {
+                urlPart: 'new_day.php',
+                selector: '#new-day-advance-btn',
+                handler: (btn) => {
+                    btn.addEventListener('click', () => {
+                        window.parent.postMessage({ type: 'TPI_TOOLBOX_LOADING_START' }, '*');
 
-                    const checkInterval = setInterval(() => {
-                        const loader = document.getElementById('simulation-loader');
-                        if (!loader || loader.style.display === 'none') {
+                        // Poll until loader is hidden (request completed)
+                        const checkInterval = setInterval(() => {
+                            const loader = document.getElementById('simulation-loader');
+                            if (!loader || loader.style.display === 'none') {
+                                clearInterval(checkInterval);
+
+                                window.parent.postMessage({ type: 'TPI_TOOLBOX_LOADING_END' }, '*');
+                                window.parent.postMessage({ type: 'TPI_TOOLBOX_REFRESH_OTHERS' }, '*');
+                            }
+                        }, 100);
+
+                        // Fallback timeout after 10 seconds
+                        setTimeout(() => {
                             clearInterval(checkInterval);
-
                             window.parent.postMessage({ type: 'TPI_TOOLBOX_LOADING_END' }, '*');
-                            window.parent.postMessage({ type: 'TPI_TOOLBOX_REFRESH_OTHERS' }, '*');
-                        }
-                    }, 100);
+                        }, 10000);
+                    });
+                }
+            },
+            // Transfer Confirm Button
+            {
+                selector: '#transfer-confirm-btn',
+                handler: (btn) => {
+                    btn.addEventListener('click', () => {
+                        this._logger.info('🖱️ Transfer button clicked. Monitoring for success (reload)...');
+                        window.parent.postMessage({ type: 'TPI_TOOLBOX_LOADING_START' }, '*');
 
-                    setTimeout(() => {
-                        clearInterval(checkInterval);
-                        window.parent.postMessage({ type: 'TPI_TOOLBOX_LOADING_END' }, '*');
-                    }, 10000);
-                });
+                        let isComplete = false;
+
+                        const onUnload = () => {
+                            if (!isComplete) {
+                                isComplete = true;
+                                this._logger.info('✅ Page unloading (Transfer success). Requesting refresh of other windows.');
+                                window.parent.postMessage({ type: 'TPI_TOOLBOX_LOADING_END' }, '*');
+                                window.parent.postMessage({ type: 'TPI_TOOLBOX_REFRESH_OTHERS' }, '*');
+                            }
+                        };
+
+                        window.addEventListener('beforeunload', onUnload);
+
+                        const checkErrorInterval = setInterval(() => {
+                            if (isComplete) {
+                                clearInterval(checkErrorInterval);
+                                return;
+                            }
+
+                            if (!(btn as HTMLButtonElement).disabled) {
+                                isComplete = true;
+                                clearInterval(checkErrorInterval);
+                                window.removeEventListener('beforeunload', onUnload);
+                                window.parent.postMessage({ type: 'TPI_TOOLBOX_LOADING_END' }, '*');
+                                this._logger.warn('❌ Transfer button re-enabled without unload. Assuming error.');
+                            }
+                        }, 200);
+
+                        setTimeout(() => {
+                            if (!isComplete) {
+                                isComplete = true;
+                                clearInterval(checkErrorInterval);
+                                window.removeEventListener('beforeunload', onUnload);
+                                window.parent.postMessage({ type: 'TPI_TOOLBOX_LOADING_END' }, '*');
+                                this._logger.warn('⚠️ Transfer monitoring timed out.');
+                            }
+                        }, 10000);
+                    });
+                }
+            }
+        ];
+
+        const tryAttachListener = (config: TriggerConfig) => {
+            if (config.urlPart && !window.location.href.includes(config.urlPart)) {
+                return;
+            }
+
+            const element = document.querySelector(config.selector);
+            if (element && element instanceof HTMLElement) {
+                this._logger.info(`✅ Found trigger element: ${config.selector}`);
+                config.handler(element);
             } else {
-                setTimeout(setupButtonListener, 500);
+                setTimeout(() => tryAttachListener(config), 1000);
             }
         };
 
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', setupButtonListener);
-        } else {
-            setupButtonListener();
-        }
+        triggers.forEach(config => {
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', () => tryAttachListener(config));
+            } else {
+                tryAttachListener(config);
+            }
+        });
     }
 
     /**
