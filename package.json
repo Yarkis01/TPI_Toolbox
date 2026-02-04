@@ -3,7 +3,17 @@
     "version": "0.1.0",
     "main": "index.js",
     "author": "Yarkis01",
-    "license": "MIT",
+    "contributors": [
+        {
+            "name": "Yarkis01",
+            "url": "https://github.com/Yarkis01"
+        },
+        {
+            "name": "MarcusIsLion",
+            "url": "https://github.com/MarcusIsLion"
+        }
+    ],
+    "license": "GPL-3.0-only",
     "homepage": "https://github.com/Yarkis01/TPI_Toolbox",
     "devDependencies": {
         "@trivago/prettier-plugin-sort-imports": "^6.0.0",
