@@ -5,6 +5,7 @@ export const SURFACE_SELECTORS = {
     MODAL: '#attraction-store-modal',
     FILTER_CONTAINER: '.attraction-store-modal__filters',
     FILTER_GROUP: '.attraction-store-modal__filter-group',
+    TYPE_FILTER: '#attraction-filter-type',
     CARD: '.attraction-card',
     CARD_DESCRIPTION: '.attraction-card__description',
     COUNTER: '#attraction-filter-count',

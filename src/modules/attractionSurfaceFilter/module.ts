@@ -95,9 +95,9 @@ export class AttractionSurfaceFilterModule extends BaseModule {
             id: SURFACE_SELECTORS.SLIDER_ID,
             class: 'attraction-store-modal__range',
             min: SURFACE_DEFAULTS.MIN.toString(),
-            max: SURFACE_DEFAULTS.MAX.toString(),
+            max: this._calculateMaxSurface().toString(), // Use dynamic max
             step: SURFACE_DEFAULTS.STEP.toString(),
-            value: SURFACE_DEFAULTS.MAX.toString(),
+            value: this._calculateMaxSurface().toString(), // Start with all selected
             style: 'width: 100%; margin-top: 5px;'
         }) as HTMLInputElement;
 
@@ -181,7 +181,10 @@ export class AttractionSurfaceFilterModule extends BaseModule {
         if (resetBtn) {
             resetBtn.addEventListener('click', () => {
                 if (this._slider) {
-                    this._slider.value = SURFACE_DEFAULTS.MAX.toString();
+                    // Reset to the current calculated max
+                    const max = this._calculateMaxSurface();
+                    this._updateSliderRange(max); // Ensure range is correct
+                    this._slider.value = max.toString();
                     this._updateValueDisplay();
                     this._updateSliderFill();
                     this._applyFilter();
@@ -189,25 +192,74 @@ export class AttractionSurfaceFilterModule extends BaseModule {
             });
         }
 
-        // Listen for other filters to update count correctly
+        // Listen for store content changes        // Listen for other filters to update count correctly
         const observer = new MutationObserver(() => {
-            this._updateCounter();
+            this._handleContentUpdate();
         });
 
         const cardsContainer = document.querySelector('.attraction-store-modal__body');
         if (cardsContainer) {
-            observer.observe(cardsContainer, { attributes: true, attributeFilter: ['style', 'class'], subtree: true });
+            observer.observe(cardsContainer, {
+                attributes: true,
+                attributeFilter: ['style', 'class'],
+                childList: true,
+                subtree: true
+            });
         }
+
+        // Fallback for Type/Constructor switching (in case Observer misses the swap or runs too early)
+        const typeSelect = document.querySelector(SURFACE_SELECTORS.TYPE_FILTER);
+        const constructorSelect = document.querySelector('#attraction-filter-constructor');
+
+        const updateHandler = () => {
+            // Wait for the app to potentially replace the DOM
+            setTimeout(() => this._handleContentUpdate(), 200);
+            setTimeout(() => this._handleContentUpdate(), 1000); // Safety double-check
+        };
+
+        if (typeSelect) typeSelect.addEventListener('change', updateHandler);
+        if (constructorSelect) constructorSelect.addEventListener('change', updateHandler);
+    }
+
+    /**
+     * Handles content updates: recalculates max and applies filter.
+     */
+    private _handleContentUpdate(): void {
+        const newMax = this._calculateMaxSurface();
+        this._updateSliderRange(newMax);
+
+        if (this._slider) {
+            const currentVal = parseInt(this._slider.value);
+            const prevMax = parseInt(this._slider.max);
+
+            // If it was at previous max, move to new max (keep "All" selected)
+            if (currentVal >= prevMax) {
+                this._slider.value = newMax.toString();
+            }
+            // If the current value is now impossible, clamp it
+            else if (currentVal > newMax) {
+                this._slider.value = newMax.toString();
+            }
+
+            this._updateValueDisplay();
+            this._updateSliderFill();
+            this._applyFilter();
+        }
+
+        this._updateCounter();
     }
 
     /**
      * Updates the text display of the current slider value.
+     * @param _ (unused)
      */
     private _updateValueDisplay(): void {
         if (!this._slider || !this._valueDisplay) return;
 
         const value = parseInt(this._slider.value);
-        if (value >= SURFACE_DEFAULTS.MAX) {
+        const max = parseInt(this._slider.max);
+
+        if (value >= max) {
             this._valueDisplay.textContent = SURFACE_STRINGS.ALL;
         } else {
             this._valueDisplay.textContent = `${value} ${SURFACE_STRINGS.UNIT}`;
@@ -221,9 +273,16 @@ export class AttractionSurfaceFilterModule extends BaseModule {
         if (!this._slider) return;
 
         const maxSurface = parseInt(this._slider.value);
+        const limit = parseInt(this._slider.max);
         const cards = document.querySelectorAll<HTMLElement>(SURFACE_SELECTORS.CARD);
 
         cards.forEach(card => {
+            // If slider is at max, show everything regardless of extraction errors or huge values
+            if (maxSurface >= limit) {
+                card.classList.remove(SURFACE_SELECTORS.HIDDEN_CLASS);
+                return;
+            }
+
             const surface = this._extractSurface(card);
             if (surface > maxSurface) {
                 card.classList.add(SURFACE_SELECTORS.HIDDEN_CLASS);
@@ -295,5 +354,56 @@ export class AttractionSurfaceFilterModule extends BaseModule {
         });
 
         counterEl.textContent = visibleCount.toString();
+    }
+    /**
+     * Calculates the maximum surface from all visible cards.
+     * @returns The maximum surface found, or default max if none/smaller.
+     */
+    private _calculateMaxSurface(): number {
+        const cards = document.querySelectorAll<HTMLElement>(SURFACE_SELECTORS.CARD);
+        let max = 0;
+
+        const typeFilter = document.querySelector<HTMLSelectElement>(SURFACE_SELECTORS.TYPE_FILTER);
+        const constructorFilter = document.querySelector<HTMLSelectElement>('#attraction-filter-constructor');
+
+        const selectedType = typeFilter ? typeFilter.value : '';
+        const selectedConstructor = constructorFilter ? constructorFilter.value : '';
+
+        cards.forEach(card => {
+            // Check Type Filter
+            if (selectedType && selectedType !== '') {
+                if (card.dataset.type !== selectedType) {
+                    return;
+                }
+            }
+
+            // Check Constructor Filter
+            if (selectedConstructor && selectedConstructor !== '') {
+                if (card.dataset['constructor'] !== selectedConstructor) {
+                    return;
+                }
+            }
+
+            const surface = this._extractSurface(card);
+            if (surface > max) {
+                max = surface;
+            }
+        });
+
+        // Round up to nearest step for cleaner UI
+        if (max > 0) {
+            return Math.ceil(max / SURFACE_DEFAULTS.STEP) * SURFACE_DEFAULTS.STEP;
+        }
+
+        return SURFACE_DEFAULTS.MAX;
+    }
+
+    /**
+     * Updates the slider's min/max attributes.
+     * @param newMax The new maximum value
+     */
+    private _updateSliderRange(newMax: number): void {
+        if (!this._slider) return;
+        this._slider.max = newMax.toString();
     }
 }
