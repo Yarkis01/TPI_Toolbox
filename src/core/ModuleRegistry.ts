@@ -11,6 +11,7 @@ import { ZoneFilterModule } from '../modules/zoneFilters/module';
 import { ModuleManager } from './managers/ModuleManager';
 import { OperatingSystemModule } from '../modules/operatingSystem/module';
 import { ParkWebSiteRedesingModule } from '../modules/parkWebSiteRedesing/module';
+import { CollapsibleZonesModule } from '../modules/collapsibleZones/module';
 
 /**
  * Registers the common functional modules into the module manager.
@@ -31,4 +32,5 @@ export function registerCommonModules(moduleManager: ModuleManager): void {
     moduleManager.register(new AttractionSurfaceFilterModule());
     moduleManager.register(new OperatingSystemModule(moduleManager));
     moduleManager.register(new ParkWebSiteRedesingModule());
+    moduleManager.register(new CollapsibleZonesModule());
 }
