@@ -33,6 +33,6 @@ export const PAGE_CONFIGS = [
         urlFragment: 'spectacles.php',
         selector: 'article.spectacle-card',
         getStatus: (el: HTMLElement) =>
-            el.querySelector('.spectacle-card__status')?.textContent?.toLowerCase() || '',
+            el.querySelector('.spectacle-card__manage-btn')?.getAttribute('data-status')?.toLowerCase() || '',
     },
 ];
