@@ -18,7 +18,7 @@ body {
 }
 
 .tpi-modal-card {
-    width: 500px;
+    width: 750px;
     max-width: 90vw;
     max-height: 85vh;
     background: $bg-card;
@@ -233,5 +233,204 @@ body {
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+// Settings section header
+.tpi-settings-section-header {
+    font-weight: 600;
+    color: $primary;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 1rem 0 0.5rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid $border-color;
+}
+
+// Module row with config support
+.tpi-module-row {
+
+    // Only wrap when expanded (to allow config panel to go below)
+    &--expanded {
+        flex-wrap: wrap;
+        background: rgba(0, 0, 0, 0.2);
+        margin: 0 -1.5rem;
+        padding: 1rem 1.5rem;
+        border-radius: 0;
+    }
+}
+
+// Settings controls container (config button + switch)
+.tpi-setting-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-shrink: 0;
+}
+
+// Config button
+.tpi-config-btn {
+    background: rgba($primary, 0.15);
+    border: 1px solid rgba($primary, 0.3);
+    color: $text-main;
+    width: 32px;
+    height: 32px;
+    border-radius: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    transition: all 0.2s;
+
+    &:hover {
+        background: rgba($primary, 0.3);
+        border-color: $primary;
+    }
+}
+
+// Configuration panel
+.tpi-config-panel {
+    width: 100%;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px dashed rgba($primary, 0.3);
+    animation: tpiSlideIn 0.2s ease-out;
+
+    &__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.75rem;
+        font-size: 0.85rem;
+        color: $primary;
+        font-weight: 600;
+    }
+}
+
+// Config reset button
+.tpi-config-reset-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: $text-muted;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    cursor: pointer;
+    border-radius: 0;
+    transition: all 0.2s;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: $text-main;
+    }
+}
+
+// Config options container
+.tpi-config-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+// Individual config option
+.tpi-config-option {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 0;
+
+    &__label {
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+        flex: 1;
+        padding-right: 1rem;
+    }
+
+    &__name {
+        color: $text-main;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    &__desc {
+        color: $text-muted;
+        font-size: 0.75rem;
+        line-height: 1.3;
+    }
+}
+
+// Config input styles
+.tpi-config-input {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 0;
+    padding: 0.4rem 0.6rem;
+    color: $text-main;
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color 0.2s;
+    min-width: 80px;
+
+    &:focus {
+        border-color: $primary;
+    }
+
+    &[type="number"] {
+        width: 80px;
+        text-align: center;
+    }
+
+    &[type="text"] {
+        min-width: 150px;
+    }
+}
+
+// Config number container
+.tpi-config-number {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+// Config select styles
+.tpi-config-select {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 0;
+    padding: 0.4rem 0.6rem;
+    color: $text-main;
+    font-size: 0.85rem;
+    outline: none;
+    cursor: pointer;
+    min-width: 120px;
+    transition: border-color 0.2s;
+
+    &:focus {
+        border-color: $primary;
+    }
+
+    option {
+        background: $bg-card;
+        color: $text-main;
+    }
+}
+
+// Small switch variant for config panel
+.tpi-switch--small {
+    width: 36px;
+    height: 20px;
+
+    .tpi-slider:before {
+        height: 14px;
+        width: 14px;
+    }
+
+    input:checked+.tpi-slider:before {
+        transform: translateX(16px);
     }
 }

@@ -1,4 +1,5 @@
 import { BaseModule } from '../../core/abstract/BaseModule';
+import { IModuleConfigSchema } from '../../core/interfaces/IModuleConfig';
 import { ModuleManager } from '../../core/managers/ModuleManager';
 import { StorageService } from '../../services/StorageService';
 import { createElement } from '../../utils/DomUtils';
@@ -8,6 +9,12 @@ import { Dock } from './components/Dock';
 import { WindowComponent } from './components/Window';
 import { WindowManager } from './components/WindowManager';
 import { APP_IDS, OS_CONFIG, SavedWindowState, SELECTORS, SessionState, SETTINGS_KEYS } from './constants';
+
+/** Configuration keys for this module */
+const CONFIG_KEYS = {
+    REDUCE_EFFECTS: 'reduceEffects',
+    RESTORE_SESSION: 'restoreSession',
+} as const;
 
 /**
  * Represents the operating system module.
@@ -55,6 +62,42 @@ export class OperatingSystemModule extends BaseModule {
     /**
      * @inheritdoc
      */
+    public override getConfigSchema(): IModuleConfigSchema {
+        return {
+            options: [
+                {
+                    key: CONFIG_KEYS.REDUCE_EFFECTS,
+                    label: 'Réduire les effets visuels',
+                    description: 'Désactive les effets de flou et transparence pour améliorer les performances.',
+                    type: 'boolean',
+                    defaultValue: false,
+                },
+                {
+                    key: CONFIG_KEYS.RESTORE_SESSION,
+                    label: 'Restaurer les fenêtres',
+                    description: 'Sauvegarde et restaure automatiquement les fenêtres ouvertes au rechargement.',
+                    type: 'boolean',
+                    defaultValue: true,
+                },
+            ],
+        };
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected override onConfigChanged(key: string, value: string | number | boolean): void {
+        super.onConfigChanged(key, value);
+
+        // React to configuration changes in real-time
+        if (key === CONFIG_KEYS.REDUCE_EFFECTS && typeof value === 'boolean') {
+            this.applyReducedEffects(value);
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
     protected onEnable(): void {
         const isIframe = window.self !== window.top;
 
@@ -76,7 +119,7 @@ export class OperatingSystemModule extends BaseModule {
         if (gameContainer) (gameContainer as HTMLElement).style.display = 'none';
 
         this.applyDesktopStyles();
-        this.applyReducedEffectsFromStorage();
+        this.applyReducedEffectsFromConfig();
 
         const desktopContainer = createElement('div', {
             id: SELECTORS.DESKTOP_CONTAINER,
@@ -101,14 +144,25 @@ export class OperatingSystemModule extends BaseModule {
     }
 
     /**
-     * Applies reduced visual effects setting from storage.
+     * Applies or removes reduced visual effects.
+     * @param enabled - Whether to enable reduced effects.
      */
-    private applyReducedEffectsFromStorage(): void {
-        const reduceEffects = this.storageService.load<boolean>(SETTINGS_KEYS.REDUCE_EFFECTS, false);
-        if (reduceEffects) {
+    private applyReducedEffects(enabled: boolean): void {
+        if (enabled) {
             document.body.classList.add('os-reduce-effects');
             this._logger.info('Reduced visual effects enabled.');
+        } else {
+            document.body.classList.remove('os-reduce-effects');
+            this._logger.info('Reduced visual effects disabled.');
         }
+    }
+
+    /**
+     * Applies reduced visual effects setting from config.
+     */
+    private applyReducedEffectsFromConfig(): void {
+        const reduceEffects = this.getConfigValue(CONFIG_KEYS.REDUCE_EFFECTS, false);
+        this.applyReducedEffects(reduceEffects);
     }
 
     /**
@@ -265,7 +319,7 @@ export class OperatingSystemModule extends BaseModule {
      * Saves the current session state to storage.
      */
     private saveSession(): void {
-        const restoreEnabled = this.storageService.load<boolean>(SETTINGS_KEYS.RESTORE_SESSION, true);
+        const restoreEnabled = this.getConfigValue(CONFIG_KEYS.RESTORE_SESSION, true);
         if (!restoreEnabled) return;
 
         const windows: SavedWindowState[] = [];
@@ -297,7 +351,7 @@ export class OperatingSystemModule extends BaseModule {
      * Restores the session state from storage.
      */
     private restoreSession(): void {
-        const restoreEnabled = this.storageService.load<boolean>(SETTINGS_KEYS.RESTORE_SESSION, true);
+        const restoreEnabled = this.getConfigValue(CONFIG_KEYS.RESTORE_SESSION, true);
         if (!restoreEnabled) {
             this._logger.info('Session restore is disabled.');
             return;

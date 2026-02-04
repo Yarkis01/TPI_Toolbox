@@ -1,5 +1,10 @@
 import { Logger } from '../../utils/Logger';
 import IModule from '../interfaces/IModule';
+import {
+    IModuleConfigSchema,
+    ModuleConfigValues,
+} from '../interfaces/IModuleConfig';
+import { ModuleConfigManager } from '../managers/ModuleConfigManager';
 
 /**
  * Abstract base class for application modules.
@@ -7,6 +12,7 @@ import IModule from '../interfaces/IModule';
 export abstract class BaseModule implements IModule {
     protected _isActive: boolean;
     protected _logger: Logger;
+    protected _configManager: ModuleConfigManager | null = null;
 
     /**
      * Creates an instance of the BaseModule class.
@@ -36,6 +42,13 @@ export abstract class BaseModule implements IModule {
      */
     init(): void {
         this._logger.info(`Initializing module: ${this.name}`);
+
+        // Initialize config manager if schema is provided
+        const schema = this.getConfigSchema();
+        if (schema && schema.options.length > 0) {
+            this._configManager = new ModuleConfigManager(this.id, schema);
+            this._logger.info(`Configuration loaded with ${schema.options.length} option(s)`);
+        }
     }
 
     /**
@@ -77,6 +90,70 @@ export abstract class BaseModule implements IModule {
      */
     isEnabled(): boolean {
         return this._isActive;
+    }
+
+    /**
+     * @inheritdoc
+     * Override this method to provide a configuration schema.
+     */
+    getConfigSchema(): IModuleConfigSchema | null {
+        return null;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    getConfig(): ModuleConfigValues {
+        return this._configManager?.getAll() ?? {};
+    }
+
+    /**
+     * @inheritdoc
+     */
+    setConfigValue(key: string, value: string | number | boolean): void {
+        if (this._configManager) {
+            this._configManager.set(key, value);
+            this.onConfigChanged(key, value);
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    resetConfig(): void {
+        this._configManager?.reset();
+        this.onConfigReset();
+    }
+
+    /**
+     * Gets a typed configuration value.
+     * @param key - The configuration key.
+     * @param defaultValue - The default value if not found.
+     * @returns The configuration value.
+     */
+    protected getConfigValue<T extends string | number | boolean>(
+        key: string,
+        defaultValue: T,
+    ): T {
+        return this._configManager?.getOrDefault(key, defaultValue) ?? defaultValue;
+    }
+
+    /**
+     * Called when a configuration value changes.
+     * Override to react to configuration changes.
+     * @param key - The changed key.
+     * @param value - The new value.
+     */
+    protected onConfigChanged(key: string, value: string | number | boolean): void {
+        this._logger.info(`Config changed: ${key} = ${value}`);
+    }
+
+    /**
+     * Called when configuration is reset.
+     * Override to react to configuration reset.
+     */
+    protected onConfigReset(): void {
+        this._logger.info('Config reset to defaults');
     }
 
     /**
