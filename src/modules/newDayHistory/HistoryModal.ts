@@ -83,12 +83,6 @@ export class HistoryModal {
                 <button class="tpi-history-modal__close" title="${NEW_DAY_STRINGS.MODAL_CLOSE}">×</button>
             </header>
             <div class="tpi-history-modal__actions">
-                <button class="tpi-history-modal__action-btn" data-action="expand-all">
-                    <span>📂</span> ${NEW_DAY_STRINGS.EXPAND_ALL}
-                </button>
-                <button class="tpi-history-modal__action-btn" data-action="collapse-all">
-                    <span>📁</span> ${NEW_DAY_STRINGS.COLLAPSE_ALL}
-                </button>
                 <button class="tpi-history-modal__action-btn" data-action="export-json">
                     <span>📄</span> ${NEW_DAY_STRINGS.EXPORT_JSON}
                 </button>
@@ -132,12 +126,6 @@ export class HistoryModal {
      */
     private _handleAction(action: string, modal: HTMLElement): void {
         switch (action) {
-            case 'expand-all':
-                this._expandAll(modal);
-                break;
-            case 'collapse-all':
-                this._collapseAll(modal);
-                break;
             case 'export-json':
                 this._exportJson();
                 break;
@@ -148,31 +136,6 @@ export class HistoryModal {
                 this._clearHistory(modal);
                 break;
         }
-    }
-
-    /**
-     * Expands all history items.
-     * @param modal - The modal element.
-     */
-    private _expandAll(modal: HTMLElement): void {
-        modal.querySelectorAll('.tpi-history-item').forEach((item) => {
-            item.classList.add('tpi-history-item--expanded');
-            const id = item.getAttribute('data-id');
-            if (id) {
-                this._expandedItems.add(id);
-            }
-        });
-    }
-
-    /**
-     * Collapses all history items.
-     * @param modal - The modal element.
-     */
-    private _collapseAll(modal: HTMLElement): void {
-        modal.querySelectorAll('.tpi-history-item').forEach((item) => {
-            item.classList.remove('tpi-history-item--expanded');
-        });
-        this._expandedItems.clear();
     }
 
     /**

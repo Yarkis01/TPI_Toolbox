@@ -93,8 +93,6 @@ export const NEW_DAY_STRINGS = {
     TOTAL_RESULT: 'Résultat total',
     DETAILS: 'Détails',
     FULL_DETAIL: 'Voir le détail complet',
-    COLLAPSE_ALL: 'Tout réduire',
-    EXPAND_ALL: 'Tout développer',
 };
 
 /**
