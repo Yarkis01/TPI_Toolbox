@@ -21,8 +21,7 @@ export const PAGE_CONFIGS = [
     {
         urlFragment: 'restaurants.php',
         selector: 'article.owned-restaurant-card',
-        getStatus: (el: HTMLElement) =>
-            el.querySelector('.owned-restaurant-card__status')?.textContent?.toLowerCase() || '',
+        getStatus: (el: HTMLElement) => el.dataset.status?.toLowerCase() || '',
     },
     {
         urlFragment: 'entrance.php',

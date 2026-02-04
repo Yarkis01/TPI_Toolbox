@@ -1,0 +1,89 @@
+/**
+ * Selectors for the operating system module.
+ */
+export const SELECTORS = {
+    LEFT_MENU: '#left-menu',
+    GAME_CONTAINER: 'main.play-main',
+    DESKTOP_CONTAINER: 'os-desktop',
+} as const;
+
+/**
+ * Application IDs for the operating system module.
+ */
+export const APP_IDS = {
+    PROFILE: 'profile',
+    BROWSER: 'web',
+    MAIL: 'mail',
+    INVEST: 'invest',
+    MY_PARK: 'my_park',
+    NEXT_DAY: 'next_day',
+    RANKING: 'ranking',
+    CHAT: 'chat',
+    TOOLS: 'tools',
+} as const;
+
+/**
+ * Configuration for the operating system module.
+ */
+export const OS_CONFIG = {
+    ID: 'operating_system',
+    NAME: "Système d'exploitation",
+    DESCRIPTION: "Transforme l'interface graphique en un système d'exploitation.",
+    URL_CHAT: 'https://www.themeparkindustries.com/tpiv4/game/chat.php',
+    URL_PROFILE: 'https://www.themeparkindustries.com/tpiv4/game/monbureau.php',
+    URL_BROWSER: 'https://www.themeparkindustries.com/tpiv4/game/park/fake/gogole.php',
+    URL_MAIL: 'https://www.themeparkindustries.com/tpiv4/game/mail.php',
+    URL_INVEST: 'https://www.themeparkindustries.com/tpiv4/game/invest.php',
+    URL_MY_PARK: 'https://www.themeparkindustries.com/tpiv4/game/park/overview.php',
+    URL_NEXT_DAY: 'https://www.themeparkindustries.com/tpiv4/game/new_day.php',
+    URL_RANKING: 'https://www.themeparkindustries.com/tpiv4/game/classement.php',
+    STYLES: {
+        DESKTOP_BG: 'linear-gradient(135deg, #050505 0%, #061f10 100%)',
+        DESKTOP_BG_COLOR: '#0f1110',
+        CHAT_BG: '#202020',
+    },
+    DOCK: {
+        LABELS: {
+            PROFILE: 'Bureau',
+            BROWSER: 'Gogole',
+            MAIL: 'Mail',
+            INVEST: 'Investissements',
+            MY_PARK: 'Mes parcs',
+            NEXT_DAY: 'Jour suivant',
+            RANKING: 'Classement',
+            CHAT: 'Chat',
+            TOOLS: 'TPI Toolbox',
+        },
+    },
+} as const;
+
+/**
+ * Settings keys for the operating system module.
+ */
+export const SETTINGS_KEYS = {
+    REDUCE_EFFECTS: 'os_reduce_effects',
+    RESTORE_SESSION: 'os_restore_session',
+    SESSION_STATE: 'os_session_state',
+} as const;
+
+/**
+ * Interface for a saved window state.
+ */
+export interface SavedWindowState {
+    appId: string;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    zIndex: number;
+    isMaximized: boolean;
+}
+
+/**
+ * Interface for the saved session state.
+ */
+export interface SessionState {
+    windows: SavedWindowState[];
+    focusedAppId: string | null;
+}
+

@@ -1,12 +1,6 @@
-import { EntityStatusColorizerModule } from '../modules/EntityStatusColorizer/module';
-import { StaffBuildingColorizerModule } from '../modules/backstage/StaffBuildingColorizer/module';
-import { WarehouseColorizerModule } from '../modules/backstage/warehouseColorizer/module';
-import { HideChatModule } from '../modules/hideChat/module';
-import { HideWarehousemanModule } from '../modules/hideWarehouseman/module';
-import { RideHypeAsTextModule } from '../modules/rideHypeAsText/module';
-import { SelectUntrainedModule } from '../modules/selectUntrained/module';
-import { ZoneFilterModule } from '../modules/zoneFilters/module';
+import { OperatingSystemModule } from '../modules/operatingSystem/module';
 import { Logger } from '../utils/Logger';
+import { registerCommonModules } from './ModuleRegistry';
 import { BaseLayout } from './bootstrap/BaseLayout';
 import { ChatLayout } from './bootstrap/ChatLayout';
 import { HeaderLayout } from './bootstrap/HeaderLayout';
@@ -38,7 +32,11 @@ export class App implements IApp {
         const settingsManager = new SettingsManager();
         const moduleManager = new ModuleManager(settingsManager);
 
-        this._runBootstrapProcesses(moduleManager);
+        if (!settingsManager.getModuleState('operating_system', false)) {
+            this._logger.info('OS is disabled, running bootstrap processes.');
+            this._runBootstrapProcesses(moduleManager);
+        }
+
         this._initializeModules(moduleManager);
 
         this._logger.info('🚀 Toolbox Started.');
@@ -79,14 +77,7 @@ export class App implements IApp {
     private _initializeModules(moduleManager: ModuleManager): void {
         this._logger.info('📦 Initializing modules...');
 
-        moduleManager.register(new StaffBuildingColorizerModule());
-        moduleManager.register(new WarehouseColorizerModule());
-        moduleManager.register(new EntityStatusColorizerModule());
-        moduleManager.register(new HideChatModule());
-        moduleManager.register(new RideHypeAsTextModule());
-        moduleManager.register(new ZoneFilterModule());
-        moduleManager.register(new HideWarehousemanModule());
-        moduleManager.register(new SelectUntrainedModule());
+        registerCommonModules(moduleManager);
 
         this._logger.info('✅ Modules initialized.');
     }
