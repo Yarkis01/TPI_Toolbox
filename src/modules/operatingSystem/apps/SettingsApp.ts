@@ -3,16 +3,13 @@ import { APP_INFORMATIONS } from '../../../core/constants/AppConstants';
 import IModule from '../../../core/interfaces/IModule';
 import { ModuleManager } from '../../../core/managers/ModuleManager';
 import { ModuleConfigRenderer } from '../../../core/utils/ModuleConfigRenderer';
-import { StorageService } from '../../../services/StorageService';
 import { createElement } from '../../../utils/DomUtils';
-import { SETTINGS_KEYS } from '../constants';
 
 /**
  * Class for the settings app.
  */
 export class SettingsApp {
     private moduleManager: ModuleManager;
-    private storageService: StorageService;
     private configRenderer: ModuleConfigRenderer;
 
     /**
@@ -21,7 +18,6 @@ export class SettingsApp {
      */
     public constructor(moduleManager: ModuleManager) {
         this.moduleManager = moduleManager;
-        this.storageService = new StorageService();
         this.configRenderer = new ModuleConfigRenderer();
     }
 
@@ -76,7 +72,6 @@ export class SettingsApp {
             class: 'tpi-modal-card__body',
         });
 
-        list.appendChild(this.createGeneralSettingsSection());
         list.appendChild(
             createElement('div', { class: 'tpi-settings-section-header' }, ['Modules'])
         );
@@ -93,105 +88,6 @@ export class SettingsApp {
         });
 
         return list;
-    }
-
-    /**
-     * Creates the general settings section.
-     * @returns The general settings section.
-     */
-    private createGeneralSettingsSection(): HTMLElement {
-        const section = createElement('div', { class: 'tpi-settings-section' });
-
-        section.appendChild(
-            createElement('div', { class: 'tpi-settings-section-header' }, ['Performances'])
-        );
-
-        // Reduce visual effects toggle
-        const reduceEffectsEnabled = this.storageService.load<boolean>(SETTINGS_KEYS.REDUCE_EFFECTS, false);
-
-        const reduceCheckbox = createElement('input', {
-            type: 'checkbox',
-            onchange: (e: Event) => {
-                const isChecked = (e.target as HTMLInputElement).checked;
-                this.storageService.save(SETTINGS_KEYS.REDUCE_EFFECTS, isChecked);
-                this.applyReducedEffects(isChecked);
-            },
-        }) as HTMLInputElement;
-
-        reduceCheckbox.checked = reduceEffectsEnabled;
-
-        const reduceSwitchLabel = createElement('label', { class: 'tpi-switch' }, [
-            reduceCheckbox,
-            createElement('span', { class: 'tpi-slider' }),
-        ]);
-
-        const reduceTextContainer = createElement('div', { class: 'tpi-setting-info' }, [
-            createElement('div', { class: 'tpi-setting-label' }, ['Réduire les effets visuels']),
-            createElement('div', { class: 'tpi-setting-desc' }, [
-                'Désactive les effets de flou et transparence pour améliorer les performances.',
-            ]),
-        ]);
-
-        const reduceRow = createElement(
-            'div',
-            {
-                class: 'tpi-setting-row',
-                'data-search': 'réduire effets visuels performance flou transparence blur',
-            },
-            [reduceTextContainer, reduceSwitchLabel],
-        );
-
-        section.appendChild(reduceRow);
-
-        // Restore session toggle
-        const restoreSessionEnabled = this.storageService.load<boolean>(SETTINGS_KEYS.RESTORE_SESSION, true);
-
-        const restoreCheckbox = createElement('input', {
-            type: 'checkbox',
-            onchange: (e: Event) => {
-                const isChecked = (e.target as HTMLInputElement).checked;
-                this.storageService.save(SETTINGS_KEYS.RESTORE_SESSION, isChecked);
-            },
-        }) as HTMLInputElement;
-
-        restoreCheckbox.checked = restoreSessionEnabled;
-
-        const restoreSwitchLabel = createElement('label', { class: 'tpi-switch' }, [
-            restoreCheckbox,
-            createElement('span', { class: 'tpi-slider' }),
-        ]);
-
-        const restoreTextContainer = createElement('div', { class: 'tpi-setting-info' }, [
-            createElement('div', { class: 'tpi-setting-label' }, ['Restaurer les fenêtres']),
-            createElement('div', { class: 'tpi-setting-desc' }, [
-                'Sauvegarde et restaure automatiquement les fenêtres ouvertes au rechargement.',
-            ]),
-        ]);
-
-        const restoreRow = createElement(
-            'div',
-            {
-                class: 'tpi-setting-row',
-                'data-search': 'restaurer fenêtres session sauvegarde reload',
-            },
-            [restoreTextContainer, restoreSwitchLabel],
-        );
-
-        section.appendChild(restoreRow);
-
-        return section;
-    }
-
-    /**
-     * Applies or removes reduced visual effects.
-     * @param enabled - Whether to enable reduced effects.
-     */
-    private applyReducedEffects(enabled: boolean): void {
-        if (enabled) {
-            document.body.classList.add('os-reduce-effects');
-        } else {
-            document.body.classList.remove('os-reduce-effects');
-        }
     }
 
     /**
