@@ -1,6 +1,7 @@
 import { DayRecord, ParkDayRecord } from './interfaces';
 import { NEW_DAY_STRINGS, NEW_DAY_SELECTORS } from './constants';
 import { HistoryStorage } from './HistoryStorage';
+import { DetailedView } from './DetailedView';
 
 /**
  * Manages the history modal display and interactions.
@@ -8,7 +9,9 @@ import { HistoryStorage } from './HistoryStorage';
 export class HistoryModal {
     private _storage: HistoryStorage;
     private _overlay: HTMLElement | null = null;
+    private _detailedViewOverlay: HTMLElement | null = null;
     private _expandedItems: Set<string> = new Set();
+    private _detailedView: DetailedView;
 
     /**
      * Creates an instance of HistoryModal.
@@ -16,6 +19,7 @@ export class HistoryModal {
      */
     constructor(storage: HistoryStorage) {
         this._storage = storage;
+        this._detailedView = new DetailedView();
     }
 
     /**
@@ -296,6 +300,9 @@ export class HistoryModal {
             </div>
             <div class="tpi-history-item__details">
                 ${record.parks.map((park) => this._createParkSummary(park)).join('')}
+                <button class="tpi-history-item__full-detail-btn" data-record-id="${record.id}">
+                    📊 ${NEW_DAY_STRINGS.FULL_DETAIL}
+                </button>
             </div>
         `;
 
@@ -310,7 +317,60 @@ export class HistoryModal {
             }
         });
 
+        // Full detail button
+        const fullDetailBtn = item.querySelector('.tpi-history-item__full-detail-btn');
+        fullDetailBtn?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this._openDetailedView(record);
+        });
+
         return item;
+    }
+
+    /**
+     * Opens the detailed view for a record.
+     * @param record - The day record to display.
+     */
+    private _openDetailedView(record: DayRecord): void {
+        // Create overlay for detailed view
+        this._detailedViewOverlay = document.createElement('div');
+        this._detailedViewOverlay.className = 'tpi-detailed-view';
+
+        // Generate content
+        const content = this._detailedView.generateDetailedView(record);
+        this._detailedViewOverlay.innerHTML = content;
+
+        // Add back button
+        const backBtn = document.createElement('button');
+        backBtn.className = 'tpi-detailed-view__back-btn';
+        backBtn.innerHTML = '← Retour à l\'historique';
+        backBtn.addEventListener('click', () => this._closeDetailedView());
+
+        const header = this._detailedViewOverlay.querySelector('.tpi-detailed-view__header');
+        if (header) {
+            header.appendChild(backBtn);
+        }
+
+        document.body.appendChild(this._detailedViewOverlay);
+
+        // Close on escape
+        const handleEscape = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                this._closeDetailedView();
+                document.removeEventListener('keydown', handleEscape);
+            }
+        };
+        document.addEventListener('keydown', handleEscape);
+    }
+
+    /**
+     * Closes the detailed view.
+     */
+    private _closeDetailedView(): void {
+        if (this._detailedViewOverlay) {
+            this._detailedViewOverlay.remove();
+            this._detailedViewOverlay = null;
+        }
     }
 
     /**
