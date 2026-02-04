@@ -35,4 +35,9 @@ export const PAGE_CONFIGS = [
         getStatus: (el: HTMLElement) =>
             el.querySelector('.spectacle-card__manage-btn')?.getAttribute('data-status')?.toLowerCase() || '',
     },
+    {
+        urlFragment: 'boutiques.php',
+        selector: 'article.owned-boutique-card',
+        getStatus: (el: HTMLElement) => el.dataset.status?.toLowerCase() || '',
+    },
 ];
