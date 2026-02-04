@@ -2,6 +2,7 @@ import { DayRecord, ParkDayRecord } from './interfaces';
 import { NEW_DAY_STRINGS, NEW_DAY_SELECTORS } from './constants';
 import { HistoryStorage } from './HistoryStorage';
 import { DetailedView } from './DetailedView';
+import { ExportManager } from './ExportManager';
 
 /**
  * Manages the history modal display and interactions.
@@ -12,6 +13,7 @@ export class HistoryModal {
     private _detailedViewOverlay: HTMLElement | null = null;
     private _expandedItems: Set<string> = new Set();
     private _detailedView: DetailedView;
+    private _exportManager: ExportManager;
 
     /**
      * Creates an instance of HistoryModal.
@@ -20,6 +22,7 @@ export class HistoryModal {
     constructor(storage: HistoryStorage) {
         this._storage = storage;
         this._detailedView = new DetailedView();
+        this._exportManager = new ExportManager();
     }
 
     /**
@@ -139,19 +142,46 @@ export class HistoryModal {
     }
 
     /**
-     * Exports history as JSON.
+     * Exports history as detailed JSON.
      */
     private _exportJson(): void {
-        const json = this._storage.exportAsJson();
-        this._downloadFile('tpi_history.json', json, 'application/json');
+        const records = this._storage.getAll();
+        const json = this._exportManager.exportDetailedJson(records);
+        this._downloadFile(
+            `tpi_history_${this._getDateString()}.json`,
+            json,
+            'application/json',
+        );
     }
 
     /**
-     * Exports history as CSV.
+     * Exports history as CSV ZIP.
      */
-    private _exportCsv(): void {
-        const csv = this._storage.exportDetailedCsv();
-        this._downloadFile('tpi_history.csv', csv, 'text/csv');
+    private async _exportCsv(): Promise<void> {
+        const records = this._storage.getAll();
+        if (records.length === 0) {
+            alert('Aucune donnée à exporter.');
+            return;
+        }
+
+        try {
+            const zipBlob = await this._exportManager.exportCsvZip(records);
+            this._downloadBlob(
+                `tpi_history_${this._getDateString()}.zip`,
+                zipBlob,
+            );
+        } catch (error) {
+            console.error('Export failed:', error);
+            alert('Erreur lors de l\'export.');
+        }
+    }
+
+    /**
+     * Gets a date string for filenames.
+     */
+    private _getDateString(): string {
+        const now = new Date();
+        return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     }
 
     /**
@@ -162,6 +192,15 @@ export class HistoryModal {
      */
     private _downloadFile(filename: string, content: string, mimeType: string): void {
         const blob = new Blob([content], { type: mimeType });
+        this._downloadBlob(filename, blob);
+    }
+
+    /**
+     * Downloads a blob as a file.
+     * @param filename - The file name.
+     * @param blob - The blob to download.
+     */
+    private _downloadBlob(filename: string, blob: Blob): void {
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
