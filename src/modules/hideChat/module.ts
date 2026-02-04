@@ -50,14 +50,14 @@ export class HideChatModule extends BaseModule {
      * @inheritdoc
      */
     public get name(): string {
-        return 'Hide chat';
+        return 'Cacher le chat';
     }
 
     /**
      * @inheritdoc
      */
     public get description(): string {
-        return 'Visually hides the dashboard chat';
+        return 'Visuellement cache le chat';
     }
 
     /**
