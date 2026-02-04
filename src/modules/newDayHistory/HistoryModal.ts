@@ -299,10 +299,7 @@ export class HistoryModal {
                 </button>
             </div>
             <div class="tpi-history-item__details">
-                ${record.parks.map((park) => this._createParkSummary(park)).join('')}
-                <button class="tpi-history-item__full-detail-btn" data-record-id="${record.id}">
-                    📊 ${NEW_DAY_STRINGS.FULL_DETAIL}
-                </button>
+                ${record.parks.map((park, index) => this._createParkSummary(park, index)).join('')}
             </div>
         `;
 
@@ -317,14 +314,60 @@ export class HistoryModal {
             }
         });
 
-        // Full detail button
-        const fullDetailBtn = item.querySelector('.tpi-history-item__full-detail-btn');
-        fullDetailBtn?.addEventListener('click', (e) => {
-            e.stopPropagation();
-            this._openDetailedView(record);
+        // Park detail buttons
+        const parkDetailBtns = item.querySelectorAll('.tpi-history-park__detail-btn');
+        parkDetailBtns.forEach((btn) => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const parkIndex = parseInt((btn as HTMLElement).dataset.parkIndex || '0', 10);
+                const park = record.parks[parkIndex];
+                if (park) {
+                    this._openParkDetailedView(park, record);
+                }
+            });
         });
 
         return item;
+    }
+
+    /**
+     * Opens the detailed view for a single park.
+     * @param park - The park to display.
+     * @param record - The parent record for context.
+     */
+    private _openParkDetailedView(park: ParkDayRecord, record: DayRecord): void {
+        // Create overlay for detailed view
+        this._detailedViewOverlay = document.createElement('div');
+        this._detailedViewOverlay.className = 'tpi-detailed-view';
+
+        // Generate content for single park
+        const content = this._detailedView.generateParkDetailedView(park, {
+            timestamp: record.timestamp,
+            daysRemaining: record.daysRemaining,
+        });
+        this._detailedViewOverlay.innerHTML = content;
+
+        // Add back button
+        const backBtn = document.createElement('button');
+        backBtn.className = 'tpi-detailed-view__back-btn';
+        backBtn.innerHTML = '← Retour à l\'historique';
+        backBtn.addEventListener('click', () => this._closeDetailedView());
+
+        const header = this._detailedViewOverlay.querySelector('.tpi-detailed-view__header');
+        if (header) {
+            header.appendChild(backBtn);
+        }
+
+        document.body.appendChild(this._detailedViewOverlay);
+
+        // Close on escape
+        const handleEscape = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                this._closeDetailedView();
+                document.removeEventListener('keydown', handleEscape);
+            }
+        };
+        document.addEventListener('keydown', handleEscape);
     }
 
     /**
@@ -376,9 +419,10 @@ export class HistoryModal {
     /**
      * Creates a park summary element.
      * @param park - The park day record.
+     * @param parkIndex - The index of the park in the record.
      * @returns The HTML string for the park summary.
      */
-    private _createParkSummary(park: ParkDayRecord): string {
+    private _createParkSummary(park: ParkDayRecord, parkIndex: number): string {
         const statusClass = park.status === 'open' ? 'open' : 'closed';
         const statusText = park.status === 'open' ? 'Ouvert' : 'Fermé';
         const resultClass = park.finalResult >= 0 ? 'positive' : 'negative';
@@ -450,6 +494,9 @@ export class HistoryModal {
                         <div class="tpi-history-park__stat-value">${park.visitors.cleanliness}%</div>
                     </div>
                 </div>
+                <button class="tpi-history-park__detail-btn" data-park-index="${parkIndex}">
+                    📊 ${NEW_DAY_STRINGS.FULL_DETAIL}
+                </button>
             </div>
         `;
     }

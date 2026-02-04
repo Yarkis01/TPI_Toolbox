@@ -50,6 +50,31 @@ export class DetailedView {
     }
 
     /**
+     * Generates detailed view for a single park.
+     * @param park - The park record to display.
+     * @param recordInfo - Optional record info (timestamp, daysRemaining).
+     */
+    public generateParkDetailedView(
+        park: ParkDayRecord,
+        recordInfo?: { timestamp: number; daysRemaining: number },
+    ): string {
+        const headerInfo = recordInfo
+            ? `<h3>📅 ${new Date(recordInfo.timestamp).toLocaleString('fr-FR')}</h3>
+               <p>${recordInfo.daysRemaining} jour(s) restant(s)</p>`
+            : '';
+
+        return `
+            <div class="tpi-detailed-view">
+                <div class="tpi-detailed-view__header">
+                    ${headerInfo}
+                    <h2 style="margin: 0.5rem 0 0 0; color: #fff;">${park.name}</h2>
+                </div>
+                ${this._generateParkView(park)}
+            </div>
+        `;
+    }
+
+    /**
      * Generates the view for a single park.
      */
     private _generateParkView(park: ParkDayRecord): string {
