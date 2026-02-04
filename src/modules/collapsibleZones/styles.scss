@@ -1,0 +1,31 @@
+.owned-attractions__zone-header {
+    cursor: pointer;
+    position: relative;
+    user-select: none;
+    transition: filter 0.2s;
+
+    &:hover {
+        filter: brightness(1.1);
+    }
+
+    &::after {
+        content: '▼';
+        position: absolute;
+        right: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 1.2rem;
+        color: white;
+        transition: transform 0.3s ease;
+    }
+}
+
+.tpi-zone-collapsed {
+    .owned-attractions__zone-header::after {
+        transform: translateY(-50%) rotate(-90deg);
+    }
+
+    .owned-attractions__zone-attractions {
+        display: none !important;
+    }
+}
