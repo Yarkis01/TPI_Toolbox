@@ -107,10 +107,6 @@ export class CollapsibleZonesModule extends BaseModule {
                 group.classList.add(COLLAPSE_SELECTORS.COLLAPSED_CLASS);
             }
 
-            // check if listener already exists to avoid duplicates if re-enabled? 
-            // BaseModule usually handles this but good to be safe.
-            // Here we just add a new one as onDisable cleans up.
-
             const listener = () => {
                 const isCollapsed = group.classList.toggle(COLLAPSE_SELECTORS.COLLAPSED_CLASS);
                 if (isCollapsed) {
