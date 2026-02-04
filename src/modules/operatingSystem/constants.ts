@@ -20,6 +20,7 @@ export const APP_IDS = {
     RANKING: 'ranking',
     CHAT: 'chat',
     TOOLS: 'tools',
+    SHOP: 'shop',
 } as const;
 
 /**
@@ -34,6 +35,7 @@ export const OS_CONFIG = {
     URL_BROWSER: 'https://www.themeparkindustries.com/tpiv4/game/park/fake/gogole.php',
     URL_MAIL: 'https://www.themeparkindustries.com/tpiv4/game/mail.php',
     URL_INVEST: 'https://www.themeparkindustries.com/tpiv4/game/invest.php',
+    URL_SHOP: 'https://www.themeparkindustries.com/tpiv4/game/boutique.php',
     URL_MY_PARK: 'https://www.themeparkindustries.com/tpiv4/game/park/overview.php',
     URL_NEXT_DAY: 'https://www.themeparkindustries.com/tpiv4/game/new_day.php',
     URL_RANKING: 'https://www.themeparkindustries.com/tpiv4/game/classement.php',
@@ -48,6 +50,7 @@ export const OS_CONFIG = {
             BROWSER: 'Gogole',
             MAIL: 'Mail',
             INVEST: 'Investissements',
+            SHOP: 'Boutique',
             MY_PARK: 'Mes parcs',
             NEXT_DAY: 'Jour suivant',
             RANKING: 'Classement',
