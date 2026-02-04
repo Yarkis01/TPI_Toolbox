@@ -1,3 +1,4 @@
+import { AttractionSurfaceFilterModule } from '../modules/attractionSurfaceFilter/module';
 import { EntityStatusColorizerModule } from '../modules/entityStatusColorizer/module';
 import { StaffBuildingColorizerModule } from '../modules/backstage/StaffBuildingColorizer/module';
 import { WarehouseColorizerModule } from '../modules/backstage/warehouseColorizer/module';
@@ -25,6 +26,7 @@ export function registerCommonModules(moduleManager: ModuleManager): void {
     moduleManager.register(new ZoneFilterModule());
     moduleManager.register(new HideWarehousemanModule());
     moduleManager.register(new SelectUntrainedModule());
+    moduleManager.register(new AttractionSurfaceFilterModule());
     moduleManager.register(new OperatingSystemModule(moduleManager));
     moduleManager.register(new ParkWebSiteRedesingModule());
 }
