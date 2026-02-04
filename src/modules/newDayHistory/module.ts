@@ -1,19 +1,25 @@
 import { BaseModule } from '../../core/abstract/BaseModule';
+import { IModuleConfigSchema } from '../../core/interfaces/IModuleConfig';
 import { createElement } from '../../utils/DomUtils';
-import { NEW_DAY_SELECTORS, NEW_DAY_STRINGS } from './constants';
+import { NEW_DAY_SELECTORS, NEW_DAY_STRINGS, STORAGE_CONFIG } from './constants';
 import { DataExtractor } from './DataExtractor';
 import { HistoryStorage } from './HistoryStorage';
 import { HistoryModal } from './HistoryModal';
 import './styles.scss';
+
+/** Configuration keys for this module */
+const CONFIG_KEYS = {
+    MAX_RECORDS: 'maxRecords',
+} as const;
 
 /**
  * Module for tracking and displaying new day history.
  */
 export class NewDayHistoryModule extends BaseModule {
     private _historyBtn: HTMLButtonElement | null = null;
-    private _storage: HistoryStorage;
+    private _storage: HistoryStorage | null = null;
     private _extractor: DataExtractor;
-    private _modal: HistoryModal;
+    private _modal: HistoryModal | null = null;
     private _observer: MutationObserver | null = null;
     private _advanceBtn: HTMLElement | null = null;
     private _boundHandleAdvance: () => void;
@@ -23,9 +29,7 @@ export class NewDayHistoryModule extends BaseModule {
      */
     constructor() {
         super();
-        this._storage = new HistoryStorage();
         this._extractor = new DataExtractor();
-        this._modal = new HistoryModal(this._storage);
         this._boundHandleAdvance = this._handleAdvanceClick.bind(this);
     }
 
@@ -53,9 +57,65 @@ export class NewDayHistoryModule extends BaseModule {
     /**
      * @inheritdoc
      */
+    public override getConfigSchema(): IModuleConfigSchema {
+        return {
+            options: [
+                {
+                    key: CONFIG_KEYS.MAX_RECORDS,
+                    label: 'Nombre maximum d\'entrées',
+                    description: 'Nombre maximum de journées à conserver dans l\'historique.',
+                    type: 'number',
+                    defaultValue: STORAGE_CONFIG.MAX_RECORDS,
+                    min: 1,
+                    max: 365,
+                    step: 1,
+                }
+            ],
+        };
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public override init(): void {
+        super.init();
+
+        // Initialize storage with configured max records
+        const maxRecords = this.getConfigValue(CONFIG_KEYS.MAX_RECORDS, STORAGE_CONFIG.MAX_RECORDS);
+        this._storage = new HistoryStorage(STORAGE_CONFIG.STORAGE_KEY, maxRecords);
+        this._modal = new HistoryModal(this._storage);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected override onConfigChanged(key: string, value: string | number | boolean): void {
+        super.onConfigChanged(key, value);
+
+        // React to configuration changes
+        if (key === CONFIG_KEYS.MAX_RECORDS && typeof value === 'number') {
+            // Recreate storage with new max records
+            this._storage = new HistoryStorage(STORAGE_CONFIG.STORAGE_KEY, value);
+            if (this._modal) {
+                this._modal = new HistoryModal(this._storage);
+            }
+            this._logger.info(`Max records updated to ${value}`);
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
     protected onEnable(): void {
         if (!window.location.href.includes(NEW_DAY_SELECTORS.PAGE_MATCH)) {
             return;
+        }
+
+        // Ensure storage is initialized
+        if (!this._storage) {
+            const maxRecords = this.getConfigValue(CONFIG_KEYS.MAX_RECORDS, STORAGE_CONFIG.MAX_RECORDS);
+            this._storage = new HistoryStorage(STORAGE_CONFIG.STORAGE_KEY, maxRecords);
+            this._modal = new HistoryModal(this._storage);
         }
 
         // Inject history button
@@ -85,7 +145,7 @@ export class NewDayHistoryModule extends BaseModule {
             this._observer = null;
         }
 
-        this._modal.close();
+        this._modal?.close();
     }
 
     /**
@@ -129,7 +189,7 @@ export class NewDayHistoryModule extends BaseModule {
      * Opens the history modal.
      */
     private _openHistoryModal(): void {
-        this._modal.open();
+        this._modal?.open();
     }
 
     /**
@@ -202,6 +262,11 @@ export class NewDayHistoryModule extends BaseModule {
      * Extracts data from the recap and saves it to storage.
      */
     private _extractAndSaveData(): void {
+        if (!this._storage) {
+            this._logger.error('Storage not initialized');
+            return;
+        }
+
         try {
             const data = this._extractor.extract();
 
