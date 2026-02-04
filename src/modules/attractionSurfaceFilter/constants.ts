@@ -1,3 +1,6 @@
+/**
+ * Selectors and IDs for the attraction surface filter module.
+ */
 export const SURFACE_SELECTORS = {
     MODAL: '#attraction-store-modal',
     FILTER_CONTAINER: '.attraction-store-modal__filters',
@@ -11,12 +14,18 @@ export const SURFACE_SELECTORS = {
     HIDDEN_CLASS: 'attraction-card--hidden-by-surface',
 };
 
+/**
+ * Strings used in the attraction surface filter module.
+ */
 export const SURFACE_STRINGS = {
     LABEL: 'Superficie Max (m²)',
     UNIT: 'm²',
     ALL: 'Tous',
 };
 
+/**
+ * Default configuration values for the surface filter slider.
+ */
 export const SURFACE_DEFAULTS = {
     MIN: 0,
     MAX: 5000,

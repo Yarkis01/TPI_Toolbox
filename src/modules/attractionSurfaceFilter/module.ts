@@ -2,28 +2,46 @@ import { BaseModule } from '../../core/abstract/BaseModule';
 import { createElement } from '../../utils/DomUtils';
 import { SURFACE_DEFAULTS, SURFACE_SELECTORS, SURFACE_STRINGS } from './constants';
 
+/**
+ * Module to filter attractions by surface area in the marketplace.
+ */
 export class AttractionSurfaceFilterModule extends BaseModule {
     private _sliderGroup: HTMLElement | null = null;
     private _slider: HTMLInputElement | null = null;
     private _valueDisplay: HTMLElement | null = null;
     private _styleElement: HTMLStyleElement | null = null;
 
+    /**
+     * @inheritdoc
+     */
     public get id(): string {
         return 'attraction_surface_filter';
     }
 
+    /**
+     * @inheritdoc
+     */
     public get name(): string {
         return 'Filtre de Surface';
     }
 
+    /**
+     * @inheritdoc
+     */
     public get description(): string {
         return 'Ajoute un slider pour filtrer les attractions par superficie maximum.';
     }
 
+    /**
+     * @inheritdoc
+     */
     protected onEnable(): void {
         this._waitForModal();
     }
 
+    /**
+     * @inheritdoc
+     */
     protected onDisable(): void {
         this._sliderGroup?.remove();
         this._styleElement?.remove();
@@ -34,6 +52,9 @@ export class AttractionSurfaceFilterModule extends BaseModule {
         this._removeFilters();
     }
 
+    /**
+     * Waits for the attraction store modal to appear.
+     */
     private _waitForModal(): void {
         const observer = new MutationObserver((mutations, obs) => {
             const modal = document.querySelector(SURFACE_SELECTORS.MODAL);
@@ -59,6 +80,10 @@ export class AttractionSurfaceFilterModule extends BaseModule {
         }
     }
 
+    /**
+     * Injects the slider UI into the filter container.
+     * @param container The container element.
+     */
     private _injectUI(container: HTMLElement): void {
         const label = createElement('label', {
             class: 'attraction-store-modal__filter-label',
@@ -99,6 +124,9 @@ export class AttractionSurfaceFilterModule extends BaseModule {
         this._setupInteractions();
     }
 
+    /**
+     * Injects custom styles for the slider.
+     */
     private _injectStyles(): void {
         this._styleElement = document.createElement('style');
         this._styleElement.innerHTML = `
@@ -137,6 +165,9 @@ export class AttractionSurfaceFilterModule extends BaseModule {
         document.head.appendChild(this._styleElement);
     }
 
+    /**
+     * Sets up event listeners for the slider and other elements.
+     */
     private _setupInteractions(): void {
         if (!this._slider) return;
 
@@ -169,6 +200,9 @@ export class AttractionSurfaceFilterModule extends BaseModule {
         }
     }
 
+    /**
+     * Updates the text display of the current slider value.
+     */
     private _updateValueDisplay(): void {
         if (!this._slider || !this._valueDisplay) return;
 
@@ -180,6 +214,9 @@ export class AttractionSurfaceFilterModule extends BaseModule {
         }
     }
 
+    /**
+     * Applies the filter based on the slider value.
+     */
     private _applyFilter(): void {
         if (!this._slider) return;
 
@@ -198,6 +235,11 @@ export class AttractionSurfaceFilterModule extends BaseModule {
         this._updateCounter();
     }
 
+    /**
+     * Extracts the surface area from an attraction card.
+     * @param card The attraction card element.
+     * @returns The surface area in m².
+     */
     private _extractSurface(card: HTMLElement): number {
         const desc = card.querySelector(SURFACE_SELECTORS.CARD_DESCRIPTION);
         if (!desc) return 0;
@@ -211,6 +253,9 @@ export class AttractionSurfaceFilterModule extends BaseModule {
         return 0;
     }
 
+    /**
+     * Updates the background fill of the slider to match the value.
+     */
     private _updateSliderFill(): void {
         if (!this._slider) return;
 
@@ -223,12 +268,18 @@ export class AttractionSurfaceFilterModule extends BaseModule {
         this._slider.style.background = `linear-gradient(to right, #35b3af 0%, #35b3af ${percentage}%, #2a2a2a ${percentage}%, #2a2a2a 100%)`;
     }
 
+    /**
+     * Removes all filters applied by this module.
+     */
     private _removeFilters(): void {
         document.querySelectorAll(`.${SURFACE_SELECTORS.HIDDEN_CLASS}`).forEach(el => {
             el.classList.remove(SURFACE_SELECTORS.HIDDEN_CLASS);
         });
     }
 
+    /**
+     * Updates the counter of visible attractions.
+     */
     private _updateCounter(): void {
         const counterEl = document.querySelector(SURFACE_SELECTORS.COUNTER);
         if (!counterEl) return;
