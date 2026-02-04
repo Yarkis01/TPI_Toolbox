@@ -1,16 +1,19 @@
 import { DayRecord } from './interfaces';
 import { STORAGE_CONFIG } from './constants';
+import { StorageService } from '../../services/StorageService';
 
 /**
  * Service for storing and retrieving day history records.
+ * Uses the centralized StorageService for persistence.
  */
 export class HistoryStorage {
     private _storageKey: string;
     private _maxRecords: number;
+    private _storage: StorageService;
 
     /**
      * Creates an instance of HistoryStorage.
-     * @param storageKey - The localStorage key to use.
+     * @param storageKey - The storage key to use.
      * @param maxRecords - Maximum number of records to keep.
      */
     constructor(
@@ -19,6 +22,7 @@ export class HistoryStorage {
     ) {
         this._storageKey = storageKey;
         this._maxRecords = maxRecords;
+        this._storage = new StorageService();
     }
 
     /**
@@ -26,17 +30,8 @@ export class HistoryStorage {
      * @returns Array of day records, sorted by timestamp (newest first).
      */
     public getAll(): DayRecord[] {
-        try {
-            const data = localStorage.getItem(this._storageKey);
-            if (!data) {
-                return [];
-            }
-            const records: DayRecord[] = JSON.parse(data);
-            return records.sort((a, b) => b.timestamp - a.timestamp);
-        } catch (error) {
-            console.error('Failed to retrieve history:', error);
-            return [];
-        }
+        const records = this._storage.load<DayRecord[]>(this._storageKey, []);
+        return records.sort((a, b) => b.timestamp - a.timestamp);
     }
 
     /**
@@ -54,24 +49,20 @@ export class HistoryStorage {
      * @param record - The day record to save.
      */
     public save(record: DayRecord): void {
-        try {
-            const records = this.getAll();
+        const records = this.getAll();
 
-            // Check if record with same ID already exists
-            const existingIndex = records.findIndex((r) => r.id === record.id);
-            if (existingIndex !== -1) {
-                records[existingIndex] = record;
-            } else {
-                records.unshift(record);
-            }
-
-            // Trim to max records
-            const trimmedRecords = records.slice(0, this._maxRecords);
-
-            localStorage.setItem(this._storageKey, JSON.stringify(trimmedRecords));
-        } catch (error) {
-            console.error('Failed to save history record:', error);
+        // Check if record with same ID already exists
+        const existingIndex = records.findIndex((r) => r.id === record.id);
+        if (existingIndex !== -1) {
+            records[existingIndex] = record;
+        } else {
+            records.unshift(record);
         }
+
+        // Trim to max records
+        const trimmedRecords = records.slice(0, this._maxRecords);
+
+        this._storage.save(this._storageKey, trimmedRecords);
     }
 
     /**
@@ -80,31 +71,22 @@ export class HistoryStorage {
      * @returns True if deleted, false if not found.
      */
     public delete(id: string): boolean {
-        try {
-            const records = this.getAll();
-            const filteredRecords = records.filter((r) => r.id !== id);
+        const records = this.getAll();
+        const filteredRecords = records.filter((r) => r.id !== id);
 
-            if (filteredRecords.length === records.length) {
-                return false;
-            }
-
-            localStorage.setItem(this._storageKey, JSON.stringify(filteredRecords));
-            return true;
-        } catch (error) {
-            console.error('Failed to delete history record:', error);
+        if (filteredRecords.length === records.length) {
             return false;
         }
+
+        this._storage.save(this._storageKey, filteredRecords);
+        return true;
     }
 
     /**
      * Clears all stored records.
      */
     public clear(): void {
-        try {
-            localStorage.removeItem(this._storageKey);
-        } catch (error) {
-            console.error('Failed to clear history:', error);
-        }
+        this._storage.remove(this._storageKey);
     }
 
     /**
