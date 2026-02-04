@@ -425,6 +425,14 @@ export class OperatingSystemModule extends BaseModule {
                         forceFullWidth: true,
                     }).render(),
                 };
+            case APP_IDS.SHOP:
+                return {
+                    title: OS_CONFIG.DOCK.LABELS.SHOP,
+                    content: new IFrameApp(OS_CONFIG.URL_SHOP, {
+                        removeSelectors: ['#left-menu', 'div.dashboard-welcome'],
+                        forceFullWidth: true,
+                    }).render(),
+                };
             case APP_IDS.MY_PARK:
                 return {
                     title: OS_CONFIG.DOCK.LABELS.MY_PARK,
