@@ -232,10 +232,12 @@ export class HistoryModal {
         if (!content) return;
 
         const records = this._storage.getAll();
+        const maxRecords = this._storage.getMaxRecords();
 
         // Update stats
         if (stats) {
-            stats.textContent = `${records.length} entrée(s) enregistrée(s)`;
+            const plural = records.length > 1 ? 's' : '';
+            stats.textContent = `${records.length} entrée${plural} enregistrée${plural} sur ${maxRecords} emplacement${maxRecords > 1 ? 's' : ''}`;
         }
 
         if (records.length === 0) {

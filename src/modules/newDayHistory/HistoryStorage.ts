@@ -98,6 +98,14 @@ export class HistoryStorage {
     }
 
     /**
+     * Gets the maximum number of records that can be stored.
+     * @returns The maximum number of records.
+     */
+    public getMaxRecords(): number {
+        return this._maxRecords;
+    }
+
+    /**
      * Exports all records as JSON string.
      * @returns JSON string of all records.
      */
