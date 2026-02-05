@@ -2,8 +2,11 @@
  * Constants for the Chat module.
  */
 export const CHAT_SELECTORS = {
-    PAGE_MATCH: 'dashboard.php',
+    DASHBOARD_PAGE: 'dashboard.php',
+    POLITIQUE_PAGE: 'politique.php',
     CHAT_DIV: '.dashboard-chatbox',
+    POLITIQUE_CHAT: '.politique-chat-wrap',
+    CHAT_BADGE: '.left-menu__badge--chat',
 };
 
 /**
