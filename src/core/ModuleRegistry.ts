@@ -4,6 +4,7 @@ import { StaffBuildingColorizerModule } from '../modules/backstage/StaffBuilding
 import { WarehouseColorizerModule } from '../modules/backstage/warehouseColorizer/module';
 import { HideChatModule } from '../modules/hideChat/module';
 import { HideWarehousemanModule } from '../modules/hideWarehouseman/module';
+import { InvestSharesFilterModule } from '../modules/investSharesFilter/module';
 import { NewDayHistoryModule } from '../modules/newDayHistory/module';
 import { RideHypeAsTextModule } from '../modules/rideHypeAsText/module';
 import { SelectUntrainedModule } from '../modules/selectUntrained/module';
@@ -24,6 +25,7 @@ export function registerCommonModules(moduleManager: ModuleManager): void {
     moduleManager.register(new WarehouseColorizerModule());
     moduleManager.register(new EntityStatusColorizerModule());
     moduleManager.register(new HideChatModule());
+    moduleManager.register(new InvestSharesFilterModule());
     moduleManager.register(new NewDayHistoryModule());
     moduleManager.register(new RideHypeAsTextModule());
     moduleManager.register(new ZoneFilterModule());
