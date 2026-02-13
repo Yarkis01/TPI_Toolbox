@@ -13,6 +13,7 @@ import { ModuleManager } from './managers/ModuleManager';
 import { OperatingSystemModule } from '../modules/operatingSystem/module';
 import { ParkWebSiteRedesingModule } from '../modules/parkWebSiteRedesing/module';
 import { CollapsibleZonesModule } from '../modules/collapsibleZones/module';
+import { UpdateNotificationModule } from '../modules/updateNotification/module';
 
 /**
  * Registers the common functional modules into the module manager.
@@ -35,4 +36,5 @@ export function registerCommonModules(moduleManager: ModuleManager): void {
     moduleManager.register(new OperatingSystemModule(moduleManager));
     moduleManager.register(new ParkWebSiteRedesingModule());
     moduleManager.register(new CollapsibleZonesModule());
+    moduleManager.register(new UpdateNotificationModule());
 }
