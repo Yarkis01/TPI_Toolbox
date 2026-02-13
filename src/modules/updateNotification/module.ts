@@ -2,19 +2,11 @@ import { BaseModule } from '../../core/abstract/BaseModule';
 import { IModuleConfigSchema } from '../../core/interfaces/IModuleConfig';
 import { injectStyle } from '../../utils/DomUtils';
 import { version as localVersion } from '../../../package.json';
-
-// Declare GM globals
-
-/**
- * URL to check for the latest version.
- */
-const UPDATE_CHECK_URL = 'https://tpitoolbox.yarkis.top/api/version';
+import { FORCE_DISPLAY_POPUP, UPDATE_CHECK_URL } from './constants';
 
 /**
- * Constant to force display the popup for testing purposes.
- * Set to true to always show the popup.
+ * Interface for the API response
  */
-const FORCE_DISPLAY_POPUP = false;
 
 // Import styles
 // @ts-ignore
@@ -47,17 +39,14 @@ export class UpdateNotificationModule extends BaseModule {
 
     public getConfigSchema(): IModuleConfigSchema {
         return {
-            options: [
-                {
-                    key: 'force_check_display',
-                    label: 'Forcer l\'affichage du popup (Test)',
-                    description: 'Affiche le popup même si la version est à jour (pour le débogage).',
-                    type: 'boolean',
-                    defaultValue: false,
-                },
-            ],
+            options: [],
         };
     }
+
+    /**
+     * Key for storing the ignored version in local storage.
+     */
+    private readonly IGNORED_VERSION_KEY = 'tpi_toolbox_ignored_version';
 
     protected onEnable(): void {
         injectStyle(styles);
@@ -86,11 +75,13 @@ export class UpdateNotificationModule extends BaseModule {
             const remoteVersion = data.version;
             // const localVersion matches the imported name
 
-            const forceDisplayConfig = this.getConfigValue('force_check_display', false);
+            const ignoredVersion = localStorage.getItem(this.IGNORED_VERSION_KEY);
+
+            const isNewer = this.compareVersions(remoteVersion, localVersion) > 0;
+            const isIgnored = ignoredVersion === remoteVersion;
+
             const shouldDisplay =
-                FORCE_DISPLAY_POPUP ||
-                forceDisplayConfig ||
-                this.compareVersions(remoteVersion, localVersion) > 0;
+                FORCE_DISPLAY_POPUP || (isNewer && !isIgnored);
 
             if (shouldDisplay) {
                 this.showNotification(localVersion, remoteVersion, data.Description);
@@ -153,6 +144,9 @@ export class UpdateNotificationModule extends BaseModule {
         const closeBtn = popup.querySelector('.tpi-update-notif__close');
         if (closeBtn) {
             closeBtn.addEventListener('click', () => {
+                // Save ignored version to local storage
+                localStorage.setItem(this.IGNORED_VERSION_KEY, remoteVersion);
+
                 popup.style.opacity = '0';
                 popup.style.transform = 'translateY(6px)';
                 setTimeout(() => popup.remove(), 200); // Wait for animation
