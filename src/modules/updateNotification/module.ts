@@ -1,13 +1,9 @@
 import { BaseModule } from '../../core/abstract/BaseModule';
 import { IModuleConfigSchema } from '../../core/interfaces/IModuleConfig';
+import { injectStyle } from '../../utils/DomUtils';
+import { version as localVersion } from '../../../package.json';
 
 // Declare GM globals
-declare const GM_info: {
-    script: {
-        version: string;
-    };
-};
-declare function GM_addStyle(css: string): void;
 
 /**
  * URL to check for the latest version.
@@ -64,7 +60,7 @@ export class UpdateNotificationModule extends BaseModule {
     }
 
     protected onEnable(): void {
-        GM_addStyle(styles);
+        injectStyle(styles);
         this.checkForUpdate();
     }
 
@@ -88,7 +84,7 @@ export class UpdateNotificationModule extends BaseModule {
 
             const data: IUpdateResponse = await response.json();
             const remoteVersion = data.version;
-            const localVersion = GM_info.script.version; // Use GM_info for the script version
+            // const localVersion matches the imported name
 
             const forceDisplayConfig = this.getConfigValue('force_check_display', false);
             const shouldDisplay =
