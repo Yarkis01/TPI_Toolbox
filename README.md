@@ -44,7 +44,7 @@ Pour cela veuillez suivre les étapes suivantes :
 
 ### 🐵 TamperMonkey :
 
-Rendez-vous sur la page de configuration de **[Tampermonkey](chrome://extensions/?id=dhdgffkkebhmkfjojejmpbldmpobfkfo)** une fois ici veillé à retrouver les options suivantes et utilisez les mêmes valeurs :
+Rendez-vous sur la page de configuration de Tampermonkey une fois ici veillé à retrouver les options suivantes et utilisez les mêmes valeurs :
 
 <img width="717" height="198" alt="image" src="https://github.com/user-attachments/assets/10b58392-a4dd-4ee3-b3da-e21ed87b8920" />
 
