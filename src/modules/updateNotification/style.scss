@@ -1,0 +1,88 @@
+@use '../../core/bootstrap/styles/variables' as *;
+
+@keyframes tpiUpdateNotifIn {
+  from {
+    transform: translateY(6px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.tpi-update-notif {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 10001;
+  width: 360px;
+  max-width: calc(100vw - 36px);
+  background: $bg-card;
+  border: 1px solid $border-color;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  border-radius: 0;
+  padding: 14px 14px 12px 14px;
+  color: $text-main;
+  font-family: inherit;
+  animation: tpiUpdateNotifIn 0.2s ease-out;
+
+  &__close {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    background: none;
+    border: none;
+    color: $text-muted;
+    font-size: 1.4rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+    transition: color 0.2s;
+
+    &:hover {
+      color: $text-main;
+    }
+  }
+
+  &__title {
+    font-weight: 700;
+    color: $primary;
+    margin: 0 1.3rem 0.35rem 0;
+    font-size: 0.95rem;
+  }
+
+  &__versions {
+    color: $text-muted;
+    font-size: 0.82rem;
+    margin-bottom: 0.55rem;
+  }
+
+  &__content {
+    color: $text-main;
+    font-size: 0.9rem;
+    line-height: 1.35;
+  }
+
+  &__link {
+    display: inline-block;
+    margin-left: 0.25rem;
+    color: $primary;
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(168, 85, 247, 0.35);
+    padding-bottom: 1px;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+
+    &:hover {
+      color: $text-main;
+      background: rgba(168, 85, 247, 0.18);
+      border-color: rgba(168, 85, 247, 0.6);
+    }
+
+    &:focus {
+      outline: 2px solid $primary-hover;
+      outline-offset: 2px;
+    }
+  }
+}
