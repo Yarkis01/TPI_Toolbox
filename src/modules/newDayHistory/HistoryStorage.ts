@@ -1,6 +1,6 @@
-import { DayRecord } from './interfaces';
-import { STORAGE_CONFIG } from './constants';
 import { StorageService } from '../../services/StorageService';
+import { STORAGE_CONFIG } from './constants';
+import { DayRecord } from './interfaces';
 
 /**
  * Service for storing and retrieving day history records.
@@ -121,22 +121,14 @@ export class HistoryStorage {
     public exportAsCsv(): string {
         const records = this.getAll();
 
-        const headers = [
-            'Date',
-            'Jours restants',
-            'Résultat total',
-            'Parcs',
-        ];
+        const headers = ['Date', 'Jours restants', 'Résultat total', 'Parcs'];
 
         const rows = records.map((record) => {
             const date = new Date(record.timestamp).toLocaleString('fr-FR');
             const parkNames = record.parks.map((p) => p.name).join(' | ');
-            return [
-                `"${date}"`,
-                record.daysRemaining,
-                record.totalResult,
-                `"${parkNames}"`,
-            ].join(',');
+            return [`"${date}"`, record.daysRemaining, record.totalResult, `"${parkNames}"`].join(
+                ',',
+            );
         });
 
         return [headers.join(','), ...rows].join('\n');

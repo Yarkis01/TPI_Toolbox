@@ -36,9 +36,7 @@ export class ExportManager {
     /**
      * Generates all CSV files for the export.
      */
-    private _generateAllCsvFiles(
-        records: DayRecord[],
-    ): Map<string, string> {
+    private _generateAllCsvFiles(records: DayRecord[]): Map<string, string> {
         const files = new Map<string, string>();
 
         // 1. Summary CSV - Overview of each day
@@ -78,9 +76,7 @@ export class ExportManager {
      * Creates a ZIP blob from multiple files.
      * Uses a simple ZIP implementation without external dependencies.
      */
-    private async _createZipBlob(
-        files: Map<string, string>,
-    ): Promise<Blob> {
+    private async _createZipBlob(files: Map<string, string>): Promise<Blob> {
         // Simple ZIP file structure
         const encoder = new TextEncoder();
         const zipParts: Uint8Array[] = [];
@@ -94,10 +90,7 @@ export class ExportManager {
             const contentBytes = encoder.encode(content);
 
             // Local file header
-            const localHeader = this._createLocalFileHeader(
-                filenameBytes,
-                contentBytes,
-            );
+            const localHeader = this._createLocalFileHeader(filenameBytes, contentBytes);
             zipParts.push(localHeader);
             zipParts.push(filenameBytes);
             zipParts.push(contentBytes);
@@ -143,10 +136,7 @@ export class ExportManager {
     /**
      * Creates a local file header for ZIP.
      */
-    private _createLocalFileHeader(
-        filename: Uint8Array,
-        content: Uint8Array,
-    ): Uint8Array {
+    private _createLocalFileHeader(filename: Uint8Array, content: Uint8Array): Uint8Array {
         const header = new Uint8Array(30);
         const view = new DataView(header.buffer);
 
@@ -302,13 +292,15 @@ export class ExportManager {
             'Résultat total',
         ];
 
-        const rows = records.map((r) => [
-            `"${new Date(r.timestamp).toLocaleString('fr-FR')}"`,
-            r.timestamp,
-            r.daysRemaining,
-            r.parks.length,
-            r.totalResult,
-        ].join(','));
+        const rows = records.map((r) =>
+            [
+                `"${new Date(r.timestamp).toLocaleString('fr-FR')}"`,
+                r.timestamp,
+                r.daysRemaining,
+                r.parks.length,
+                r.totalResult,
+            ].join(','),
+        );
 
         return [headers.join(','), ...rows].join('\n');
     }
@@ -333,17 +325,19 @@ export class ExportManager {
         records.forEach((r) => {
             const date = `"${new Date(r.timestamp).toLocaleString('fr-FR')}"`;
             r.parks.forEach((p) => {
-                rows.push([
-                    date,
-                    r.daysRemaining,
-                    `"${p.name}"`,
-                    p.status,
-                    p.hasWarning ? 'Oui' : 'Non',
-                    p.visitors.totalVisitors,
-                    p.summary.parkNote,
-                    p.summary.experienceGained,
-                    p.finalResult,
-                ].join(','));
+                rows.push(
+                    [
+                        date,
+                        r.daysRemaining,
+                        `"${p.name}"`,
+                        p.status,
+                        p.hasWarning ? 'Oui' : 'Non',
+                        p.visitors.totalVisitors,
+                        p.summary.parkNote,
+                        p.summary.experienceGained,
+                        p.finalResult,
+                    ].join(','),
+                );
             });
         });
 
@@ -379,25 +373,27 @@ export class ExportManager {
             const date = `"${new Date(r.timestamp).toLocaleString('fr-FR')}"`;
             r.parks.forEach((p) => {
                 const v = p.visitors;
-                rows.push([
-                    date,
-                    `"${p.name}"`,
-                    v.totalVisitors,
-                    v.adults,
-                    v.children,
-                    v.visitorsByCar,
-                    v.visitorsByTransport,
-                    v.parkingOccupied,
-                    v.parkingAvailable,
-                    v.parkingFree,
-                    v.totalCapacity,
-                    v.securityCapacityBonus,
-                    v.cleanliness,
-                    v.cleanlinessBonus,
-                    v.adultRevenue,
-                    v.childRevenue,
-                    v.totalEntryRevenue,
-                ].join(','));
+                rows.push(
+                    [
+                        date,
+                        `"${p.name}"`,
+                        v.totalVisitors,
+                        v.adults,
+                        v.children,
+                        v.visitorsByCar,
+                        v.visitorsByTransport,
+                        v.parkingOccupied,
+                        v.parkingAvailable,
+                        v.parkingFree,
+                        v.totalCapacity,
+                        v.securityCapacityBonus,
+                        v.cleanliness,
+                        v.cleanlinessBonus,
+                        v.adultRevenue,
+                        v.childRevenue,
+                        v.totalEntryRevenue,
+                    ].join(','),
+                );
             });
         });
 
@@ -424,16 +420,18 @@ export class ExportManager {
             const date = `"${new Date(r.timestamp).toLocaleString('fr-FR')}"`;
             r.parks.forEach((p) => {
                 p.attractions.attractions.forEach((a) => {
-                    rows.push([
-                        date,
-                        `"${p.name}"`,
-                        `"${a.zone || 'Sans zone'}"`,
-                        `"${a.name}"`,
-                        a.capacity,
-                        a.costPerDay,
-                        a.waitTime,
-                        a.waitTimeStatus,
-                    ].join(','));
+                    rows.push(
+                        [
+                            date,
+                            `"${p.name}"`,
+                            `"${a.zone || 'Sans zone'}"`,
+                            `"${a.name}"`,
+                            a.capacity,
+                            a.costPerDay,
+                            a.waitTime,
+                            a.waitTimeStatus,
+                        ].join(','),
+                    );
                 });
             });
         });
@@ -461,15 +459,17 @@ export class ExportManager {
             r.parks.forEach((p) => {
                 if (p.spectacles) {
                     p.spectacles.spectacles.forEach((s) => {
-                        rows.push([
-                            date,
-                            `"${p.name}"`,
-                            `"${s.zone || 'Sans zone'}"`,
-                            `"${s.name}"`,
-                            `"${s.type}"`,
-                            s.capacity,
-                            s.visitorsPerShow,
-                        ].join(','));
+                        rows.push(
+                            [
+                                date,
+                                `"${p.name}"`,
+                                `"${s.zone || 'Sans zone'}"`,
+                                `"${s.name}"`,
+                                `"${s.type}"`,
+                                s.capacity,
+                                s.visitorsPerShow,
+                            ].join(','),
+                        );
                     });
                 }
             });
@@ -497,15 +497,17 @@ export class ExportManager {
             const date = `"${new Date(r.timestamp).toLocaleString('fr-FR')}"`;
             r.parks.forEach((p) => {
                 p.restaurants.restaurants.forEach((rest) => {
-                    rows.push([
-                        date,
-                        `"${p.name}"`,
-                        `"${rest.zone || 'Sans zone'}"`,
-                        `"${rest.name}"`,
-                        rest.capacity,
-                        rest.visitorsServed,
-                        rest.revenue,
-                    ].join(','));
+                    rows.push(
+                        [
+                            date,
+                            `"${p.name}"`,
+                            `"${rest.zone || 'Sans zone'}"`,
+                            `"${rest.name}"`,
+                            rest.capacity,
+                            rest.visitorsServed,
+                            rest.revenue,
+                        ].join(','),
+                    );
                 });
             });
         });
@@ -533,16 +535,18 @@ export class ExportManager {
             const date = `"${new Date(r.timestamp).toLocaleString('fr-FR')}"`;
             r.parks.forEach((p) => {
                 p.boutiques.boutiques.forEach((b) => {
-                    rows.push([
-                        date,
-                        `"${p.name}"`,
-                        `"${b.zone || 'Sans zone'}"`,
-                        `"${b.name}"`,
-                        b.capacity,
-                        b.visitorsServed,
-                        `"${b.salesDetail.replace(/"/g, '""')}"`,
-                        b.revenue,
-                    ].join(','));
+                    rows.push(
+                        [
+                            date,
+                            `"${p.name}"`,
+                            `"${b.zone || 'Sans zone'}"`,
+                            `"${b.name}"`,
+                            b.capacity,
+                            b.visitorsServed,
+                            `"${b.salesDetail.replace(/"/g, '""')}"`,
+                            b.revenue,
+                        ].join(','),
+                    );
                 });
             });
         });
@@ -575,16 +579,18 @@ export class ExportManager {
                     .join('; ');
                 const changes = hr.teamStateChanges.join('; ');
 
-                rows.push([
-                    date,
-                    `"${p.name}"`,
-                    hr.availableEmployees,
-                    hr.salary,
-                    hr.totalHR,
-                    hr.dailyResult,
-                    `"${movements}"`,
-                    `"${changes}"`,
-                ].join(','));
+                rows.push(
+                    [
+                        date,
+                        `"${p.name}"`,
+                        hr.availableEmployees,
+                        hr.salary,
+                        hr.totalHR,
+                        hr.dailyResult,
+                        `"${movements}"`,
+                        `"${changes}"`,
+                    ].join(','),
+                );
             });
         });
 
@@ -622,28 +628,30 @@ export class ExportManager {
         records.forEach((r) => {
             const date = `"${new Date(r.timestamp).toLocaleString('fr-FR')}"`;
             r.parks.forEach((p) => {
-                rows.push([
-                    date,
-                    `"${p.name}"`,
-                    p.visitors.totalEntryRevenue,
-                    p.restaurants.totalRevenue,
-                    p.restaurants.netRevenue,
-                    p.restaurants.rawMaterialsCost,
-                    p.restaurants.electricityCost,
-                    p.boutiques.totalRevenue,
-                    p.boutiques.netRevenue,
-                    p.boutiques.productsCost,
-                    p.attractions.totalCost,
-                    p.attractions.electricityCost,
-                    p.spectacles?.totalCost || 0,
-                    p.hr.salary,
-                    `"${p.taxes.cityName}"`,
-                    p.taxes.taxRate,
-                    p.taxes.taxAmount,
-                    p.otherExpenses.holdingFeeRate,
-                    p.otherExpenses.holdingFeeAmount,
-                    p.finalResult,
-                ].join(','));
+                rows.push(
+                    [
+                        date,
+                        `"${p.name}"`,
+                        p.visitors.totalEntryRevenue,
+                        p.restaurants.totalRevenue,
+                        p.restaurants.netRevenue,
+                        p.restaurants.rawMaterialsCost,
+                        p.restaurants.electricityCost,
+                        p.boutiques.totalRevenue,
+                        p.boutiques.netRevenue,
+                        p.boutiques.productsCost,
+                        p.attractions.totalCost,
+                        p.attractions.electricityCost,
+                        p.spectacles?.totalCost || 0,
+                        p.hr.salary,
+                        `"${p.taxes.cityName}"`,
+                        p.taxes.taxRate,
+                        p.taxes.taxAmount,
+                        p.otherExpenses.holdingFeeRate,
+                        p.otherExpenses.holdingFeeAmount,
+                        p.finalResult,
+                    ].join(','),
+                );
             });
         });
 
@@ -654,28 +662,23 @@ export class ExportManager {
      * Generates note details CSV.
      */
     private _generateNoteDetailsCsv(records: DayRecord[]): string {
-        const headers = [
-            'Date',
-            'Parc',
-            'Type',
-            'Calcul',
-            'Points',
-            'Maximum atteint',
-        ];
+        const headers = ['Date', 'Parc', 'Type', 'Calcul', 'Points', 'Maximum atteint'];
 
         const rows: string[] = [];
         records.forEach((r) => {
             const date = `"${new Date(r.timestamp).toLocaleString('fr-FR')}"`;
             r.parks.forEach((p) => {
                 p.summary.noteDetails.forEach((n) => {
-                    rows.push([
-                        date,
-                        `"${p.name}"`,
-                        `"${n.type}"`,
-                        `"${n.calculation.replace(/"/g, '""')}"`,
-                        n.points,
-                        n.isMaxed ? 'Oui' : 'Non',
-                    ].join(','));
+                    rows.push(
+                        [
+                            date,
+                            `"${p.name}"`,
+                            `"${n.type}"`,
+                            `"${n.calculation.replace(/"/g, '""')}"`,
+                            n.points,
+                            n.isMaxed ? 'Oui' : 'Non',
+                        ].join(','),
+                    );
                 });
             });
         });

@@ -1,9 +1,9 @@
 import { BaseModule } from '../../core/abstract/BaseModule';
 import { StorageService } from '../../services/StorageService';
-import { CSS_CLASSES, SELECTORS, STORAGE_KEY } from './constants';
 import { ShareFilterEngine } from './ShareFilterEngine';
 import { ShareFilterUI } from './ShareFilterUI';
 import { ShareParser } from './ShareParser';
+import { CSS_CLASSES, SELECTORS, STORAGE_KEY } from './constants';
 import { IShare, IShareFilterCriteria, IShareFilterEngine, IShareParser } from './types';
 
 /**
@@ -57,7 +57,7 @@ export class InvestSharesFilterModule extends BaseModule {
      * @inheritdoc
      */
     public get description(): string {
-        return 'Ajoute des filtres avancés pour les parts sur la page d\'investissement.';
+        return "Ajoute des filtres avancés pour les parts sur la page d'investissement.";
     }
 
     /**
@@ -247,7 +247,10 @@ export class InvestSharesFilterModule extends BaseModule {
      */
     private _restoreFilterState(): void {
         const defaultCriteria: IShareFilterCriteria = {};
-        const criteria = this._storageService.load<IShareFilterCriteria>(STORAGE_KEY, defaultCriteria);
+        const criteria = this._storageService.load<IShareFilterCriteria>(
+            STORAGE_KEY,
+            defaultCriteria,
+        );
 
         if (Object.keys(criteria).length > 0) {
             this._ui.setCriteria(criteria);

@@ -1,23 +1,23 @@
 import { NEW_DAY_SELECTORS } from './constants';
 import {
-    DayRecord,
-    ParkDayRecord,
-    HRData,
-    VisitorsData,
-    AttractionsData,
-    SpectaclesData,
-    RestaurantsData,
-    BoutiquesData,
-    TaxesData,
-    OtherExpensesData,
-    SummaryData,
     AttractionRecord,
-    RestaurantRecord,
+    AttractionsData,
     BoutiqueRecord,
-    SpectacleRecord,
-    WorkRecord,
+    BoutiquesData,
+    DayRecord,
     EmployeeMovement,
+    HRData,
     NoteDetailItem,
+    OtherExpensesData,
+    ParkDayRecord,
+    RestaurantRecord,
+    RestaurantsData,
+    SpectacleRecord,
+    SpectaclesData,
+    SummaryData,
+    TaxesData,
+    VisitorsData,
+    WorkRecord,
 } from './interfaces';
 
 /**
@@ -159,10 +159,16 @@ export class DataExtractor {
 
         // Extract footer values
         const totalHR = this._parseSignedNumber(
-            this._getText(hrSection, '.new-day-modal__park-rh-footer-left .new-day-modal__park-rh-footer-value'),
+            this._getText(
+                hrSection,
+                '.new-day-modal__park-rh-footer-left .new-day-modal__park-rh-footer-value',
+            ),
         );
         const dailyResult = this._parseSignedNumber(
-            this._getText(hrSection, '.new-day-modal__park-rh-footer-right .new-day-modal__park-rh-footer-value'),
+            this._getText(
+                hrSection,
+                '.new-day-modal__park-rh-footer-right .new-day-modal__park-rh-footer-value',
+            ),
         );
 
         return {
@@ -201,14 +207,21 @@ export class DataExtractor {
         }
 
         // Parse parking info
-        const parkingInfo = this._getText(visitorsSection, '.new-day-modal__park-visitors-parking-info');
-        const parkingMatch = parkingInfo.match(/(\d[\d\s]*)\s*place\(s\)\s*occupée\(s\)\s*\/\s*(\d[\d\s]*)\s*place\(s\)\s*disponible\(s\)\s*\((\d[\d\s]*)\s*libre/);
+        const parkingInfo = this._getText(
+            visitorsSection,
+            '.new-day-modal__park-visitors-parking-info',
+        );
+        const parkingMatch = parkingInfo.match(
+            /(\d[\d\s]*)\s*place\(s\)\s*occupée\(s\)\s*\/\s*(\d[\d\s]*)\s*place\(s\)\s*disponible\(s\)\s*\((\d[\d\s]*)\s*libre/,
+        );
         const parkingOccupied = parkingMatch ? this._parseNumber(parkingMatch[1]) : 0;
         const parkingAvailable = parkingMatch ? this._parseNumber(parkingMatch[2]) : 0;
         const parkingFree = parkingMatch ? this._parseNumber(parkingMatch[3]) : 0;
 
         // Parse entrance capacity
-        const entranceList = visitorsSection.querySelector('.new-day-modal__park-visitors-entrance-list');
+        const entranceList = visitorsSection.querySelector(
+            '.new-day-modal__park-visitors-entrance-list',
+        );
         let totalCapacity = 0;
         let securityCapacityBonus = 0;
         if (entranceList) {
@@ -231,7 +244,9 @@ export class DataExtractor {
         }
 
         // Parse visitors
-        const visitorsList = visitorsSection.querySelector('.new-day-modal__park-visitors-visitors-list');
+        const visitorsList = visitorsSection.querySelector(
+            '.new-day-modal__park-visitors-visitors-list',
+        );
         let visitorsByCar = 0;
         let visitorsByTransport = 0;
         let totalVisitors = 0;
@@ -258,7 +273,9 @@ export class DataExtractor {
         }
 
         // Parse cleanliness
-        const opinionList = visitorsSection.querySelector('.new-day-modal__park-visitors-opinion-list');
+        const opinionList = visitorsSection.querySelector(
+            '.new-day-modal__park-visitors-opinion-list',
+        );
         let cleanliness = 100;
         let cleanlinessBonus = 0;
         if (opinionList) {
@@ -275,7 +292,9 @@ export class DataExtractor {
         }
 
         // Parse revenues
-        const revenueList = visitorsSection.querySelector('.new-day-modal__park-visitors-revenue-list');
+        const revenueList = visitorsSection.querySelector(
+            '.new-day-modal__park-visitors-revenue-list',
+        );
         let adultRevenue = 0;
         let childRevenue = 0;
         if (revenueList) {
@@ -293,16 +312,24 @@ export class DataExtractor {
         }
 
         // Parse footer
-        const footer = visitorsSection.querySelector('.new-day-modal__park-visitors-revenue-footer');
+        const footer = visitorsSection.querySelector(
+            '.new-day-modal__park-visitors-revenue-footer',
+        );
         const totalEntryRevenue = footer
             ? this._parseSignedNumber(
-                this._getText(footer, '.new-day-modal__park-visitors-revenue-footer-left .new-day-modal__park-visitors-revenue-footer-value'),
-            )
+                  this._getText(
+                      footer,
+                      '.new-day-modal__park-visitors-revenue-footer-left .new-day-modal__park-visitors-revenue-footer-value',
+                  ),
+              )
             : adultRevenue + childRevenue;
         const dailyResult = footer
             ? this._parseSignedNumber(
-                this._getText(footer, '.new-day-modal__park-visitors-revenue-footer-right .new-day-modal__park-visitors-revenue-footer-value'),
-            )
+                  this._getText(
+                      footer,
+                      '.new-day-modal__park-visitors-revenue-footer-right .new-day-modal__park-visitors-revenue-footer-value',
+                  ),
+              )
             : totalEntryRevenue;
 
         return {
@@ -361,7 +388,10 @@ export class DataExtractor {
 
         for (const section of Array.from(allSections)) {
             const header = section.querySelector('.new-day-modal__park-attractions-header-title');
-            if (header?.textContent?.includes('Attractions') && !header?.textContent?.includes('Spectacles')) {
+            if (
+                header?.textContent?.includes('Attractions') &&
+                !header?.textContent?.includes('Spectacles')
+            ) {
                 attractionsSection = section;
                 break;
             }
@@ -372,7 +402,10 @@ export class DataExtractor {
         }
 
         // Parse open count
-        const openSubtitle = this._getText(attractionsSection, '.new-day-modal__park-attractions-open-subtitle');
+        const openSubtitle = this._getText(
+            attractionsSection,
+            '.new-day-modal__park-attractions-open-subtitle',
+        );
         const openMatch = openSubtitle.match(/(\d+)/);
         const openCount = openMatch ? parseInt(openMatch[1], 10) : 0;
 
@@ -383,7 +416,10 @@ export class DataExtractor {
         if (table) {
             table.querySelectorAll('tr').forEach((row) => {
                 if (row.classList.contains('new-day-modal__attractions-zone-title-row')) {
-                    currentZone = row.querySelector('.new-day-modal__attractions-zone-title')?.textContent?.trim() || '';
+                    currentZone =
+                        row
+                            .querySelector('.new-day-modal__attractions-zone-title')
+                            ?.textContent?.trim() || '';
                 } else {
                     const cells = row.querySelectorAll('td');
                     if (cells.length >= 4) {
@@ -402,12 +438,18 @@ export class DataExtractor {
         }
 
         // Parse wait time penalty
-        const waitAlert = this._getText(attractionsSection, '.new-day-modal__park-attractions-wait-time-alert');
+        const waitAlert = this._getText(
+            attractionsSection,
+            '.new-day-modal__park-attractions-wait-time-alert',
+        );
         const penaltyMatch = waitAlert.match(/-(\d+)/);
         const waitTimePenalty = penaltyMatch ? parseInt(penaltyMatch[1], 10) : 0;
 
         // Parse ratio section
-        const ratioText = this._getText(attractionsSection, '.new-day-modal__park-attractions-ratio-section');
+        const ratioText = this._getText(
+            attractionsSection,
+            '.new-day-modal__park-attractions-ratio-section',
+        );
         const coasterMatch = ratioText.match(/(\d+)\s*coasters?/i);
         const flatMatch = ratioText.match(/(\d+)\s*flatrides?/i);
         const ratioBonusMatch = ratioText.match(/\+(\d+)\s*points/);
@@ -420,7 +462,9 @@ export class DataExtractor {
 
         // Parse works
         const works: WorkRecord[] = [];
-        const worksList = attractionsSection.querySelector('.new-day-modal__park-attractions-works-list');
+        const worksList = attractionsSection.querySelector(
+            '.new-day-modal__park-attractions-works-list',
+        );
         if (worksList) {
             worksList.querySelectorAll('li').forEach((li) => {
                 const text = li.textContent || '';
@@ -435,7 +479,9 @@ export class DataExtractor {
         }
 
         // Parse revenue section
-        const revenueList = attractionsSection.querySelector('.new-day-modal__park-attractions-revenue-list');
+        const revenueList = attractionsSection.querySelector(
+            '.new-day-modal__park-attractions-revenue-list',
+        );
         let electricityCost = 0;
         if (revenueList) {
             const elecItem = Array.from(revenueList.querySelectorAll('li')).find((li) =>
@@ -448,18 +494,26 @@ export class DataExtractor {
         }
 
         // Parse footer
-        const footer = attractionsSection.querySelector('.new-day-modal__park-attractions-revenue-footer');
+        const footer = attractionsSection.querySelector(
+            '.new-day-modal__park-attractions-revenue-footer',
+        );
         const totalCost = footer
             ? Math.abs(
-                this._parseSignedNumber(
-                    this._getText(footer, '.new-day-modal__park-attractions-revenue-footer-left .new-day-modal__park-attractions-revenue-footer-value'),
-                ),
-            )
+                  this._parseSignedNumber(
+                      this._getText(
+                          footer,
+                          '.new-day-modal__park-attractions-revenue-footer-left .new-day-modal__park-attractions-revenue-footer-value',
+                      ),
+                  ),
+              )
             : electricityCost;
         const dailyResult = footer
             ? this._parseSignedNumber(
-                this._getText(footer, '.new-day-modal__park-attractions-revenue-footer-right .new-day-modal__park-attractions-revenue-footer-value'),
-            )
+                  this._getText(
+                      footer,
+                      '.new-day-modal__park-attractions-revenue-footer-right .new-day-modal__park-attractions-revenue-footer-value',
+                  ),
+              )
             : 0;
 
         return {
@@ -508,7 +562,10 @@ export class DataExtractor {
         }
 
         // Parse open count
-        const openSubtitle = this._getText(spectaclesSection, '.new-day-modal__park-attractions-open-subtitle');
+        const openSubtitle = this._getText(
+            spectaclesSection,
+            '.new-day-modal__park-attractions-open-subtitle',
+        );
         const openMatch = openSubtitle.match(/(\d+)/);
         const openCount = openMatch ? parseInt(openMatch[1], 10) : 0;
 
@@ -519,7 +576,10 @@ export class DataExtractor {
         if (table) {
             table.querySelectorAll('tr').forEach((row) => {
                 if (row.classList.contains('new-day-modal__attractions-zone-title-row')) {
-                    currentZone = row.querySelector('.new-day-modal__attractions-zone-title')?.textContent?.trim() || '';
+                    currentZone =
+                        row
+                            .querySelector('.new-day-modal__attractions-zone-title')
+                            ?.textContent?.trim() || '';
                 } else {
                     const cells = row.querySelectorAll('td');
                     if (cells.length >= 4) {
@@ -536,18 +596,26 @@ export class DataExtractor {
         }
 
         // Parse footer
-        const footer = spectaclesSection.querySelector('.new-day-modal__park-attractions-revenue-footer');
+        const footer = spectaclesSection.querySelector(
+            '.new-day-modal__park-attractions-revenue-footer',
+        );
         const totalCost = footer
             ? Math.abs(
-                this._parseSignedNumber(
-                    this._getText(footer, '.new-day-modal__park-attractions-revenue-footer-left .new-day-modal__park-attractions-revenue-footer-value'),
-                ),
-            )
+                  this._parseSignedNumber(
+                      this._getText(
+                          footer,
+                          '.new-day-modal__park-attractions-revenue-footer-left .new-day-modal__park-attractions-revenue-footer-value',
+                      ),
+                  ),
+              )
             : 0;
         const dailyResult = footer
             ? this._parseSignedNumber(
-                this._getText(footer, '.new-day-modal__park-attractions-revenue-footer-right .new-day-modal__park-attractions-revenue-footer-value'),
-            )
+                  this._getText(
+                      footer,
+                      '.new-day-modal__park-attractions-revenue-footer-right .new-day-modal__park-attractions-revenue-footer-value',
+                  ),
+              )
             : 0;
 
         return {
@@ -570,7 +638,10 @@ export class DataExtractor {
         }
 
         // Parse open count
-        const openSubtitle = this._getText(restaurantsSection, '.new-day-modal__park-attractions-open-subtitle');
+        const openSubtitle = this._getText(
+            restaurantsSection,
+            '.new-day-modal__park-attractions-open-subtitle',
+        );
         const openMatch = openSubtitle.match(/(\d+)/);
         const openCount = openMatch ? parseInt(openMatch[1], 10) : 0;
 
@@ -581,7 +652,10 @@ export class DataExtractor {
         if (table) {
             table.querySelectorAll('tr').forEach((row) => {
                 if (row.classList.contains('new-day-modal__attractions-zone-title-row')) {
-                    currentZone = row.querySelector('.new-day-modal__attractions-zone-title')?.textContent?.trim() || '';
+                    currentZone =
+                        row
+                            .querySelector('.new-day-modal__attractions-zone-title')
+                            ?.textContent?.trim() || '';
                 } else {
                     const cells = row.querySelectorAll('td');
                     if (cells.length >= 4) {
@@ -599,7 +673,9 @@ export class DataExtractor {
 
         // Parse capacity warnings
         const capacityWarnings: string[] = [];
-        const warningSection = restaurantsSection.querySelector('.new-day-modal__park-attractions-works-section--in-open-section');
+        const warningSection = restaurantsSection.querySelector(
+            '.new-day-modal__park-attractions-works-section--in-open-section',
+        );
         if (warningSection) {
             warningSection.querySelectorAll('li').forEach((li) => {
                 capacityWarnings.push(li.textContent?.trim() || '');
@@ -608,7 +684,9 @@ export class DataExtractor {
 
         // Parse works
         const works: WorkRecord[] = [];
-        const worksList = restaurantsSection.querySelector('.new-day-modal__park-attractions-works-section:not(.new-day-modal__park-attractions-works-section--in-open-section) .new-day-modal__park-attractions-works-list');
+        const worksList = restaurantsSection.querySelector(
+            '.new-day-modal__park-attractions-works-section:not(.new-day-modal__park-attractions-works-section--in-open-section) .new-day-modal__park-attractions-works-list',
+        );
         if (worksList) {
             worksList.querySelectorAll('li').forEach((li) => {
                 const text = li.textContent || '';
@@ -623,7 +701,9 @@ export class DataExtractor {
         }
 
         // Parse revenue section
-        const revenueList = restaurantsSection.querySelector('.new-day-modal__park-attractions-revenue-list');
+        const revenueList = restaurantsSection.querySelector(
+            '.new-day-modal__park-attractions-revenue-list',
+        );
         let electricityCost = 0;
         let rawMaterialsCost = 0;
         let totalRevenue = 0;
@@ -643,16 +723,24 @@ export class DataExtractor {
         }
 
         // Parse footer
-        const footer = restaurantsSection.querySelector('.new-day-modal__park-attractions-revenue-footer');
+        const footer = restaurantsSection.querySelector(
+            '.new-day-modal__park-attractions-revenue-footer',
+        );
         const netRevenue = footer
             ? this._parseSignedNumber(
-                this._getText(footer, '.new-day-modal__park-attractions-revenue-footer-left .new-day-modal__park-attractions-revenue-footer-value'),
-            )
+                  this._getText(
+                      footer,
+                      '.new-day-modal__park-attractions-revenue-footer-left .new-day-modal__park-attractions-revenue-footer-value',
+                  ),
+              )
             : totalRevenue - electricityCost - rawMaterialsCost;
         const dailyResult = footer
             ? this._parseSignedNumber(
-                this._getText(footer, '.new-day-modal__park-attractions-revenue-footer-right .new-day-modal__park-attractions-revenue-footer-value'),
-            )
+                  this._getText(
+                      footer,
+                      '.new-day-modal__park-attractions-revenue-footer-right .new-day-modal__park-attractions-revenue-footer-value',
+                  ),
+              )
             : 0;
 
         return {
@@ -697,7 +785,10 @@ export class DataExtractor {
         }
 
         // Parse open count
-        const openSubtitle = this._getText(boutiquesSection, '.new-day-modal__park-attractions-open-subtitle');
+        const openSubtitle = this._getText(
+            boutiquesSection,
+            '.new-day-modal__park-attractions-open-subtitle',
+        );
         const openMatch = openSubtitle.match(/(\d+)/);
         const openCount = openMatch ? parseInt(openMatch[1], 10) : 0;
 
@@ -708,7 +799,10 @@ export class DataExtractor {
         if (table) {
             table.querySelectorAll('tr').forEach((row) => {
                 if (row.classList.contains('new-day-modal__attractions-zone-title-row')) {
-                    currentZone = row.querySelector('.new-day-modal__attractions-zone-title')?.textContent?.trim() || '';
+                    currentZone =
+                        row
+                            .querySelector('.new-day-modal__attractions-zone-title')
+                            ?.textContent?.trim() || '';
                 } else {
                     const cells = row.querySelectorAll('td');
                     if (cells.length >= 5) {
@@ -726,7 +820,9 @@ export class DataExtractor {
         }
 
         // Parse revenue section
-        const revenueList = boutiquesSection.querySelector('.new-day-modal__park-attractions-revenue-list');
+        const revenueList = boutiquesSection.querySelector(
+            '.new-day-modal__park-attractions-revenue-list',
+        );
         let productsCost = 0;
         let totalRevenue = 0;
         if (revenueList) {
@@ -734,7 +830,7 @@ export class DataExtractor {
                 const text = li.textContent || '';
                 const span = li.querySelector('span');
                 const value = this._parseSignedNumber(span?.textContent || '');
-                if (text.includes('Coût d\'achat')) {
+                if (text.includes("Coût d'achat")) {
                     productsCost = Math.abs(value);
                 } else if (text.includes('Revenus')) {
                     totalRevenue = value;
@@ -743,16 +839,24 @@ export class DataExtractor {
         }
 
         // Parse footer
-        const footer = boutiquesSection.querySelector('.new-day-modal__park-attractions-revenue-footer');
+        const footer = boutiquesSection.querySelector(
+            '.new-day-modal__park-attractions-revenue-footer',
+        );
         const netRevenue = footer
             ? this._parseSignedNumber(
-                this._getText(footer, '.new-day-modal__park-attractions-revenue-footer-left .new-day-modal__park-attractions-revenue-footer-value'),
-            )
+                  this._getText(
+                      footer,
+                      '.new-day-modal__park-attractions-revenue-footer-left .new-day-modal__park-attractions-revenue-footer-value',
+                  ),
+              )
             : totalRevenue - productsCost;
         const dailyResult = footer
             ? this._parseSignedNumber(
-                this._getText(footer, '.new-day-modal__park-attractions-revenue-footer-right .new-day-modal__park-attractions-revenue-footer-value'),
-            )
+                  this._getText(
+                      footer,
+                      '.new-day-modal__park-attractions-revenue-footer-right .new-day-modal__park-attractions-revenue-footer-value',
+                  ),
+              )
             : 0;
 
         return {
@@ -791,7 +895,10 @@ export class DataExtractor {
         }
 
         // Parse city name
-        const citySubtitle = this._getText(taxesSection, '.new-day-modal__park-attractions-open-subtitle');
+        const citySubtitle = this._getText(
+            taxesSection,
+            '.new-day-modal__park-attractions-open-subtitle',
+        );
         const cityMatch = citySubtitle.match(/Taxes de la ville de (.+)/);
         const cityName = cityMatch ? cityMatch[1].trim() : '';
 
@@ -805,16 +912,23 @@ export class DataExtractor {
                 const rateMatch = taxItem.textContent?.match(/\((\d+)%\)/);
                 taxRate = rateMatch ? parseInt(rateMatch[1], 10) : 0;
                 const amountSpan = taxItem.querySelector('span[style*="231, 76, 60"]');
-                taxAmount = amountSpan ? Math.abs(this._parseSignedNumber(amountSpan.textContent || '')) : 0;
+                taxAmount = amountSpan
+                    ? Math.abs(this._parseSignedNumber(amountSpan.textContent || ''))
+                    : 0;
             }
         }
 
         // Parse footer
-        const footer = taxesSection.querySelector('.new-day-modal__park-attractions-revenue-footer');
+        const footer = taxesSection.querySelector(
+            '.new-day-modal__park-attractions-revenue-footer',
+        );
         const dailyResult = footer
             ? this._parseSignedNumber(
-                this._getText(footer, '.new-day-modal__park-attractions-revenue-footer-right .new-day-modal__park-attractions-revenue-footer-value'),
-            )
+                  this._getText(
+                      footer,
+                      '.new-day-modal__park-attractions-revenue-footer-right .new-day-modal__park-attractions-revenue-footer-value',
+                  ),
+              )
             : 0;
 
         return {
@@ -869,16 +983,23 @@ export class DataExtractor {
                 const rateMatch = feeItem.textContent?.match(/\((\d+)%\)/);
                 holdingFeeRate = rateMatch ? parseInt(rateMatch[1], 10) : 0;
                 const amountSpan = feeItem.querySelector('span[style*="231, 76, 60"]');
-                holdingFeeAmount = amountSpan ? Math.abs(this._parseSignedNumber(amountSpan.textContent || '')) : 0;
+                holdingFeeAmount = amountSpan
+                    ? Math.abs(this._parseSignedNumber(amountSpan.textContent || ''))
+                    : 0;
             }
         }
 
         // Parse footer
-        const footer = expensesSection.querySelector('.new-day-modal__park-attractions-revenue-footer');
+        const footer = expensesSection.querySelector(
+            '.new-day-modal__park-attractions-revenue-footer',
+        );
         const dailyResult = footer
             ? this._parseSignedNumber(
-                this._getText(footer, '.new-day-modal__park-attractions-revenue-footer-right .new-day-modal__park-attractions-revenue-footer-value'),
-            )
+                  this._getText(
+                      footer,
+                      '.new-day-modal__park-attractions-revenue-footer-right .new-day-modal__park-attractions-revenue-footer-value',
+                  ),
+              )
             : 0;
 
         return {
@@ -922,14 +1043,18 @@ export class DataExtractor {
         }
 
         // Parse summary values
-        const summaryBlocks = summarySection.querySelectorAll('.new-day-modal__park-summary-item-block');
+        const summaryBlocks = summarySection.querySelectorAll(
+            '.new-day-modal__park-summary-item-block',
+        );
         let parkNote = 0;
         let experienceGained = 0;
         let dailyResult = 0;
 
         summaryBlocks.forEach((block) => {
-            const label = block.querySelector('.new-day-modal__park-summary-item-label')?.textContent || '';
-            const value = block.querySelector('.new-day-modal__park-summary-item-value')?.textContent || '';
+            const label =
+                block.querySelector('.new-day-modal__park-summary-item-label')?.textContent || '';
+            const value =
+                block.querySelector('.new-day-modal__park-summary-item-value')?.textContent || '';
 
             if (label.includes('Note')) {
                 parkNote = this._parseNumber(value);
@@ -942,7 +1067,9 @@ export class DataExtractor {
 
         // Parse note details
         const noteDetails: NoteDetailItem[] = [];
-        const noteTable = summarySection.querySelector('.new-day-modal__park-note-detail-table tbody');
+        const noteTable = summarySection.querySelector(
+            '.new-day-modal__park-note-detail-table tbody',
+        );
         if (noteTable) {
             noteTable.querySelectorAll('tr').forEach((row) => {
                 const cells = row.querySelectorAll('td');
@@ -994,8 +1121,11 @@ export class DataExtractor {
         const name = this._getText(parkElement, NEW_DAY_SELECTORS.PARK_NAME);
         const statusElement = parkElement.querySelector(NEW_DAY_SELECTORS.PARK_STATUS);
         const statusText = statusElement?.textContent?.trim().toLowerCase() || '';
-        const status: 'open' | 'closed' | 'unknown' =
-            statusText.includes('ouvert') ? 'open' : statusText.includes('fermé') ? 'closed' : 'unknown';
+        const status: 'open' | 'closed' | 'unknown' = statusText.includes('ouvert')
+            ? 'open'
+            : statusText.includes('fermé')
+              ? 'closed'
+              : 'unknown';
         const hasWarning = !!parkElement.querySelector(NEW_DAY_SELECTORS.PARK_WARNING);
 
         // Parse final result

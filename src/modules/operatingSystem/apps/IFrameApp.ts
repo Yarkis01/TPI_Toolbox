@@ -1,5 +1,5 @@
-import { createElement, injectStyle } from "../../../utils/DomUtils";
-import { Logger } from "../../../utils/Logger";
+import { createElement, injectStyle } from '../../../utils/DomUtils';
+import { Logger } from '../../../utils/Logger';
 
 /**
  * Options for the IFrameApp.
@@ -42,8 +42,8 @@ export class IFrameApp {
                 height: '100%',
                 border: 'none',
                 backgroundColor: this.options.backgroundColor || '#202020',
-                ...(this.options.customStyles || {})
-            }
+                ...(this.options.customStyles || {}),
+            },
         }) as HTMLIFrameElement;
 
         iframe.addEventListener('load', () => this.injectCleanup(iframe));
@@ -85,8 +85,9 @@ export class IFrameApp {
                 injectStyle(styleContent, doc);
             }
         } catch (e) {
-            this.logger.error(`Cannot modify iframe content for ${this.url}. Possible CORS restriction.`);
+            this.logger.error(
+                `Cannot modify iframe content for ${this.url}. Possible CORS restriction.`,
+            );
         }
     }
 }
-

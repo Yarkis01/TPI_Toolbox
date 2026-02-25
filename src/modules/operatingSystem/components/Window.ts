@@ -182,7 +182,14 @@ export class WindowComponent {
      * Gets the current state of the window for persistence.
      * @returns The window state object.
      */
-    public getWindowState(): { x: number; y: number; width: number; height: number; zIndex: number; isMaximized: boolean } {
+    public getWindowState(): {
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+        zIndex: number;
+        isMaximized: boolean;
+    } {
         return {
             x: this.element.offsetLeft,
             y: this.element.offsetTop,
@@ -197,7 +204,13 @@ export class WindowComponent {
      * Applies a saved state to the window.
      * @param state - The state to apply.
      */
-    public applyState(state: { x: number; y: number; width: number; height: number; isMaximized: boolean }): void {
+    public applyState(state: {
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+        isMaximized: boolean;
+    }): void {
         if (state.isMaximized) {
             this.maximize();
         } else {

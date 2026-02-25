@@ -1,9 +1,8 @@
+import { version as localVersion } from '../../../package.json';
 import { BaseModule } from '../../core/abstract/BaseModule';
 import { IModuleConfigSchema } from '../../core/interfaces/IModuleConfig';
 import { injectStyle } from '../../utils/DomUtils';
-import { version as localVersion } from '../../../package.json';
 import { FORCE_DISPLAY_POPUP, UPDATE_CHECK_URL } from './constants';
-
 /**
  * Interface for the API response
  */
@@ -80,8 +79,7 @@ export class UpdateNotificationModule extends BaseModule {
             const isNewer = this.compareVersions(remoteVersion, localVersion) > 0;
             const isIgnored = ignoredVersion === remoteVersion;
 
-            const shouldDisplay =
-                FORCE_DISPLAY_POPUP || (isNewer && !isIgnored);
+            const shouldDisplay = FORCE_DISPLAY_POPUP || (isNewer && !isIgnored);
 
             if (shouldDisplay) {
                 this.showNotification(localVersion, remoteVersion, data.Description);

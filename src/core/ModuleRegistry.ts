@@ -1,24 +1,24 @@
 import { AttractionSurfaceFilterModule } from '../modules/attractionSurfaceFilter/module';
-import { EntityStatusColorizerModule } from '../modules/entityStatusColorizer/module';
 import { StaffBuildingColorizerModule } from '../modules/backstage/StaffBuildingColorizer/module';
 import { WarehouseColorizerModule } from '../modules/backstage/warehouseColorizer/module';
+import { CollapsibleZonesModule } from '../modules/collapsibleZones/module';
+import { EntityStatusColorizerModule } from '../modules/entityStatusColorizer/module';
 import { HideChatModule } from '../modules/hideChat/module';
 import { HideWarehousemanModule } from '../modules/hideWarehouseman/module';
 import { InvestSharesFilterModule } from '../modules/investSharesFilter/module';
 import { NewDayHistoryModule } from '../modules/newDayHistory/module';
-import { RideHypeAsTextModule } from '../modules/rideHypeAsText/module';
-import { SelectUntrainedModule } from '../modules/selectUntrained/module';
-import { ZoneFilterModule } from '../modules/zoneFilters/module';
-import { ModuleManager } from './managers/ModuleManager';
 import { OperatingSystemModule } from '../modules/operatingSystem/module';
 import { ParkWebSiteRedesingModule } from '../modules/parkWebSiteRedesing/module';
-import { CollapsibleZonesModule } from '../modules/collapsibleZones/module';
+import { RideHypeAsTextModule } from '../modules/rideHypeAsText/module';
+import { SelectUntrainedModule } from '../modules/selectUntrained/module';
 import { UpdateNotificationModule } from '../modules/updateNotification/module';
+import { ZoneFilterModule } from '../modules/zoneFilters/module';
+import { ModuleManager } from './managers/ModuleManager';
 
 /**
  * Registers the common functional modules into the module manager.
  * These modules are intended to run in both the main application and iframes (when in OS mode).
- * 
+ *
  * @param moduleManager The module manager instance.
  */
 export function registerCommonModules(moduleManager: ModuleManager): void {

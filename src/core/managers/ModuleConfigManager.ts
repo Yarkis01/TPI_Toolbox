@@ -1,10 +1,10 @@
 import { StorageService } from '../../services/StorageService';
+import { Logger } from '../../utils/Logger';
 import {
-    IModuleConfigSchema,
     IConfigOption,
+    IModuleConfigSchema,
     ModuleConfigValues,
 } from '../interfaces/IModuleConfig';
-import { Logger } from '../../utils/Logger';
 
 /**
  * Manages module configurations using the StorageService.

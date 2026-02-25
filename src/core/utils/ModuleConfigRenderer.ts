@@ -1,9 +1,6 @@
-import IModule from '../interfaces/IModule';
-import {
-    IConfigOption,
-    IModuleConfigSchema,
-} from '../interfaces/IModuleConfig';
 import { createElement } from '../../utils/DomUtils';
+import IModule from '../interfaces/IModule';
+import { IConfigOption, IModuleConfigSchema } from '../interfaces/IModuleConfig';
 
 /**
  * Utility class for rendering module configuration UI components.
@@ -164,9 +161,9 @@ export class ModuleConfigRenderer {
         if (!optionsContainer) return;
 
         for (const option of schema.options) {
-            const input = optionsContainer.querySelector(
-                `[data-config-key="${option.key}"]`,
-            ) as HTMLInputElement | HTMLSelectElement;
+            const input = optionsContainer.querySelector(`[data-config-key="${option.key}"]`) as
+                | HTMLInputElement
+                | HTMLSelectElement;
 
             if (input) {
                 const value = config[option.key] ?? option.defaultValue;

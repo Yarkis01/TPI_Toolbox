@@ -6,7 +6,7 @@
     display: flex;
     flex-direction: column;
     border-radius: 0;
-    background: #23323D;
+    background: #23323d;
     border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow: none;
     overflow: hidden;
@@ -34,7 +34,7 @@
     gap: 1rem;
     align-items: flex-end;
     padding: 1.5rem 2rem;
-    background: #23323D;
+    background: #23323d;
 }
 
 .tpi-shares-filter__label {
@@ -56,7 +56,9 @@
     font-size: 0.9rem;
     font-family: 'Inter', sans-serif;
     min-width: 100px;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    transition:
+        border-color 0.2s,
+        box-shadow 0.2s;
 
     &:focus {
         outline: none;
@@ -77,7 +79,7 @@
 
 .tpi-shares-filter__select {
     option {
-        background: #23323D;
+        background: #23323d;
         color: var(--text-primary, #ffffff);
     }
 }
@@ -97,7 +99,7 @@
         color: var(--text-primary, #ffffff);
     }
 
-    input[type="checkbox"] {
+    input[type='checkbox'] {
         width: 16px;
         height: 16px;
         accent-color: var(--primary-color, #35b3af);

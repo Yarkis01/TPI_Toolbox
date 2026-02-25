@@ -73,7 +73,7 @@ export class SettingsApp {
         });
 
         list.appendChild(
-            createElement('div', { class: 'tpi-settings-section-header' }, ['Modules'])
+            createElement('div', { class: 'tpi-settings-section-header' }, ['Modules']),
         );
 
         if (modules.length === 0) {

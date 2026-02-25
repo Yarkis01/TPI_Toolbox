@@ -1,8 +1,8 @@
-import { DayRecord, ParkDayRecord } from './interfaces';
-import { NEW_DAY_STRINGS, NEW_DAY_SELECTORS } from './constants';
-import { HistoryStorage } from './HistoryStorage';
 import { DetailedView } from './DetailedView';
 import { ExportManager } from './ExportManager';
+import { HistoryStorage } from './HistoryStorage';
+import { NEW_DAY_SELECTORS, NEW_DAY_STRINGS } from './constants';
+import { DayRecord, ParkDayRecord } from './interfaces';
 
 /**
  * Manages the history modal display and interactions.
@@ -104,8 +104,12 @@ export class HistoryModal {
         `;
 
         // Bind events
-        modal.querySelector('.tpi-history-modal__close')?.addEventListener('click', () => this.close());
-        modal.querySelector('.tpi-history-modal__footer-btn')?.addEventListener('click', () => this.close());
+        modal
+            .querySelector('.tpi-history-modal__close')
+            ?.addEventListener('click', () => this.close());
+        modal
+            .querySelector('.tpi-history-modal__footer-btn')
+            ?.addEventListener('click', () => this.close());
 
         // Action buttons
         modal.querySelectorAll('[data-action]').forEach((btn) => {
@@ -147,11 +151,7 @@ export class HistoryModal {
     private _exportJson(): void {
         const records = this._storage.getAll();
         const json = this._exportManager.exportDetailedJson(records);
-        this._downloadFile(
-            `tpi_history_${this._getDateString()}.json`,
-            json,
-            'application/json',
-        );
+        this._downloadFile(`tpi_history_${this._getDateString()}.json`, json, 'application/json');
     }
 
     /**
@@ -166,13 +166,10 @@ export class HistoryModal {
 
         try {
             const zipBlob = await this._exportManager.exportCsvZip(records);
-            this._downloadBlob(
-                `tpi_history_${this._getDateString()}.zip`,
-                zipBlob,
-            );
+            this._downloadBlob(`tpi_history_${this._getDateString()}.zip`, zipBlob);
         } catch (error) {
             console.error('Export failed:', error);
-            alert('Erreur lors de l\'export.');
+            alert("Erreur lors de l'export.");
         }
     }
 
@@ -354,7 +351,7 @@ export class HistoryModal {
         // Add back button
         const backBtn = document.createElement('button');
         backBtn.className = 'tpi-detailed-view__back-btn';
-        backBtn.innerHTML = '← Retour à l\'historique';
+        backBtn.innerHTML = "← Retour à l'historique";
         backBtn.addEventListener('click', () => this._closeDetailedView());
 
         const header = this._detailedViewOverlay.querySelector('.tpi-detailed-view__header');
@@ -390,7 +387,7 @@ export class HistoryModal {
         // Add back button
         const backBtn = document.createElement('button');
         backBtn.className = 'tpi-detailed-view__back-btn';
-        backBtn.innerHTML = '← Retour à l\'historique';
+        backBtn.innerHTML = "← Retour à l'historique";
         backBtn.addEventListener('click', () => this._closeDetailedView());
 
         const header = this._detailedViewOverlay.querySelector('.tpi-detailed-view__header');

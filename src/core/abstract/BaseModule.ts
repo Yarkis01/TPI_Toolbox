@@ -1,9 +1,6 @@
 import { Logger } from '../../utils/Logger';
 import IModule from '../interfaces/IModule';
-import {
-    IModuleConfigSchema,
-    ModuleConfigValues,
-} from '../interfaces/IModuleConfig';
+import { IModuleConfigSchema, ModuleConfigValues } from '../interfaces/IModuleConfig';
 import { ModuleConfigManager } from '../managers/ModuleConfigManager';
 
 /**
@@ -131,10 +128,7 @@ export abstract class BaseModule implements IModule {
      * @param defaultValue - The default value if not found.
      * @returns The configuration value.
      */
-    protected getConfigValue<T extends string | number | boolean>(
-        key: string,
-        defaultValue: T,
-    ): T {
+    protected getConfigValue<T extends string | number | boolean>(key: string, defaultValue: T): T {
         return this._configManager?.getOrDefault(key, defaultValue) ?? defaultValue;
     }
 

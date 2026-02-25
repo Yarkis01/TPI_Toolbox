@@ -1,4 +1,4 @@
-import { ParkDayRecord, DayRecord } from './interfaces';
+import { DayRecord, ParkDayRecord } from './interfaces';
 
 /**
  * Generates detailed HTML view for a day record, replicating the original recap display.
@@ -16,7 +16,7 @@ export class DetailedView {
      */
     private _formatCurrency(value: number, showSign = true): string {
         const color = value >= 0 ? 'rgb(46, 204, 113)' : 'rgb(231, 76, 60)';
-        const sign = showSign ? (value >= 0 ? '+' : '-') : (value < 0 ? '-' : '');
+        const sign = showSign ? (value >= 0 ? '+' : '-') : value < 0 ? '-' : '';
         return `<span style="color: ${color};">${sign}${this._formatNumber(value)}&nbsp;€</span>`;
     }
 
@@ -127,15 +127,19 @@ export class DetailedView {
                     <div class="tpi-detailed-section__grid">
                         <div class="tpi-detailed-section__col">
                             <p class="tpi-detailed-section__subtitle">Mouvements employé</p>
-                            ${hasMovements
-                ? `<ul>${hr.employeeMovements.map((m) => `<li>${m.name} (${m.role}) ${m.action}</li>`).join('')}</ul>`
-                : '<p class="tpi-detailed-section__empty">Aucun mouvement</p>'}
+                            ${
+                                hasMovements
+                                    ? `<ul>${hr.employeeMovements.map((m) => `<li>${m.name} (${m.role}) ${m.action}</li>`).join('')}</ul>`
+                                    : '<p class="tpi-detailed-section__empty">Aucun mouvement</p>'
+                            }
                         </div>
                         <div class="tpi-detailed-section__col">
                             <p class="tpi-detailed-section__subtitle">Etat des équipes</p>
-                            ${hasChanges
-                ? `<ul>${hr.teamStateChanges.map((c) => `<li>${c}</li>`).join('')}</ul>`
-                : '<p class="tpi-detailed-section__empty">Aucun changement</p>'}
+                            ${
+                                hasChanges
+                                    ? `<ul>${hr.teamStateChanges.map((c) => `<li>${c}</li>`).join('')}</ul>`
+                                    : '<p class="tpi-detailed-section__empty">Aucun changement</p>'
+                            }
                         </div>
                     </div>
                     <p class="tpi-detailed-section__info">Nombre d'employé disponible : ${hr.availableEmployees}</p>
@@ -175,9 +179,11 @@ export class DetailedView {
                         <p class="tpi-detailed-section__subtitle">Entrées :</p>
                         <ul>
                             <li>Capacité totale : ${this._formatNumber(v.totalCapacity)} pers./jour</li>
-                            ${v.securityCapacityBonus > 0
-                ? `<li>Capacité des points de sécurité : <span style="color: rgb(46, 204, 113);">+${v.securityCapacityBonus} points</span></li>`
-                : ''}
+                            ${
+                                v.securityCapacityBonus > 0
+                                    ? `<li>Capacité des points de sécurité : <span style="color: rgb(46, 204, 113);">+${v.securityCapacityBonus} points</span></li>`
+                                    : ''
+                            }
                         </ul>
                     </div>
                     <div class="tpi-detailed-section__subsection">
@@ -228,19 +234,25 @@ export class DetailedView {
         });
 
         const attractionsTable = Array.from(attractionsByZone.entries())
-            .map(([zone, attrs]) => `
+            .map(
+                ([zone, attrs]) => `
                 <tr class="tpi-detailed-table__zone-row">
                     <td colspan="4">${zone}</td>
                 </tr>
-                ${attrs.map((attr) => `
+                ${attrs
+                    .map(
+                        (attr) => `
                     <tr>
                         <td>${attr.name}</td>
                         <td>${this._formatNumber(attr.capacity)}</td>
                         <td>${this._formatNumber(attr.costPerDay)}&nbsp;€</td>
                         <td style="color: ${this._getWaitTimeColor(attr.waitTimeStatus)};">${attr.waitTime} min</td>
                     </tr>
-                `).join('')}
-            `)
+                `,
+                    )
+                    .join('')}
+            `,
+            )
             .join('');
 
         return `
@@ -266,22 +278,28 @@ export class DetailedView {
                             </tbody>
                         </table>
                     </div>
-                    ${a.waitTimePenalty > 0
-                ? `<p class="tpi-detailed-section__alert" style="color: rgb(231, 76, 60);">-${a.waitTimePenalty} points sur la note du parc à cause de temps d'attente trop long.</p>`
-                : ''}
+                    ${
+                        a.waitTimePenalty > 0
+                            ? `<p class="tpi-detailed-section__alert" style="color: rgb(231, 76, 60);">-${a.waitTimePenalty} points sur la note du parc à cause de temps d'attente trop long.</p>`
+                            : ''
+                    }
                     <p class="tpi-detailed-section__info">
                         Ratio coaster/flat : ${a.coasterCount} coasters / ${a.flatrideCount} flatrides 
                         ${a.ratioBonus > 0 ? `<span style="color: rgb(46, 204, 113);">+${a.ratioBonus} points</span>` : ''}
                         ${a.themingBonus > 0 ? ` · Bonus score de thématisation : <span style="color: rgb(46, 204, 113);">+${a.themingBonus} points</span>` : ''}
                     </p>
-                    ${a.works.length > 0 ? `
+                    ${
+                        a.works.length > 0
+                            ? `
                         <div class="tpi-detailed-section__subsection">
                             <p class="tpi-detailed-section__subtitle">Attractions en travaux :</p>
                             <ul>
                                 ${a.works.map((w) => `<li>${w.name} - ${w.daysRemaining} jours restants</li>`).join('')}
                             </ul>
                         </div>
-                    ` : ''}
+                    `
+                            : ''
+                    }
                     <div class="tpi-detailed-section__finance">
                         <p class="tpi-detailed-section__subtitle">Recette / dépenses :</p>
                         <ul>
@@ -315,19 +333,25 @@ export class DetailedView {
         });
 
         const spectaclesTable = Array.from(spectaclesByZone.entries())
-            .map(([zone, specs]) => `
+            .map(
+                ([zone, specs]) => `
                 <tr class="tpi-detailed-table__zone-row">
                     <td colspan="4">${zone}</td>
                 </tr>
-                ${specs.map((spec) => `
+                ${specs
+                    .map(
+                        (spec) => `
                     <tr>
                         <td>${spec.name}</td>
                         <td>${spec.type}</td>
                         <td>${this._formatNumber(spec.capacity)}</td>
                         <td>${this._formatNumber(spec.visitorsPerShow)}</td>
                     </tr>
-                `).join('')}
-            `)
+                `,
+                    )
+                    .join('')}
+            `,
+            )
             .join('');
 
         return `
@@ -385,19 +409,25 @@ export class DetailedView {
         });
 
         const restaurantsTable = Array.from(restaurantsByZone.entries())
-            .map(([zone, rests]) => `
+            .map(
+                ([zone, rests]) => `
                 <tr class="tpi-detailed-table__zone-row">
                     <td colspan="4">${zone}</td>
                 </tr>
-                ${rests.map((rest) => `
+                ${rests
+                    .map(
+                        (rest) => `
                     <tr>
                         <td>${rest.name}</td>
                         <td>${this._formatNumber(rest.capacity)}</td>
                         <td>${this._formatNumber(rest.visitorsServed)}</td>
                         <td>${this._formatCurrency(rest.revenue)}</td>
                     </tr>
-                `).join('')}
-            `)
+                `,
+                    )
+                    .join('')}
+            `,
+            )
             .join('');
 
         return `
@@ -423,19 +453,27 @@ export class DetailedView {
                             </tbody>
                         </table>
                     </div>
-                    ${r.capacityWarnings.length > 0 ? `
+                    ${
+                        r.capacityWarnings.length > 0
+                            ? `
                         <div class="tpi-detailed-section__alert" style="color: rgb(255, 165, 0);">
                             ${r.capacityWarnings.join('<br>')}
                         </div>
-                    ` : ''}
-                    ${r.works.length > 0 ? `
+                    `
+                            : ''
+                    }
+                    ${
+                        r.works.length > 0
+                            ? `
                         <div class="tpi-detailed-section__subsection">
                             <p class="tpi-detailed-section__subtitle">Restaurants en travaux :</p>
                             <ul>
                                 ${r.works.map((w) => `<li>${w.name} - ${w.daysRemaining} jours restants</li>`).join('')}
                             </ul>
                         </div>
-                    ` : ''}
+                    `
+                            : ''
+                    }
                     <div class="tpi-detailed-section__finance">
                         <p class="tpi-detailed-section__subtitle">Recette / dépenses :</p>
                         <ul>
@@ -470,11 +508,14 @@ export class DetailedView {
         });
 
         const boutiquesTable = Array.from(boutiquesByZone.entries())
-            .map(([zone, bouts]) => `
+            .map(
+                ([zone, bouts]) => `
                 <tr class="tpi-detailed-table__zone-row">
                     <td colspan="5">${zone}</td>
                 </tr>
-                ${bouts.map((bout) => `
+                ${bouts
+                    .map(
+                        (bout) => `
                     <tr>
                         <td>${bout.name}</td>
                         <td>${this._formatNumber(bout.capacity)}</td>
@@ -482,8 +523,11 @@ export class DetailedView {
                         <td style="font-size: 0.85rem;">${bout.salesDetail}</td>
                         <td>${this._formatCurrency(bout.revenue)}</td>
                     </tr>
-                `).join('')}
-            `)
+                `,
+                    )
+                    .join('')}
+            `,
+            )
             .join('');
 
         return `
@@ -584,7 +628,9 @@ export class DetailedView {
     private _generateSummarySection(park: ParkDayRecord): string {
         const s = park.summary;
 
-        const noteDetailsTable = s.noteDetails.length > 0 ? `
+        const noteDetailsTable =
+            s.noteDetails.length > 0
+                ? `
             <div class="tpi-detailed-section__note-details">
                 <p class="tpi-detailed-section__subtitle" style="cursor: pointer;" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">
                     ▼ Détail de la note de parc
@@ -600,7 +646,9 @@ export class DetailedView {
                             </tr>
                         </thead>
                         <tbody>
-                            ${s.noteDetails.map((n) => `
+                            ${s.noteDetails
+                                .map(
+                                    (n) => `
                                 <tr>
                                     <td>${n.type}</td>
                                     <td style="color: var(--text-secondary);">${n.calculation}</td>
@@ -611,7 +659,9 @@ export class DetailedView {
                                         ${n.isMaxed ? '✓' : '-'}
                                     </td>
                                 </tr>
-                            `).join('')}
+                            `,
+                                )
+                                .join('')}
                             <tr class="tpi-detailed-table__total-row">
                                 <td>TOTAL</td>
                                 <td>Nouvelle note du parc</td>
@@ -622,7 +672,8 @@ export class DetailedView {
                     </table>
                 </div>
             </div>
-        ` : '';
+        `
+                : '';
 
         return `
             <div class="tpi-detailed-section tpi-detailed-section--summary">

@@ -89,4 +89,3 @@ export interface SessionState {
     windows: SavedWindowState[];
     focusedAppId: string | null;
 }
-

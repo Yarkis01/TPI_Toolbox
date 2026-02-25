@@ -1,7 +1,7 @@
 import { createElement } from '../../utils/DomUtils';
-import { CSS_CLASSES, STRINGS, DEFAULTS } from './constants';
-import { IShareFilterCriteria, IShareFilterUI } from './types';
+import { CSS_CLASSES, DEFAULTS, STRINGS } from './constants';
 import './styles.scss';
+import { IShareFilterCriteria, IShareFilterUI } from './types';
 
 /**
  * UI component for share filtering.
@@ -122,9 +122,10 @@ export class ShareFilterUI implements IShareFilterUI {
      */
     public updateStats(visible: number, total: number): void {
         if (this._statsDisplay) {
-            this._statsDisplay.textContent = STRINGS.STATS_TEMPLATE
-                .replace('{visible}', visible.toString())
-                .replace('{total}', total.toString());
+            this._statsDisplay.textContent = STRINGS.STATS_TEMPLATE.replace(
+                '{visible}',
+                visible.toString(),
+            ).replace('{total}', total.toString());
         }
     }
 
@@ -160,17 +161,44 @@ export class ShareFilterUI implements IShareFilterUI {
         );
         const holdingGroup = this._createLabeledElement(STRINGS.HOLDING_LABEL, this._holdingSelect);
 
-        this._minIndexInput = this._createNumberInput('tpi-min-index', DEFAULTS.MIN_INDEX, -100, 100);
-        const minIndexGroup = this._createLabeledElement(STRINGS.MIN_INDEX_LABEL, this._minIndexInput);
+        this._minIndexInput = this._createNumberInput(
+            'tpi-min-index',
+            DEFAULTS.MIN_INDEX,
+            -100,
+            100,
+        );
+        const minIndexGroup = this._createLabeledElement(
+            STRINGS.MIN_INDEX_LABEL,
+            this._minIndexInput,
+        );
 
-        this._maxIndexInput = this._createNumberInput('tpi-max-index', DEFAULTS.MAX_INDEX, -100, 100);
-        const maxIndexGroup = this._createLabeledElement(STRINGS.MAX_INDEX_LABEL, this._maxIndexInput);
+        this._maxIndexInput = this._createNumberInput(
+            'tpi-max-index',
+            DEFAULTS.MAX_INDEX,
+            -100,
+            100,
+        );
+        const maxIndexGroup = this._createLabeledElement(
+            STRINGS.MAX_INDEX_LABEL,
+            this._maxIndexInput,
+        );
 
-        this._minPriceInput = this._createNumberInput('tpi-min-price', DEFAULTS.MIN_PRICE, 0, 10000);
-        const minPriceGroup = this._createLabeledElement(STRINGS.MIN_PRICE_LABEL, this._minPriceInput);
+        this._minPriceInput = this._createNumberInput(
+            'tpi-min-price',
+            DEFAULTS.MIN_PRICE,
+            0,
+            10000,
+        );
+        const minPriceGroup = this._createLabeledElement(
+            STRINGS.MIN_PRICE_LABEL,
+            this._minPriceInput,
+        );
 
         this._maxPriceInput = this._createNumberInput('tpi-max-price', undefined, 0, 10000);
-        const maxPriceGroup = this._createLabeledElement(STRINGS.MAX_PRICE_LABEL, this._maxPriceInput);
+        const maxPriceGroup = this._createLabeledElement(
+            STRINGS.MAX_PRICE_LABEL,
+            this._maxPriceInput,
+        );
 
         this._positiveOnlyCheckbox = createElement('input', {
             type: 'checkbox',
@@ -190,36 +218,31 @@ export class ShareFilterUI implements IShareFilterUI {
             this._negativeOnlyCheckbox,
         );
 
-        const resetBtn = createElement(
-            'button',
-            { type: 'button', class: CSS_CLASSES.RESET_BTN },
-            [STRINGS.RESET_BTN],
-        );
+        const resetBtn = createElement('button', { type: 'button', class: CSS_CLASSES.RESET_BTN }, [
+            STRINGS.RESET_BTN,
+        ]);
         resetBtn.addEventListener('click', () => this._resetFilters());
 
-        this._statsDisplay = createElement('div', { class: CSS_CLASSES.STATS_DISPLAY }, ['0 / 0 parts affichées']);
+        this._statsDisplay = createElement('div', { class: CSS_CLASSES.STATS_DISPLAY }, [
+            '0 / 0 parts affichées',
+        ]);
 
-        const filterGroup = createElement(
-            'div',
-            { class: CSS_CLASSES.FILTER_GROUP },
-            [
-                holdingGroup,
-                minIndexGroup,
-                maxIndexGroup,
-                minPriceGroup,
-                maxPriceGroup,
-                positiveOnlyGroup,
-                negativeOnlyGroup,
-                resetBtn,
-                this._statsDisplay,
-            ],
-        );
+        const filterGroup = createElement('div', { class: CSS_CLASSES.FILTER_GROUP }, [
+            holdingGroup,
+            minIndexGroup,
+            maxIndexGroup,
+            minPriceGroup,
+            maxPriceGroup,
+            positiveOnlyGroup,
+            negativeOnlyGroup,
+            resetBtn,
+            this._statsDisplay,
+        ]);
 
-        this._filterContainer = createElement(
-            'div',
-            { class: CSS_CLASSES.FILTER_CONTAINER },
-            [title, filterGroup],
-        );
+        this._filterContainer = createElement('div', { class: CSS_CLASSES.FILTER_CONTAINER }, [
+            title,
+            filterGroup,
+        ]);
 
         this._container?.appendChild(this._filterContainer);
         this._setupEventListeners();
@@ -232,11 +255,10 @@ export class ShareFilterUI implements IShareFilterUI {
      * @returns The wrapper element.
      */
     private _createLabeledElement(labelText: string, element: HTMLElement): HTMLElement {
-        const label = createElement(
-            'label',
-            { class: CSS_CLASSES.FILTER_LABEL },
-            [labelText, element],
-        );
+        const label = createElement('label', { class: CSS_CLASSES.FILTER_LABEL }, [
+            labelText,
+            element,
+        ]);
         return label;
     }
 
@@ -247,11 +269,10 @@ export class ShareFilterUI implements IShareFilterUI {
      * @returns The wrapper element.
      */
     private _createCheckboxElement(labelText: string, checkbox: HTMLInputElement): HTMLElement {
-        const label = createElement(
-            'label',
-            { class: CSS_CLASSES.FILTER_CHECKBOX },
-            [checkbox, labelText],
-        );
+        const label = createElement('label', { class: CSS_CLASSES.FILTER_CHECKBOX }, [
+            checkbox,
+            labelText,
+        ]);
         return label;
     }
 

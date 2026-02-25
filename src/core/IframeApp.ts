@@ -1,9 +1,9 @@
 import { injectStyle } from '../utils/DomUtils';
 import { Logger } from '../utils/Logger';
+import { registerCommonModules } from './ModuleRegistry';
 import IApp from './interfaces/IApp';
 import { ModuleManager } from './managers/ModuleManager';
 import { SettingsManager } from './managers/SettingsManager';
-import { registerCommonModules } from './ModuleRegistry';
 
 /**
  * Iframe application class.
@@ -26,7 +26,7 @@ export class IframeApp implements IApp {
 
         const settingsManager = new SettingsManager();
 
-        if (settingsManager.getModuleState("operating_system", false)) {
+        if (settingsManager.getModuleState('operating_system', false)) {
             this._logger.info('🔧 Operating System Module is enabled. Enabling...');
 
             const moduleManager = new ModuleManager(settingsManager);
@@ -53,9 +53,6 @@ export class IframeApp implements IApp {
             `);
         }
     }
-
-
-
 
     /**
      * Initializes application modules.

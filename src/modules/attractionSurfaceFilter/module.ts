@@ -85,10 +85,14 @@ export class AttractionSurfaceFilterModule extends BaseModule {
      * @param container The container element.
      */
     private _injectUI(container: HTMLElement): void {
-        const label = createElement('label', {
-            class: 'attraction-store-modal__filter-label',
-            for: SURFACE_SELECTORS.SLIDER_ID
-        }, [SURFACE_STRINGS.LABEL]);
+        const label = createElement(
+            'label',
+            {
+                class: 'attraction-store-modal__filter-label',
+                for: SURFACE_SELECTORS.SLIDER_ID,
+            },
+            [SURFACE_STRINGS.LABEL],
+        );
 
         this._slider = createElement('input', {
             type: 'range',
@@ -98,19 +102,27 @@ export class AttractionSurfaceFilterModule extends BaseModule {
             max: this._calculateMaxSurface().toString(), // Use dynamic max
             step: SURFACE_DEFAULTS.STEP.toString(),
             value: this._calculateMaxSurface().toString(), // Start with all selected
-            style: 'width: 100%; margin-top: 5px;'
+            style: 'width: 100%; margin-top: 5px;',
         }) as HTMLInputElement;
 
-        this._valueDisplay = createElement('span', {
-            id: SURFACE_SELECTORS.SLIDER_VALUE_ID,
-            style: 'font-size: 0.8rem; color: var(--text-secondary); float: right;'
-        }, [SURFACE_STRINGS.ALL]);
+        this._valueDisplay = createElement(
+            'span',
+            {
+                id: SURFACE_SELECTORS.SLIDER_VALUE_ID,
+                style: 'font-size: 0.8rem; color: var(--text-secondary); float: right;',
+            },
+            [SURFACE_STRINGS.ALL],
+        );
 
         const labelContainer = createElement('div', {}, [label, this._valueDisplay]);
 
-        this._sliderGroup = createElement('div', {
-            class: 'attraction-store-modal__filter-group'
-        }, [labelContainer, this._slider]);
+        this._sliderGroup = createElement(
+            'div',
+            {
+                class: 'attraction-store-modal__filter-group',
+            },
+            [labelContainer, this._slider],
+        );
 
         // Insert before the last filter group (usually the checkbox)
         const lastGroup = container.lastElementChild;
@@ -203,7 +215,7 @@ export class AttractionSurfaceFilterModule extends BaseModule {
                 attributes: true,
                 attributeFilter: ['style', 'class'],
                 childList: true,
-                subtree: true
+                subtree: true,
             });
         }
 
@@ -276,7 +288,7 @@ export class AttractionSurfaceFilterModule extends BaseModule {
         const limit = parseInt(this._slider.max);
         const cards = document.querySelectorAll<HTMLElement>(SURFACE_SELECTORS.CARD);
 
-        cards.forEach(card => {
+        cards.forEach((card) => {
             // If slider is at max, show everything regardless of extraction errors or huge values
             if (maxSurface >= limit) {
                 card.classList.remove(SURFACE_SELECTORS.HIDDEN_CLASS);
@@ -331,7 +343,7 @@ export class AttractionSurfaceFilterModule extends BaseModule {
      * Removes all filters applied by this module.
      */
     private _removeFilters(): void {
-        document.querySelectorAll(`.${SURFACE_SELECTORS.HIDDEN_CLASS}`).forEach(el => {
+        document.querySelectorAll(`.${SURFACE_SELECTORS.HIDDEN_CLASS}`).forEach((el) => {
             el.classList.remove(SURFACE_SELECTORS.HIDDEN_CLASS);
         });
     }
@@ -346,7 +358,7 @@ export class AttractionSurfaceFilterModule extends BaseModule {
         const cards = document.querySelectorAll<HTMLElement>(SURFACE_SELECTORS.CARD);
         let visibleCount = 0;
 
-        cards.forEach(card => {
+        cards.forEach((card) => {
             const style = window.getComputedStyle(card);
             if (style.display !== 'none') {
                 visibleCount++;
@@ -364,12 +376,14 @@ export class AttractionSurfaceFilterModule extends BaseModule {
         let max = 0;
 
         const typeFilter = document.querySelector<HTMLSelectElement>(SURFACE_SELECTORS.TYPE_FILTER);
-        const constructorFilter = document.querySelector<HTMLSelectElement>('#attraction-filter-constructor');
+        const constructorFilter = document.querySelector<HTMLSelectElement>(
+            '#attraction-filter-constructor',
+        );
 
         const selectedType = typeFilter ? typeFilter.value : '';
         const selectedConstructor = constructorFilter ? constructorFilter.value : '';
 
-        cards.forEach(card => {
+        cards.forEach((card) => {
             // Check Type Filter
             if (selectedType && selectedType !== '') {
                 if (card.dataset.type !== selectedType) {

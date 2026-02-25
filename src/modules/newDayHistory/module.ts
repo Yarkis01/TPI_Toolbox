@@ -1,10 +1,10 @@
 import { BaseModule } from '../../core/abstract/BaseModule';
 import { IModuleConfigSchema } from '../../core/interfaces/IModuleConfig';
 import { createElement } from '../../utils/DomUtils';
-import { NEW_DAY_SELECTORS, NEW_DAY_STRINGS, STORAGE_CONFIG } from './constants';
 import { DataExtractor } from './DataExtractor';
-import { HistoryStorage } from './HistoryStorage';
 import { HistoryModal } from './HistoryModal';
+import { HistoryStorage } from './HistoryStorage';
+import { NEW_DAY_SELECTORS, NEW_DAY_STRINGS, STORAGE_CONFIG } from './constants';
 import './styles.scss';
 
 /** Configuration keys for this module */
@@ -51,7 +51,7 @@ export class NewDayHistoryModule extends BaseModule {
      * @inheritdoc
      */
     public get description(): string {
-        return 'Enregistre et affiche l\'historique des résumés de journée.';
+        return "Enregistre et affiche l'historique des résumés de journée.";
     }
 
     /**
@@ -62,14 +62,14 @@ export class NewDayHistoryModule extends BaseModule {
             options: [
                 {
                     key: CONFIG_KEYS.MAX_RECORDS,
-                    label: 'Nombre maximum d\'entrées',
-                    description: 'Nombre maximum de journées à conserver dans l\'historique.',
+                    label: "Nombre maximum d'entrées",
+                    description: "Nombre maximum de journées à conserver dans l'historique.",
                     type: 'number',
                     defaultValue: STORAGE_CONFIG.MAX_RECORDS,
                     min: 1,
                     max: 365,
                     step: 1,
-                }
+                },
             ],
         };
     }
@@ -113,7 +113,10 @@ export class NewDayHistoryModule extends BaseModule {
 
         // Ensure storage is initialized
         if (!this._storage) {
-            const maxRecords = this.getConfigValue(CONFIG_KEYS.MAX_RECORDS, STORAGE_CONFIG.MAX_RECORDS);
+            const maxRecords = this.getConfigValue(
+                CONFIG_KEYS.MAX_RECORDS,
+                STORAGE_CONFIG.MAX_RECORDS,
+            );
             this._storage = new HistoryStorage(STORAGE_CONFIG.STORAGE_KEY, maxRecords);
             this._modal = new HistoryModal(this._storage);
         }
@@ -276,8 +279,7 @@ export class NewDayHistoryModule extends BaseModule {
                 const existingRecords = this._storage.getAll();
                 const recentRecord = existingRecords.find(
                     (r) =>
-                        r.daysRemaining === data.daysRemaining &&
-                        Date.now() - r.timestamp < 60000, // Within 1 minute
+                        r.daysRemaining === data.daysRemaining && Date.now() - r.timestamp < 60000, // Within 1 minute
                 );
 
                 if (recentRecord) {

@@ -114,4 +114,3 @@ export interface IShareFilterUI {
      */
     destroy(): void;
 }
-

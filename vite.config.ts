@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import monkey, { cdn } from 'vite-plugin-monkey';
+
 import { version } from './package.json';
 
 export default defineConfig({

@@ -26,7 +26,7 @@ export class ParkWebSiteRedesingModule extends BaseModule {
      * @inheritdoc
      */
     public get name() {
-        return 'Redesign de la page web d\'un park';
+        return "Redesign de la page web d'un park";
     }
 
     /**
@@ -133,7 +133,7 @@ export class ParkWebSiteRedesingModule extends BaseModule {
      * Applies the specified theme to the document.
      * Light theme: adds `data-theme="light"` attribute to document root.
      * Dark theme: removes the data-theme attribute.
-     * 
+     *
      * @param theme - The theme to apply ('light' or 'dark').
      */
     private _applyTheme(theme: 'light' | 'dark'): void {
@@ -159,7 +159,7 @@ export class ParkWebSiteRedesingModule extends BaseModule {
 
     /**
      * Gets the currently applied theme.
-     * 
+     *
      * @returns The current theme ('light' or 'dark').
      */
     private _getCurrentTheme(): 'light' | 'dark' {
@@ -168,7 +168,7 @@ export class ParkWebSiteRedesingModule extends BaseModule {
 
     /**
      * Retrieves the saved theme preference from localStorage.
-     * 
+     *
      * @returns The saved theme, or 'dark' as the default.
      */
     private _getSavedTheme(): 'light' | 'dark' {
@@ -178,7 +178,7 @@ export class ParkWebSiteRedesingModule extends BaseModule {
 
     /**
      * Saves the theme preference to localStorage.
-     * 
+     *
      * @param theme - The theme to save.
      */
     private _saveTheme(theme: 'light' | 'dark'): void {
@@ -189,7 +189,7 @@ export class ParkWebSiteRedesingModule extends BaseModule {
      * Gets the appropriate icon for the current theme.
      * Returns a sun icon when in dark mode (clicking will switch to light),
      * and a moon icon when in light mode (clicking will switch to dark).
-     * 
+     *
      * @param theme - The current theme.
      * @returns The HTML icon string (emoji).
      */

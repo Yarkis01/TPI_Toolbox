@@ -3,12 +3,19 @@ import { IModuleConfigSchema } from '../../core/interfaces/IModuleConfig';
 import { ModuleManager } from '../../core/managers/ModuleManager';
 import { StorageService } from '../../services/StorageService';
 import { createElement } from '../../utils/DomUtils';
-import { SettingsApp } from './apps/SettingsApp';
 import { IFrameApp } from './apps/IFrameApp';
+import { SettingsApp } from './apps/SettingsApp';
 import { Dock } from './components/Dock';
 import { WindowComponent } from './components/Window';
 import { WindowManager } from './components/WindowManager';
-import { APP_IDS, OS_CONFIG, SavedWindowState, SELECTORS, SessionState, SETTINGS_KEYS } from './constants';
+import {
+    APP_IDS,
+    OS_CONFIG,
+    SELECTORS,
+    SETTINGS_KEYS,
+    SavedWindowState,
+    SessionState,
+} from './constants';
 
 /** Configuration keys for this module */
 const CONFIG_KEYS = {
@@ -68,14 +75,16 @@ export class OperatingSystemModule extends BaseModule {
                 {
                     key: CONFIG_KEYS.REDUCE_EFFECTS,
                     label: 'Réduire les effets visuels',
-                    description: 'Désactive les effets de flou et transparence pour améliorer les performances.',
+                    description:
+                        'Désactive les effets de flou et transparence pour améliorer les performances.',
                     type: 'boolean',
                     defaultValue: false,
                 },
                 {
                     key: CONFIG_KEYS.RESTORE_SESSION,
                     label: 'Restaurer les fenêtres',
-                    description: 'Sauvegarde et restaure automatiquement les fenêtres ouvertes au rechargement.',
+                    description:
+                        'Sauvegarde et restaure automatiquement les fenêtres ouvertes au rechargement.',
                     type: 'boolean',
                     defaultValue: true,
                 },
@@ -211,7 +220,9 @@ export class OperatingSystemModule extends BaseModule {
         if (!appConfig) {
             appConfig = {
                 title: `Application: ${appId}`,
-                content: createElement('div', { style: { padding: '20px' } }, [`Contenu pour ${appId} (Placeholder)`]),
+                content: createElement('div', { style: { padding: '20px' } }, [
+                    `Contenu pour ${appId} (Placeholder)`,
+                ]),
             };
         }
 
@@ -260,7 +271,9 @@ export class OperatingSystemModule extends BaseModule {
                 if (iframe.contentWindow !== sourceWindow) {
                     const content = winComponent.element.querySelector('.window-content');
                     if (content) {
-                        let loader = content.querySelector('.window-loading-overlay') as HTMLElement;
+                        let loader = content.querySelector(
+                            '.window-loading-overlay',
+                        ) as HTMLElement;
 
                         if (isLoading) {
                             if (!loader) {
@@ -297,7 +310,9 @@ export class OperatingSystemModule extends BaseModule {
                     try {
                         iframe.contentWindow.location.reload();
                     } catch (error) {
-                        this._logger.error(`Failed to refresh window ${appId}: ${(error as Error).message}`);
+                        this._logger.error(
+                            `Failed to refresh window ${appId}: ${(error as Error).message}`,
+                        );
                     }
                 }
             }
@@ -357,7 +372,10 @@ export class OperatingSystemModule extends BaseModule {
             return;
         }
 
-        const session = this.storageService.load<SessionState | null>(SETTINGS_KEYS.SESSION_STATE, null);
+        const session = this.storageService.load<SessionState | null>(
+            SETTINGS_KEYS.SESSION_STATE,
+            null,
+        );
         if (!session || !session.windows || session.windows.length === 0) {
             this._logger.info('No session to restore.');
             return;
@@ -491,7 +509,13 @@ export class OperatingSystemModule extends BaseModule {
                 return {
                     title: OS_CONFIG.DOCK.LABELS.MY_PARK,
                     content: new IFrameApp(OS_CONFIG.URL_MY_PARK, {
-                        removeSelectors: ["a.left-menu__item:nth-child(1)", "a.left-menu__item:nth-child(2)", "div.left-menu__separator", "div.dashboard-welcome", "div.left-menu__footer"],
+                        removeSelectors: [
+                            'a.left-menu__item:nth-child(1)',
+                            'a.left-menu__item:nth-child(2)',
+                            'div.left-menu__separator',
+                            'div.dashboard-welcome',
+                            'div.left-menu__footer',
+                        ],
                         forceFullWidth: false,
                     }).render(),
                 };
@@ -532,12 +556,12 @@ export class OperatingSystemModule extends BaseModule {
                 urlPart: 'new_day.php',
                 selector: '#new-day-advance-btn',
                 strategy: 'element-hide',
-                targetSelector: '#simulation-loader'
+                targetSelector: '#simulation-loader',
             },
             {
                 selector: '#transfer-confirm-btn',
-                strategy: 'unload-or-reenable'
-            }
+                strategy: 'unload-or-reenable',
+            },
         ];
 
         const tryAttachListener = (config: TriggerConfig) => {
@@ -547,14 +571,18 @@ export class OperatingSystemModule extends BaseModule {
             if (element && element instanceof HTMLElement) {
                 this._logger.info(`✅ Found trigger element: ${config.selector}`);
                 element.addEventListener('click', () => {
-                    this.monitorAsyncAction(config.strategy, element as HTMLButtonElement, config.targetSelector);
+                    this.monitorAsyncAction(
+                        config.strategy,
+                        element as HTMLButtonElement,
+                        config.targetSelector,
+                    );
                 });
             } else {
                 setTimeout(() => tryAttachListener(config), 1000);
             }
         };
 
-        triggers.forEach(config => {
+        triggers.forEach((config) => {
             if (document.readyState === 'loading') {
                 document.addEventListener('DOMContentLoaded', () => tryAttachListener(config));
             } else {
@@ -572,13 +600,13 @@ export class OperatingSystemModule extends BaseModule {
     private monitorAsyncAction(
         strategy: 'element-hide' | 'unload-or-reenable',
         button: HTMLButtonElement,
-        targetSelector?: string
+        targetSelector?: string,
     ): void {
         window.parent.postMessage({ type: 'TPI_TOOLBOX_LOADING_START' }, '*');
         this._logger.info(`Starting async monitoring: ${strategy}`);
 
         let isFinalized = false;
-        let cleanup: () => void = () => { };
+        let cleanup: () => void = () => {};
 
         const finalize = (success: boolean) => {
             if (isFinalized) return;
@@ -603,9 +631,11 @@ export class OperatingSystemModule extends BaseModule {
                     finalize(true);
                 }
             }, 100);
-            cleanup = () => { clearInterval(interval); clearTimeout(timeoutId); };
-        }
-        else if (strategy === 'unload-or-reenable') {
+            cleanup = () => {
+                clearInterval(interval);
+                clearTimeout(timeoutId);
+            };
+        } else if (strategy === 'unload-or-reenable') {
             const onUnload = () => finalize(true);
             window.addEventListener('beforeunload', onUnload);
 
