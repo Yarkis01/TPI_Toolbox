@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import monkey, { cdn } from 'vite-plugin-monkey';
+import { version } from './package.json';
 
 export default defineConfig({
     plugins: [
@@ -7,7 +8,7 @@ export default defineConfig({
             entry: 'src/main.ts',
             userscript: {
                 name: 'TPI Toolbox',
-                version: '0.1.0',
+                version,
                 author: 'Yarkis01 & MarcusIsLion',
                 description: 'A toolbox for TPI enhancing user experience with various features.',
                 match: ['https://*.themeparkindustries.com/*'],
@@ -19,6 +20,9 @@ export default defineConfig({
             },
         }),
     ],
+    define: {
+        'import.meta.env.VITE_APP_VERSION': JSON.stringify(version),
+    },
     build: {
         outDir: 'dist',
         emptyOutDir: true,
