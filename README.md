@@ -30,9 +30,23 @@ TPI Toolbox est entièrement modulable et regorge d'outils pensés pour les gér
 ## 🚀 Installation
 
 1. Installez une extension de gestion de scripts comme **[Tampermonkey](https://www.tampermonkey.net/)** ou **[Violentmonkey](https://violentmonkey.github.io/)** sur votre navigateur.
-2. Rendez-vous sur la page des **[Releases GitHub](https://github.com/Yarkis01/TPI_Toolbox/releases/latest)** du projet.
-3. Téléchargez et installez la dernière version du script (fichier `.user.js`).
-4. Rafraîchissez la page de **Theme Park Industries** et ouvrez le menu en cliquant sur le bouton TPI Toolbox !
+3. Rendez-vous sur la page des **[Releases GitHub](https://github.com/Yarkis01/TPI_Toolbox/releases/latest)** du projet.
+4. Téléchargez et installez la dernière version du script (fichier `.user.js`).
+5. Rafraîchissez la page de **Theme Park Industries** et ouvrez le menu en cliquant sur le bouton TPI Toolbox !
+
+---
+
+## ⚙️ Configuration
+
+Si vous ne voyez pas le bouton "TPI Toolbox" c'est normal, il faut authoriser votre extention à ajouter notre projet sur TPI.
+
+Pour cela veuillez suivre les étapes suivantes :
+
+### 🐵 TamperMonkey :
+
+rendez-vous sur la page de configuration de Tampermonkey **[Tampermonkey](chrome://extensions/?id=dhdgffkkebhmkfjojejmpbldmpobfkfo)** une fois ici veillé à retrouver les options suivantes et utilisez les mêmes valeurs :
+
+<img width="717" height="198" alt="image" src="https://github.com/user-attachments/assets/10b58392-a4dd-4ee3-b3da-e21ed87b8920" />
 
 ---
 
