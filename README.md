@@ -2,6 +2,7 @@
 
 ![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
 ![License](https://img.shields.io/badge/license-GPL--3.0-green.svg)
+![Downloads](https://img.shields.io/github/downloads/Yarkis01/TPI_Toolbox/total.svg?v=2)
 
 **TPI Toolbox** est un script utilisateur (Userscript) modulaire et performant conçu pour enrichir l'expérience sur le jeu de gestion **[Theme Park Industries](https://www.themeparkindustries.com/)**. 
 
