@@ -33,6 +33,7 @@ export class OperatingSystemModule extends BaseModule {
     private activeWindows: Map<string, WindowComponent> = new Map();
     private _messageHandler: (event: MessageEvent) => void;
     private storageService: StorageService;
+    private _sessionSaveTimeout: ReturnType<typeof setTimeout> | null = null;
 
     /**
      * Creates a new instance of the OperatingSystemModule.
@@ -331,9 +332,17 @@ export class OperatingSystemModule extends BaseModule {
     }
 
     /**
-     * Saves the current session state to storage.
+     * Debounces session saving to avoid excessive storage writes during drag/resize.
      */
     private saveSession(): void {
+        if (this._sessionSaveTimeout) clearTimeout(this._sessionSaveTimeout);
+        this._sessionSaveTimeout = setTimeout(() => this._doSaveSession(), 300);
+    }
+
+    /**
+     * Saves the current session state to storage.
+     */
+    private _doSaveSession(): void {
         const restoreEnabled = this.getConfigValue(CONFIG_KEYS.RESTORE_SESSION, true);
         if (!restoreEnabled) return;
 
@@ -606,7 +615,7 @@ export class OperatingSystemModule extends BaseModule {
         this._logger.info(`Starting async monitoring: ${strategy}`);
 
         let isFinalized = false;
-        let cleanup: () => void = () => {};
+        let cleanup: () => void = () => { };
 
         const finalize = (success: boolean) => {
             if (isFinalized) return;
