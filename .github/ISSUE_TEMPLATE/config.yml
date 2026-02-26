@@ -4,6 +4,3 @@ contact_links:
   - name: 📖 Documentation de TPI
     url: https://github.com/Yarkis01/TPI_Toolbox/blob/059a865d9d85a77d3f6f92be4fce6d35fb1fd932/README.md
     about: Consultez notre guide d'utilisation avant d'ouvrir un ticket.
-  - name: 🚀 Suggérer une fonctionnalité
-    url: https://github.com/Yarkis01/TPI_Toolbox/issues/new?assignees=&labels=enhancement&title=%5BFEATURE%5D+
-    about: Proposez une nouvelle fonctionnalité ou une idée d'amélioration pour TPI.
