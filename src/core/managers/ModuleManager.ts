@@ -9,6 +9,7 @@ export class ModuleManager {
     private readonly _modules: Map<string, IModule>;
     private readonly _settingsManager: SettingsManager;
     private readonly _logger: Logger;
+    private _sortedModulesCache: IModule[] | null = null;
 
     /**
      * Creates an instance of the ModuleManager class.
@@ -31,6 +32,7 @@ export class ModuleManager {
         }
 
         this._modules.set(module.id, module);
+        this._sortedModulesCache = null;
 
         if (this._settingsManager.getModuleState(module.id, false)) {
             module.init();
@@ -66,6 +68,12 @@ export class ModuleManager {
      * @returns An array of registered modules.
      */
     public getModules(): IModule[] {
-        return Array.from(this._modules.values()).toSorted((a, b) => a.name.localeCompare(b.name));
+        if (!this._sortedModulesCache) {
+            this._sortedModulesCache = Array.from(this._modules.values()).toSorted(
+                (a, b) => a.name.localeCompare(b.name),
+            );
+        }
+
+        return this._sortedModulesCache;
     }
 }
