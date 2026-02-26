@@ -9,8 +9,18 @@ import { ModuleConfigManager } from '../managers/ModuleConfigManager';
 export abstract class BaseModule implements IModule {
     protected _isActive: boolean;
     protected _isInitialized: boolean;
-    protected _logger: Logger;
+    private _loggerInstance: Logger | null = null;
     protected _configManager: ModuleConfigManager | null = null;
+
+    /**
+     * Lazily initialized logger — only created on first access.
+     */
+    protected get _logger(): Logger {
+        if (!this._loggerInstance) {
+            this._loggerInstance = new Logger(`Module:${this.constructor.name}`);
+        }
+        return this._loggerInstance;
+    }
 
     /**
      * Creates an instance of the BaseModule class.
@@ -18,7 +28,6 @@ export abstract class BaseModule implements IModule {
     public constructor() {
         this._isActive = false;
         this._isInitialized = false;
-        this._logger = new Logger(`Module:${this.constructor.name}`);
     }
 
     /**

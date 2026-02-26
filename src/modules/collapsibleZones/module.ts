@@ -9,7 +9,10 @@ import './styles.scss';
 export class CollapsibleZonesModule extends BaseModule {
     private _collapsedZones: Set<string> = new Set();
     private _listeners: Map<HTMLElement, () => void> = new Map();
-    private readonly _storage = new StorageService();
+
+    private get _storage(): StorageService {
+        return StorageService.getInstance();
+    }
 
     /**
      * @inheritdoc

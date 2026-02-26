@@ -32,8 +32,11 @@ export class OperatingSystemModule extends BaseModule {
     private moduleManager: ModuleManager;
     private activeWindows: Map<string, WindowComponent> = new Map();
     private _messageHandler: (event: MessageEvent) => void;
-    private storageService: StorageService;
     private _sessionSaveTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    private get storageService(): StorageService {
+        return StorageService.getInstance();
+    }
 
     /**
      * Creates a new instance of the OperatingSystemModule.
@@ -42,7 +45,6 @@ export class OperatingSystemModule extends BaseModule {
     public constructor(moduleManager: ModuleManager) {
         super();
         this.moduleManager = moduleManager;
-        this.storageService = new StorageService();
         this._messageHandler = this.handleMessage.bind(this);
     }
 

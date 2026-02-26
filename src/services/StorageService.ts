@@ -4,14 +4,26 @@ import { Logger } from '../utils/Logger';
  * Service for saving and loading data.
  */
 export class StorageService {
+    private static _instance: StorageService | null = null;
+
     private readonly _logger: Logger;
     private readonly _prefix: string;
     private readonly _useTamperMonkey: boolean;
 
     /**
-     * Initializes a new instance of the StorageService class.
+     * Gets the singleton instance of StorageService.
      */
-    public constructor() {
+    public static getInstance(): StorageService {
+        if (!StorageService._instance) {
+            StorageService._instance = new StorageService();
+        }
+        return StorageService._instance;
+    }
+
+    /**
+     * Private constructor — use StorageService.getInstance() instead.
+     */
+    private constructor() {
         this._logger = new Logger('StorageService');
         this._prefix = 'tpitoolbox:';
 
