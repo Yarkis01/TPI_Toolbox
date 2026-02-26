@@ -22,7 +22,7 @@ export class HistoryStorage {
     ) {
         this._storageKey = storageKey;
         this._maxRecords = maxRecords;
-        this._storage = new StorageService();
+        this._storage = StorageService.getInstance();
     }
 
     /**

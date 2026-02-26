@@ -10,33 +10,48 @@ import { IShare, IShareFilterCriteria, IShareFilterEngine, IShareParser } from '
  * Module to filter investment shares on the invest.php page.
  */
 export class InvestSharesFilterModule extends BaseModule {
-    private _parser: IShareParser;
-    private _filterEngine: IShareFilterEngine;
-    private _ui: ShareFilterUI;
-    private _storageService: StorageService;
+    private _parserInstance: IShareParser | null = null;
+    private _filterEngineInstance: IShareFilterEngine | null = null;
+    private _uiInstance: ShareFilterUI | null = null;
     private _shares: IShare[] = [];
     private _mutationObserver: MutationObserver | null = null;
-    private _isInitialized: boolean = false;
+    private _isModuleInitialized: boolean = false;
     private _debounceTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    private get _parser(): IShareParser {
+        if (!this._parserInstance) this._parserInstance = new ShareParser();
+        return this._parserInstance;
+    }
+
+    private get _filterEngine(): IShareFilterEngine {
+        if (!this._filterEngineInstance) this._filterEngineInstance = new ShareFilterEngine();
+        return this._filterEngineInstance;
+    }
+
+    private get _ui(): ShareFilterUI {
+        if (!this._uiInstance) this._uiInstance = new ShareFilterUI();
+        return this._uiInstance;
+    }
+
+    private get _storageService(): StorageService {
+        return StorageService.getInstance();
+    }
 
     /**
      * Creates an instance of InvestSharesFilterModule.
      * @param parser Optional custom parser.
      * @param filterEngine Optional custom filter engine.
      * @param ui Optional custom UI component.
-     * @param storageService Optional custom storage service.
      */
     public constructor(
         parser?: IShareParser,
         filterEngine?: IShareFilterEngine,
         ui?: ShareFilterUI,
-        storageService?: StorageService,
     ) {
         super();
-        this._parser = parser ?? new ShareParser();
-        this._filterEngine = filterEngine ?? new ShareFilterEngine();
-        this._ui = ui ?? new ShareFilterUI();
-        this._storageService = storageService ?? new StorageService();
+        if (parser) this._parserInstance = parser;
+        if (filterEngine) this._filterEngineInstance = filterEngine;
+        if (ui) this._uiInstance = ui;
     }
 
     /**
@@ -91,7 +106,7 @@ export class InvestSharesFilterModule extends BaseModule {
         });
         this._ui.destroy();
         this._shares = [];
-        this._isInitialized = false;
+        this._isModuleInitialized = false;
     }
 
     /**
@@ -114,12 +129,12 @@ export class InvestSharesFilterModule extends BaseModule {
 
         const tags = this._filterEngine.getUniqueTags(this._shares);
 
-        if (!this._isInitialized) {
+        if (!this._isModuleInitialized) {
             this._ui.render(container, tags);
             this._ui.onFilterChange(() => this._handleFilterChange());
 
             this._restoreFilterState();
-            this._isInitialized = true;
+            this._isModuleInitialized = true;
         }
         this._applyFilters();
     }

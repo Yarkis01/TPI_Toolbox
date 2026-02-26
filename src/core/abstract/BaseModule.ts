@@ -8,15 +8,26 @@ import { ModuleConfigManager } from '../managers/ModuleConfigManager';
  */
 export abstract class BaseModule implements IModule {
     protected _isActive: boolean;
-    protected _logger: Logger;
+    protected _isInitialized: boolean;
+    private _loggerInstance: Logger | null = null;
     protected _configManager: ModuleConfigManager | null = null;
+
+    /**
+     * Lazily initialized logger — only created on first access.
+     */
+    protected get _logger(): Logger {
+        if (!this._loggerInstance) {
+            this._loggerInstance = new Logger(`Module:${this.constructor.name}`);
+        }
+        return this._loggerInstance;
+    }
 
     /**
      * Creates an instance of the BaseModule class.
      */
     public constructor() {
         this._isActive = false;
-        this._logger = new Logger(`Module:${this.constructor.name}`);
+        this._isInitialized = false;
     }
 
     /**
@@ -37,15 +48,34 @@ export abstract class BaseModule implements IModule {
     /**
      * @inheritdoc
      */
-    init(): void {
-        this._logger.info(`Initializing module: ${this.name}`);
+    public get enabledByDefault(): boolean {
+        return false;
+    }
 
-        // Initialize config manager if schema is provided
+    /**
+     * @inheritdoc
+     */
+    init(): void {
+        if (!this._isInitialized) {
+            this._isInitialized = true;
+            this._logger.info(`Initializing module: ${this.name}`);
+        }
+    }
+
+    /**
+     * Lazily initializes the config manager on first access.
+     * @returns The config manager, or null if no schema is defined.
+     */
+    private _ensureConfigManager(): ModuleConfigManager | null {
+        if (this._configManager) return this._configManager;
+
         const schema = this.getConfigSchema();
         if (schema && schema.options.length > 0) {
             this._configManager = new ModuleConfigManager(this.id, schema);
             this._logger.info(`Configuration loaded with ${schema.options.length} option(s)`);
         }
+
+        return this._configManager;
     }
 
     /**
@@ -101,15 +131,16 @@ export abstract class BaseModule implements IModule {
      * @inheritdoc
      */
     getConfig(): ModuleConfigValues {
-        return this._configManager?.getAll() ?? {};
+        return this._ensureConfigManager()?.getAll() ?? {};
     }
 
     /**
      * @inheritdoc
      */
     setConfigValue(key: string, value: string | number | boolean): void {
-        if (this._configManager) {
-            this._configManager.set(key, value);
+        const configManager = this._ensureConfigManager();
+        if (configManager) {
+            configManager.set(key, value);
             this.onConfigChanged(key, value);
         }
     }
@@ -118,7 +149,7 @@ export abstract class BaseModule implements IModule {
      * @inheritdoc
      */
     resetConfig(): void {
-        this._configManager?.reset();
+        this._ensureConfigManager()?.reset();
         this.onConfigReset();
     }
 
@@ -129,7 +160,7 @@ export abstract class BaseModule implements IModule {
      * @returns The configuration value.
      */
     protected getConfigValue<T extends string | number | boolean>(key: string, defaultValue: T): T {
-        return this._configManager?.getOrDefault(key, defaultValue) ?? defaultValue;
+        return this._ensureConfigManager()?.getOrDefault(key, defaultValue) ?? defaultValue;
     }
 
     /**

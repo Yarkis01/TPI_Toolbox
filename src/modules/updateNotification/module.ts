@@ -36,6 +36,10 @@ export class UpdateNotificationModule extends BaseModule {
         return "Affiche une notification lorsqu'une nouvelle version de la toolbox est disponible.";
     }
 
+    public get enabledByDefault(): boolean {
+        return true;
+    }
+
     public getConfigSchema(): IModuleConfigSchema {
         return {
             options: [],

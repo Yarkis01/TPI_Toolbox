@@ -23,7 +23,7 @@ export class ModuleConfigManager {
      * @param schema - The configuration schema.
      */
     constructor(moduleId: string, schema: IModuleConfigSchema) {
-        this._storage = new StorageService();
+        this._storage = StorageService.getInstance();
         this._logger = new Logger(`ConfigManager:${moduleId}`);
         this._moduleId = moduleId;
         this._schema = schema;

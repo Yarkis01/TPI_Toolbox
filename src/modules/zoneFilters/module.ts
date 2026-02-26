@@ -193,7 +193,9 @@ export class ZoneFilterModule extends BaseModule {
                 const parentGroup = card.closest(ZONE_SELECTORS.ZONE_GROUP);
 
                 const isGroupHidden = parentGroup?.classList.contains(ZONE_SELECTORS.HIDDEN_CLASS);
-                const isCardHidden = window.getComputedStyle(card).display === 'none';
+                const isCardHidden =
+                    card.classList.contains(ZONE_SELECTORS.HIDDEN_CLASS) ||
+                    card.offsetParent === null;
 
                 if (!isGroupHidden && !isCardHidden) {
                     visibleCount++;
