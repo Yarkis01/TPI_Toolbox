@@ -1,0 +1,43 @@
+name: 1️⃣ 🚀 Suggérer une fonctionnalité
+description: Proposez une nouvelle fonctionnalité ou une idée d'amélioration pour TPI.
+title: "[FEATURE]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Merci de nous aider à améliorer TPI ! Prenez le temps de détailler votre idée pour que nous puissions bien la comprendre.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Votre idée résout-elle un problème ?
+      description: Expliquez le problème ou le besoin rencontré avec l'application actuelle.
+      placeholder: "Ex: C'est toujours très long de faire [telle action] car je dois..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Quelle est votre solution idéale ?
+      description: Décrivez précisément la fonctionnalité ou le comportement que vous aimeriez voir dans TPI.
+      placeholder: "Ex: J'aimerais un bouton sur l'écran d'accueil qui permettrait de..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Avez-vous pensé à des alternatives ?
+      description: Quelles autres solutions ou contournements avez-vous envisagés ?
+    validations:
+      required: false
+
+  - type: input
+    id: context
+    attributes:
+      label: Contexte supplémentaire
+      description: Ajoutez ici tout autre contexte, lien, ou idée liée (optionnel).
+    validations:
+      required: false
