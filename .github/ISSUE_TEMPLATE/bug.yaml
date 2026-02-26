@@ -1,0 +1,83 @@
+name: 🐛 Rapport de Bug
+description: Signalez une erreur pour nous aider à améliorer TPI.
+title: "[BUG]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Merci de prendre le temps de nous signaler ce problème. Plus vos informations sont précises, plus vite nous pourrons réparer !
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Que s'est-il passé ?
+      description: Expliquez-nous en détail le problème rencontré.
+      placeholder: "Ex: Lorsque je clique sur le bouton de sauvegarde, l'application se ferme sans message d'erreur."
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Comment en est-on arrivé là ?
+      description: Listez les étapes pour reproduire le bug.
+      placeholder: |
+        1. Ouvrir l'onglet 'Paramètres'
+        2. Modifier le nom d'utilisateur
+        3. Cliquer sur 'Valider'
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Système d'exploitation (OS)
+      description: Sur quel OS travaillez-vous ?
+      options:
+        - Windows
+        - macOS
+        - Linux
+        - Autre
+    validations:
+      required: true
+
+  - type: dropdown
+    id: browser
+    attributes:
+      label: Navigateur utilisé
+      description: Si le bug concerne l'interface web.
+      options:
+        - Chrome
+        - Firefox
+        - Safari
+        - Microsoft Edge
+        - Autre / Sans objet (App Desktop)
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version de TPI
+      description: Quelle version utilisez-vous ? (ex: v1.2.0)
+      placeholder: "v1.x.x"
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs ou messages d'erreur
+      description: Copiez-collez les erreurs de la console ou des fichiers logs ici.
+      render: shell
+
+  - type: checkboxes
+    id: validation
+    attributes:
+      label: Vérifications finales
+      options:
+        - label: J'ai vérifié que le bug n'a pas déjà été signalé.
+          required: true
+        - label: J'accepte que ces informations soient utilisées pour résoudre le bug.
+          required: true
