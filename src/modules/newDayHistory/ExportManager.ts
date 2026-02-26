@@ -20,7 +20,7 @@ export class ExportManager {
                 formattedDate: new Date(record.timestamp).toLocaleString('fr-FR'),
             })),
         };
-        return JSON.stringify(exportData, null, 2);
+        return JSON.stringify(exportData, null);
     }
 
     /**

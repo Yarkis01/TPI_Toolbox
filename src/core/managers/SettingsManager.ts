@@ -14,7 +14,7 @@ export class SettingsManager {
      */
     public constructor() {
         this._logger = new Logger('SettingsManager');
-        this._storage = new StorageService();
+        this._storage = StorageService.getInstance();
         this._cache = new Map<string, boolean>();
     }
 

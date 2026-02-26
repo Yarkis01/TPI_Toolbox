@@ -9,6 +9,7 @@ export class ModuleManager {
     private readonly _modules: Map<string, IModule>;
     private readonly _settingsManager: SettingsManager;
     private readonly _logger: Logger;
+    private _sortedModulesCache: IModule[] | null = null;
 
     /**
      * Creates an instance of the ModuleManager class.
@@ -31,10 +32,10 @@ export class ModuleManager {
         }
 
         this._modules.set(module.id, module);
+        this._sortedModulesCache = null;
 
-        module.init();
-
-        if (this._settingsManager.getModuleState(module.id, false)) {
+        if (this._settingsManager.getModuleState(module.id, module.enabledByDefault)) {
+            module.init();
             try {
                 module.enable();
             } catch (error) {
@@ -51,8 +52,12 @@ export class ModuleManager {
     public toggleModule(moduleId: string, enable: boolean): void {
         const module = this._modules.get(moduleId);
         if (module) {
-            if (enable) module.enable();
-            else module.disable();
+            if (enable) {
+                module.init();
+                module.enable();
+            } else {
+                module.disable();
+            }
 
             this._settingsManager.setModuleState(moduleId, enable);
         }
@@ -63,6 +68,12 @@ export class ModuleManager {
      * @returns An array of registered modules.
      */
     public getModules(): IModule[] {
-        return Array.from(this._modules.values()).toSorted((a, b) => a.name.localeCompare(b.name));
+        if (!this._sortedModulesCache) {
+            this._sortedModulesCache = Array.from(this._modules.values()).toSorted(
+                (a, b) => a.name.localeCompare(b.name),
+            );
+        }
+
+        return this._sortedModulesCache;
     }
 }

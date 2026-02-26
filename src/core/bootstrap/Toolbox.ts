@@ -137,9 +137,6 @@ export class Toolbox implements IBootstrap {
      */
     private _createBody(): HTMLElement {
         const modules = this._moduleManager.getModules();
-
-        modules.sort((a, b) => a.name.localeCompare(b.name));
-
         const rows = modules.map((module) => this._createModuleRow(module));
 
         if (rows.length === 0) {

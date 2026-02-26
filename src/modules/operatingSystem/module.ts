@@ -32,7 +32,11 @@ export class OperatingSystemModule extends BaseModule {
     private moduleManager: ModuleManager;
     private activeWindows: Map<string, WindowComponent> = new Map();
     private _messageHandler: (event: MessageEvent) => void;
-    private storageService: StorageService;
+    private _sessionSaveTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    private get storageService(): StorageService {
+        return StorageService.getInstance();
+    }
 
     /**
      * Creates a new instance of the OperatingSystemModule.
@@ -41,7 +45,6 @@ export class OperatingSystemModule extends BaseModule {
     public constructor(moduleManager: ModuleManager) {
         super();
         this.moduleManager = moduleManager;
-        this.storageService = new StorageService();
         this._messageHandler = this.handleMessage.bind(this);
     }
 
@@ -331,9 +334,17 @@ export class OperatingSystemModule extends BaseModule {
     }
 
     /**
-     * Saves the current session state to storage.
+     * Debounces session saving to avoid excessive storage writes during drag/resize.
      */
     private saveSession(): void {
+        if (this._sessionSaveTimeout) clearTimeout(this._sessionSaveTimeout);
+        this._sessionSaveTimeout = setTimeout(() => this._doSaveSession(), 300);
+    }
+
+    /**
+     * Saves the current session state to storage.
+     */
+    private _doSaveSession(): void {
         const restoreEnabled = this.getConfigValue(CONFIG_KEYS.RESTORE_SESSION, true);
         if (!restoreEnabled) return;
 
@@ -606,7 +617,7 @@ export class OperatingSystemModule extends BaseModule {
         this._logger.info(`Starting async monitoring: ${strategy}`);
 
         let isFinalized = false;
-        let cleanup: () => void = () => {};
+        let cleanup: () => void = () => { };
 
         const finalize = (success: boolean) => {
             if (isFinalized) return;
