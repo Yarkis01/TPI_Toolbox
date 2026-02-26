@@ -18,19 +18,17 @@ const CONFIG_KEYS = {
 export class NewDayHistoryModule extends BaseModule {
     private _historyBtn: HTMLButtonElement | null = null;
     private _storage: HistoryStorage | null = null;
-    private _extractor: DataExtractor;
+    private _extractorInstance: DataExtractor | null = null;
     private _modal: HistoryModal | null = null;
     private _observer: MutationObserver | null = null;
     private _advanceBtn: HTMLElement | null = null;
-    private _boundHandleAdvance: () => void;
+    private _boundHandleAdvance: (() => void) | null = null;
 
-    /**
-     * Creates an instance of NewDayHistoryModule.
-     */
-    constructor() {
-        super();
-        this._extractor = new DataExtractor();
-        this._boundHandleAdvance = this._handleAdvanceClick.bind(this);
+    private get _extractor(): DataExtractor {
+        if (!this._extractorInstance) {
+            this._extractorInstance = new DataExtractor();
+        }
+        return this._extractorInstance;
     }
 
     /**
@@ -138,7 +136,7 @@ export class NewDayHistoryModule extends BaseModule {
         this._historyBtn?.remove();
         this._historyBtn = null;
 
-        if (this._advanceBtn) {
+        if (this._advanceBtn && this._boundHandleAdvance) {
             this._advanceBtn.removeEventListener('click', this._boundHandleAdvance);
             this._advanceBtn = null;
         }
@@ -202,6 +200,9 @@ export class NewDayHistoryModule extends BaseModule {
         this._advanceBtn = document.querySelector(NEW_DAY_SELECTORS.ADVANCE_BUTTON);
 
         if (this._advanceBtn) {
+            if (!this._boundHandleAdvance) {
+                this._boundHandleAdvance = this._handleAdvanceClick.bind(this);
+            }
             this._advanceBtn.addEventListener('click', this._boundHandleAdvance);
             this._logger.info('Advance button listener attached');
         } else {
