@@ -32,9 +32,8 @@ export class ModuleManager {
 
         this._modules.set(module.id, module);
 
-        module.init();
-
         if (this._settingsManager.getModuleState(module.id, false)) {
+            module.init();
             try {
                 module.enable();
             } catch (error) {
@@ -51,8 +50,12 @@ export class ModuleManager {
     public toggleModule(moduleId: string, enable: boolean): void {
         const module = this._modules.get(moduleId);
         if (module) {
-            if (enable) module.enable();
-            else module.disable();
+            if (enable) {
+                module.init();
+                module.enable();
+            } else {
+                module.disable();
+            }
 
             this._settingsManager.setModuleState(moduleId, enable);
         }
