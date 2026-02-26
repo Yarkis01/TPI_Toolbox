@@ -48,6 +48,13 @@ export abstract class BaseModule implements IModule {
     /**
      * @inheritdoc
      */
+    public get enabledByDefault(): boolean {
+        return false;
+    }
+
+    /**
+     * @inheritdoc
+     */
     init(): void {
         if (!this._isInitialized) {
             this._isInitialized = true;

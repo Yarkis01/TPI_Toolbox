@@ -20,6 +20,11 @@ export default interface IModule {
     get description(): string;
 
     /**
+     * Whether the module should be enabled by default.
+     */
+    get enabledByDefault(): boolean;
+
+    /**
      * Initializes the module.
      */
     init(): void;

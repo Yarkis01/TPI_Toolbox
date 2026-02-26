@@ -34,7 +34,7 @@ export class ModuleManager {
         this._modules.set(module.id, module);
         this._sortedModulesCache = null;
 
-        if (this._settingsManager.getModuleState(module.id, false)) {
+        if (this._settingsManager.getModuleState(module.id, module.enabledByDefault)) {
             module.init();
             try {
                 module.enable();
