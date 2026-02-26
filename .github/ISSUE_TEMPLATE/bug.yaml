@@ -1,5 +1,5 @@
 name: 🐛 Rapport de Bug
-description: Signalez une erreur pour nous aider à améliorer TPI.
+description: Signalez une erreur pour nous aider à améliorer TPI Toolbox.
 title: "[BUG]: "
 labels: ["bug"]
 body:
@@ -60,6 +60,15 @@ body:
     id: version
     attributes:
       label: Version de TPI
+      description: "Quelle version utilisez-vous ? (ex: v1.2.0)"
+      placeholder: "v1.x.x"
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version de TPI Toolbox
       description: "Quelle version utilisez-vous ? (ex: v1.2.0)"
       placeholder: "v1.x.x"
     validations:
