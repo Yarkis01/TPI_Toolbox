@@ -1,4 +1,5 @@
 import { BaseModule } from '../../core/abstract/BaseModule';
+import { StorageService } from '../../services/StorageService';
 import { COLLAPSE_SELECTORS, STORAGE_KEYS } from './constants';
 import './styles.scss';
 
@@ -8,6 +9,7 @@ import './styles.scss';
 export class CollapsibleZonesModule extends BaseModule {
     private _collapsedZones: Set<string> = new Set();
     private _listeners: Map<HTMLElement, () => void> = new Map();
+    private readonly _storage = new StorageService();
 
     /**
      * @inheritdoc
@@ -62,30 +64,18 @@ export class CollapsibleZonesModule extends BaseModule {
     }
 
     /**
-     * Loads the collapsed state from local storage.
+     * Loads the collapsed state from storage.
      */
     private _loadState(): void {
-        const stored = localStorage.getItem(STORAGE_KEYS.COLLAPSED_ZONES);
-        if (stored) {
-            try {
-                const parsed = JSON.parse(stored);
-                if (Array.isArray(parsed)) {
-                    this._collapsedZones = new Set(parsed);
-                }
-            } catch (e) {
-                console.error('Failed to parse collapsed zones state', e);
-            }
-        }
+        const stored = this._storage.load<string[]>(STORAGE_KEYS.COLLAPSED_ZONES, []);
+        this._collapsedZones = new Set(stored);
     }
 
     /**
-     * Saves the collapsed state to local storage.
+     * Saves the collapsed state to storage.
      */
     private _saveState(): void {
-        localStorage.setItem(
-            STORAGE_KEYS.COLLAPSED_ZONES,
-            JSON.stringify(Array.from(this._collapsedZones)),
-        );
+        this._storage.save(STORAGE_KEYS.COLLAPSED_ZONES, Array.from(this._collapsedZones));
     }
 
     /**
