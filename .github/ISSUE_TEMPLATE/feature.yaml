@@ -1,12 +1,12 @@
 name: 🚀 Suggérer une fonctionnalité
-description: Proposez une nouvelle fonctionnalité ou une idée d'amélioration pour TPI.
+description: Proposez une nouvelle fonctionnalité ou une idée d'amélioration pour TPI Toolbox.
 title: "[FEATURE]: "
 labels: ["enhancement"]
 body:
   - type: markdown
     attributes:
       value: |
-        Merci de nous aider à améliorer TPI ! Prenez le temps de détailler votre idée pour que nous puissions bien la comprendre.
+        Merci de nous aider à améliorer TPI Toolbox ! Prenez le temps de détailler votre idée pour que nous puissions bien la comprendre.
 
   - type: textarea
     id: problem
@@ -21,7 +21,7 @@ body:
     id: solution
     attributes:
       label: Quelle est votre solution idéale ?
-      description: Décrivez précisément la fonctionnalité ou le comportement que vous aimeriez voir dans TPI.
+      description: Décrivez précisément la fonctionnalité ou le comportement que vous aimeriez voir dans TPI Toolbox.
       placeholder: "Ex: J'aimerais un bouton sur l'écran d'accueil qui permettrait de..."
     validations:
       required: true
