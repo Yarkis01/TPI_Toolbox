@@ -79,6 +79,7 @@ export class ShowAllPlanningsFeature extends BaseFeature {
     private _originalContent: HTMLElement | null = null;
     private _isShowingAll: boolean = false;
     private _typeChangeListener: (() => void) | null = null;
+    private _secondaryChangeListeners: { select: HTMLSelectElement; listener: () => void }[] = [];
 
     public get id(): string {
         return 'show_all_plannings';
@@ -96,6 +97,7 @@ export class ShowAllPlanningsFeature extends BaseFeature {
         injectStyle(styles);
         this._injectButton();
         this._listenTypeChange();
+        this._listenSecondaryChanges();
     }
 
     protected onDisable(): void {
@@ -110,6 +112,11 @@ export class ShowAllPlanningsFeature extends BaseFeature {
             typeSelect?.removeEventListener('change', this._typeChangeListener);
             this._typeChangeListener = null;
         }
+
+        for (const { select, listener } of this._secondaryChangeListeners) {
+            select.removeEventListener('change', listener);
+        }
+        this._secondaryChangeListeners = [];
     }
 
     /**
@@ -130,6 +137,49 @@ export class ShowAllPlanningsFeature extends BaseFeature {
 
         typeSelect.addEventListener('change', this._typeChangeListener);
         this._updateButtonVisibility(typeSelect.value);
+    }
+
+    /**
+     * Listens for changes on secondary selects (boutique, restaurant, etc.)
+     * to reset state when the user picks a specific one while in "show all" mode.
+     */
+    private _listenSecondaryChanges(): void {
+        const secondaryIds = [
+            PLANNING_SELECTORS.BOUTIQUE_SELECT,
+            PLANNING_SELECTORS.RESTAURANT_SELECT,
+            PLANNING_SELECTORS.SPECTACLE_SELECT,
+            PLANNING_SELECTORS.ATTRACTION_SELECT,
+        ];
+
+        for (const id of secondaryIds) {
+            const select = document.querySelector<HTMLSelectElement>(id);
+            if (!select) continue;
+
+            const listener = () => {
+                if (this._isShowingAll) {
+                    this._resetState();
+                }
+            };
+
+            select.addEventListener('change', listener);
+            this._secondaryChangeListeners.push({ select, listener });
+        }
+    }
+
+    /**
+     * Resets internal state without restoring the original content.
+     * Used when the game's JS has already replaced the content area
+     * (e.g. when the user picks a specific restaurant from the dropdown).
+     */
+    private _resetState(): void {
+        this._container = null;
+        this._originalContent = null;
+        this._isShowingAll = false;
+
+        if (this._btn) {
+            this._btn.classList.remove('show-all-plannings__btn--active');
+            this._btn.textContent = '📋 Afficher tous les plannings';
+        }
     }
 
     /**
@@ -325,8 +375,8 @@ export class ShowAllPlanningsFeature extends BaseFeature {
 
             const countSpan = document.createElement('span');
             countSpan.className = `planning-grid__day-maintainable ${count >= location.minEmployees
-                    ? 'planning-grid__day-maintainable--ok'
-                    : 'planning-grid__day-maintainable--short'
+                ? 'planning-grid__day-maintainable--ok'
+                : 'planning-grid__day-maintainable--short'
                 }`;
             countSpan.textContent = String(count);
 
