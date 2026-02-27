@@ -1,6 +1,7 @@
 import { BaseModule } from '../../core/abstract/BaseModule';
 import { IModuleConfigSchema } from '../../core/interfaces/IModuleConfig';
 import { PLANNING_SELECTORS } from './constants';
+import { PlanningSortFeature } from './features/PlanningSortFeature';
 import { QuickNavigationFeature } from './features/QuickNavigationFeature';
 import { ShowAllPlanningsFeature } from './features/ShowAllPlanningsFeature';
 import { FeatureRegistry } from './registry/FeatureRegistry';
@@ -9,6 +10,7 @@ import { FeatureRegistry } from './registry/FeatureRegistry';
 const CONFIG_KEYS = {
     QUICK_NAVIGATION: 'enableQuickNavigation',
     SHOW_ALL_PLANNINGS: 'enableShowAllPlannings',
+    PLANNING_SORT: 'enablePlanningSort',
 } as const;
 
 /**
@@ -64,6 +66,14 @@ export class EnhancedPlanningModule extends BaseModule {
                     type: 'boolean',
                     defaultValue: true,
                 },
+                {
+                    key: CONFIG_KEYS.PLANNING_SORT,
+                    label: 'Tri du planning',
+                    description:
+                        'Ajoute des boutons pour trier les employés par nom ou par nombre d\'affectations.',
+                    type: 'boolean',
+                    defaultValue: true,
+                },
             ],
         };
     }
@@ -80,6 +90,8 @@ export class EnhancedPlanningModule extends BaseModule {
             this._featureRegistry.toggleFeature('quick_navigation', value as boolean);
         } else if (key === CONFIG_KEYS.SHOW_ALL_PLANNINGS) {
             this._featureRegistry.toggleFeature('show_all_plannings', value as boolean);
+        } else if (key === CONFIG_KEYS.PLANNING_SORT) {
+            this._featureRegistry.toggleFeature('planning_sort', value as boolean);
         }
     }
 
@@ -122,6 +134,7 @@ export class EnhancedPlanningModule extends BaseModule {
 
         this._featureRegistry.register(new QuickNavigationFeature());
         this._featureRegistry.register(new ShowAllPlanningsFeature());
+        this._featureRegistry.register(new PlanningSortFeature());
         this._featuresRegistered = true;
     }
 
@@ -140,6 +153,12 @@ export class EnhancedPlanningModule extends BaseModule {
             true,
         );
         this._featureRegistry.toggleFeature('show_all_plannings', showAllEnabled);
+
+        const sortEnabled = this.getConfigValue<boolean>(
+            CONFIG_KEYS.PLANNING_SORT,
+            true,
+        );
+        this._featureRegistry.toggleFeature('planning_sort', sortEnabled);
     }
 }
 
