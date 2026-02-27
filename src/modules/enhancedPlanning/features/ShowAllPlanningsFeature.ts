@@ -456,20 +456,47 @@ export class ShowAllPlanningsFeature extends BaseFeature {
     }
 
     /**
-     * Reads planningData from the page's live window object via unsafeWindow.
-     * This ensures we always get the current data, even after the user
-     * has modified employee assignments.
+     * Reads the live planningData from the page's window scope.
+     * Injects a small inline script that serializes window.planningData
+     * into a temporary DOM element, reads it from the userscript side,
+     * then cleans up. This avoids relying on unsafeWindow.
      */
     private _getPlanningData(): IPlanningData | null {
+        const BRIDGE_ID = 'tpi-toolbox-planning-bridge';
+
         try {
-            const pageWindow = unsafeWindow as unknown as { planningData?: IPlanningData };
-            if (pageWindow.planningData && typeof pageWindow.planningData === 'object') {
-                return pageWindow.planningData;
-            }
+            // Inject a page-scope script that reads the live planningData
+            const script = document.createElement('script');
+            script.textContent = `
+                (function() {
+                    var el = document.getElementById('${BRIDGE_ID}');
+                    if (!el) {
+                        el = document.createElement('div');
+                        el.id = '${BRIDGE_ID}';
+                        el.style.display = 'none';
+                        document.body.appendChild(el);
+                    }
+                    el.textContent = typeof window.planningData === 'object'
+                        ? JSON.stringify(window.planningData)
+                        : '';
+                })();
+            `;
+            document.documentElement.appendChild(script);
+            script.remove();
+
+            // Read from the bridge element
+            const bridge = document.getElementById(BRIDGE_ID);
+            if (!bridge || !bridge.textContent) return null;
+
+            const data = JSON.parse(bridge.textContent) as IPlanningData;
+            bridge.remove();
+
+            return data && typeof data === 'object' ? data : null;
         } catch (e) {
             this._logger.error(`Failed to read planningData: ${(e as Error).message}`);
+            // Clean up bridge on error
+            document.getElementById(BRIDGE_ID)?.remove();
+            return null;
         }
-
-        return null;
     }
 }
