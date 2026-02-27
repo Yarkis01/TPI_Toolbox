@@ -1,0 +1,31 @@
+// Only button styles — tables use the game's native CSS classes
+.show-all-plannings__btn {
+    appearance: none;
+    border: 1px solid rgba(53, 179, 175, 0.4);
+    background: rgba(53, 179, 175, 0.1);
+    color: #35b3af;
+    border-radius: 0;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease;
+    align-self: flex-end;
+
+    &:hover {
+        background: rgba(53, 179, 175, 0.25);
+        border-color: #35b3af;
+    }
+
+    &--active {
+        background: #35b3af;
+        color: #1e2330;
+        border-color: #35b3af;
+
+        &:hover {
+            background: #2a9a96;
+        }
+    }
+}

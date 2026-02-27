@@ -2,11 +2,13 @@ import { BaseModule } from '../../core/abstract/BaseModule';
 import { IModuleConfigSchema } from '../../core/interfaces/IModuleConfig';
 import { PLANNING_SELECTORS } from './constants';
 import { QuickNavigationFeature } from './features/QuickNavigationFeature';
+import { ShowAllPlanningsFeature } from './features/ShowAllPlanningsFeature';
 import { FeatureRegistry } from './registry/FeatureRegistry';
 
 /** Configuration keys mapping feature IDs to their config toggle key. */
 const CONFIG_KEYS = {
     QUICK_NAVIGATION: 'enableQuickNavigation',
+    SHOW_ALL_PLANNINGS: 'enableShowAllPlannings',
 } as const;
 
 /**
@@ -54,6 +56,14 @@ export class EnhancedPlanningModule extends BaseModule {
                     type: 'boolean',
                     defaultValue: true,
                 },
+                {
+                    key: CONFIG_KEYS.SHOW_ALL_PLANNINGS,
+                    label: 'Afficher tous les plannings',
+                    description:
+                        'Ajoute un bouton pour afficher tous les plannings du type sélectionné en une seule vue.',
+                    type: 'boolean',
+                    defaultValue: true,
+                },
             ],
         };
     }
@@ -68,6 +78,8 @@ export class EnhancedPlanningModule extends BaseModule {
 
         if (key === CONFIG_KEYS.QUICK_NAVIGATION) {
             this._featureRegistry.toggleFeature('quick_navigation', value as boolean);
+        } else if (key === CONFIG_KEYS.SHOW_ALL_PLANNINGS) {
+            this._featureRegistry.toggleFeature('show_all_plannings', value as boolean);
         }
     }
 
@@ -109,6 +121,7 @@ export class EnhancedPlanningModule extends BaseModule {
         if (this._featuresRegistered) return;
 
         this._featureRegistry.register(new QuickNavigationFeature());
+        this._featureRegistry.register(new ShowAllPlanningsFeature());
         this._featuresRegistered = true;
     }
 
@@ -121,6 +134,12 @@ export class EnhancedPlanningModule extends BaseModule {
             true,
         );
         this._featureRegistry.toggleFeature('quick_navigation', quickNavEnabled);
+
+        const showAllEnabled = this.getConfigValue<boolean>(
+            CONFIG_KEYS.SHOW_ALL_PLANNINGS,
+            true,
+        );
+        this._featureRegistry.toggleFeature('show_all_plannings', showAllEnabled);
     }
 }
 
