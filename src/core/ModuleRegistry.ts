@@ -2,6 +2,7 @@ import { AttractionSurfaceFilterModule } from '../modules/attractionSurfaceFilte
 import { StaffBuildingColorizerModule } from '../modules/backstage/StaffBuildingColorizer/module';
 import { WarehouseColorizerModule } from '../modules/backstage/warehouseColorizer/module';
 import { CollapsibleZonesModule } from '../modules/collapsibleZones/module';
+import { EnhancedPlanningModule } from '../modules/enhancedPlanning/module';
 import { EntityStatusColorizerModule } from '../modules/entityStatusColorizer/module';
 import { HideChatModule } from '../modules/hideChat/module';
 import { HideWarehousemanModule } from '../modules/hideWarehouseman/module';
@@ -37,4 +38,5 @@ export function registerCommonModules(moduleManager: ModuleManager): void {
     moduleManager.register(new ParkWebSiteRedesingModule());
     moduleManager.register(new CollapsibleZonesModule());
     moduleManager.register(new UpdateNotificationModule());
+    moduleManager.register(new EnhancedPlanningModule());
 }
