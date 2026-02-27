@@ -30,3 +30,8 @@
         }
     }
 }
+
+// Read-only cursor on all day cells in the "show all" view
+.show-all-plannings--readonly .planning-grid__day-cell {
+    cursor: not-allowed !important;
+}

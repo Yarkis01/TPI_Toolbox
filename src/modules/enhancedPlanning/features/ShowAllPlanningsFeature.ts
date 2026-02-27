@@ -257,7 +257,7 @@ export class ShowAllPlanningsFeature extends BaseFeature {
 
         // Build the all-plannings view
         this._container = document.createElement('div');
-        this._container.className = 'planning-result__content';
+        this._container.className = 'planning-result__content show-all-plannings--readonly';
 
         for (const location of locations) {
             const section = this._buildLocationSection(location, employees, nextDay, mapping.locationLabel);
