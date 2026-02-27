@@ -456,29 +456,18 @@ export class ShowAllPlanningsFeature extends BaseFeature {
     }
 
     /**
-     * Extracts planningData from the page's inline <script> tags.
-     * Userscripts run in a sandboxed context, so window.planningData is not
-     * directly accessible. This method evaluates the script to extract the data.
+     * Reads planningData from the page's live window object via unsafeWindow.
+     * This ensures we always get the current data, even after the user
+     * has modified employee assignments.
      */
     private _getPlanningData(): IPlanningData | null {
-        const scripts = document.querySelectorAll('script:not([src])');
-
-        for (const script of scripts) {
-            const text = script.textContent;
-            if (!text || !text.includes('window.planningData')) continue;
-
-            try {
-                // The data is a JS object literal (unquoted keys), not valid JSON.
-                // Use new Function to safely evaluate it.
-                const fn = new Function(`${text}; return window.planningData;`);
-                const data = fn();
-                if (data && typeof data === 'object') {
-                    return data as IPlanningData;
-                }
-            } catch (e) {
-                this._logger.error(`Failed to parse planningData: ${(e as Error).message}`);
-                return null;
+        try {
+            const pageWindow = unsafeWindow as unknown as { planningData?: IPlanningData };
+            if (pageWindow.planningData && typeof pageWindow.planningData === 'object') {
+                return pageWindow.planningData;
             }
+        } catch (e) {
+            this._logger.error(`Failed to read planningData: ${(e as Error).message}`);
         }
 
         return null;
