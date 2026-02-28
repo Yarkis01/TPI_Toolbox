@@ -1,6 +1,5 @@
 import '../../../core/bootstrap/styles/_toolbox.scss';
 import { APP_INFORMATIONS } from '../../../core/constants/AppConstants';
-import { ModuleStatusService } from '../../../services/ModuleStatusService';
 import IModule from '../../../core/interfaces/IModule';
 import { ModuleManager } from '../../../core/managers/ModuleManager';
 import { ModuleConfigRenderer } from '../../../core/utils/ModuleConfigRenderer';
@@ -85,72 +84,13 @@ export class SettingsApp {
         }
 
         modules.forEach((mod) => {
-            list.appendChild(this.createModuleRow(mod));
+            list.appendChild(this.configRenderer.createModuleRow(
+                mod,
+                (isChecked) => this.moduleManager.toggleModule(mod.id, isChecked)
+            ));
         });
 
         return list;
-    }
-
-    /**
-     * Creates a row for a module.
-     * @param module - The module to create a row for.
-     * @returns The module row.
-     */
-    private createModuleRow(module: IModule): HTMLElement {
-        const moduleStatus = ModuleStatusService.getInstance().getStatus(module.id);
-        const badgeClass = `tpi-badge tpi-badge-${moduleStatus.effectiveStatus}`;
-
-        let badgeText = 'Inconnu';
-        if (moduleStatus.effectiveStatus === 'ok') badgeText = 'OK';
-        else if (moduleStatus.effectiveStatus === 'broken') badgeText = 'Cassé';
-        else if (moduleStatus.effectiveStatus === 'update_required') badgeText = 'MAJ Requise';
-        else if (moduleStatus.effectiveStatus === 'bug') badgeText = 'Bug';
-
-        const badge = createElement('span', { class: badgeClass }, [badgeText]);
-
-        const labelContainer = createElement('div', { class: 'tpi-setting-label' }, [module.name, badge]);
-
-        const descChildren: (string | HTMLElement)[] = [module.description];
-
-        if (moduleStatus.effectiveStatus === 'broken' && moduleStatus.reason) {
-            const reasonText = createElement('div', { class: 'tpi-setting-reason' }, [`Détail API : ${moduleStatus.reason}`]);
-            descChildren.push(reasonText);
-        } else if (moduleStatus.effectiveStatus === 'bug' && moduleStatus.reason) {
-            const reasonText = createElement('div', { class: 'tpi-setting-reason warning' }, [`Bug identifié : ${moduleStatus.reason}`]);
-            descChildren.push(reasonText);
-        } else if (moduleStatus.effectiveStatus === 'update_required') {
-            const reasonMsg = moduleStatus.fixed_in_version ? `Corrigé dans la version ${moduleStatus.fixed_in_version}, veuillez mettre à jour TPI Toolbox.` : 'Une mise à jour est requise pour utiliser ce module.';
-            const reasonText = createElement('div', { class: 'tpi-setting-reason warning' }, [reasonMsg]);
-            descChildren.push(reasonText);
-        }
-
-        const textContainer = createElement('div', { class: 'tpi-setting-info' }, [
-            labelContainer,
-            createElement('div', { class: 'tpi-setting-desc' }, descChildren),
-        ]);
-
-        // Use the shared config renderer
-        const { controls, configPanel } = this.configRenderer.createModuleControls(
-            module,
-            (isChecked) => this.moduleManager.toggleModule(module.id, isChecked),
-        );
-
-        const row = createElement(
-            'div',
-            {
-                class: 'tpi-setting-row tpi-module-row',
-                'data-module-id': module.id,
-                'data-search': `${module.name} ${module.description}`.toLowerCase(),
-            },
-            [textContainer, controls],
-        );
-
-        // Add config panel if it exists
-        if (configPanel) {
-            row.appendChild(configPanel);
-        }
-
-        return row;
     }
 
     /**

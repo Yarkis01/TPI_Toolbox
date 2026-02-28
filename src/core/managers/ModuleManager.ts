@@ -36,18 +36,9 @@ export class ModuleManager {
         this._sortedModulesCache = null;
 
         const shouldBeEnabled = this._settingsManager.getModuleState(module.id, module.enabledByDefault);
-        const moduleStatus = ModuleStatusService.getInstance().getStatus(module.id);
 
         if (shouldBeEnabled) {
-            if (moduleStatus.effectiveStatus === 'broken') {
-                this._logger.warn(`Module '${module.id}' is configured to be enabled but is currently broken. Force disabled.`);
-                return;
-            }
-
-            if (moduleStatus.effectiveStatus === 'update_required') {
-                this._logger.warn(`Module '${module.id}' is configured to be enabled but requires an app update. Force disabled.`);
-                return;
-            }
+            if (!this._canEnableModule(module.id, 'register')) return;
 
             module.init();
             try {
@@ -66,17 +57,7 @@ export class ModuleManager {
     public toggleModule(moduleId: string, enable: boolean): void {
         const module = this._modules.get(moduleId);
         if (module) {
-            const moduleStatus = ModuleStatusService.getInstance().getStatus(moduleId);
-
-            if (enable && moduleStatus.effectiveStatus === 'broken') {
-                this._logger.warn(`Attempt to enable broken module '${moduleId}'. Action blocked.`);
-                return;
-            }
-
-            if (enable && moduleStatus.effectiveStatus === 'update_required') {
-                this._logger.warn(`Attempt to enable module '${moduleId}' requiring an update. Action blocked.`);
-                return;
-            }
+            if (enable && !this._canEnableModule(moduleId, 'toggle')) return;
 
             if (enable) {
                 module.init();
@@ -101,5 +82,33 @@ export class ModuleManager {
         }
 
         return this._sortedModulesCache;
+    }
+
+    /**
+     * Checks if a module can be enabled. Logs warnings if not.
+     * @param moduleId The module identifier.
+     * @param action The action attempting to enable the module.
+     * @returns True if it can be enabled, false otherwise.
+     */
+    private _canEnableModule(moduleId: string, action: 'register' | 'toggle'): boolean {
+        const moduleStatus = ModuleStatusService.getInstance().getStatus(moduleId);
+
+        if (moduleStatus.effectiveStatus === 'broken') {
+            const message = action === 'register'
+                ? `Module '${moduleId}' is configured to be enabled but is currently broken. Force disabled.`
+                : `Attempt to enable broken module '${moduleId}'. Action blocked.`;
+            this._logger.warn(message);
+            return false;
+        }
+
+        if (moduleStatus.effectiveStatus === 'update_required') {
+            const message = action === 'register'
+                ? `Module '${moduleId}' is configured to be enabled but requires an app update. Force disabled.`
+                : `Attempt to enable module '${moduleId}' requiring an update. Action blocked.`;
+            this._logger.warn(message);
+            return false;
+        }
+
+        return true;
     }
 }
