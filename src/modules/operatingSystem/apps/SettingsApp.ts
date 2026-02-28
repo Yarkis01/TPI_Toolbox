@@ -1,5 +1,6 @@
 import '../../../core/bootstrap/styles/_toolbox.scss';
 import { APP_INFORMATIONS } from '../../../core/constants/AppConstants';
+import { ModuleStatusService } from '../../../services/ModuleStatusService';
 import IModule from '../../../core/interfaces/IModule';
 import { ModuleManager } from '../../../core/managers/ModuleManager';
 import { ModuleConfigRenderer } from '../../../core/utils/ModuleConfigRenderer';
@@ -96,9 +97,32 @@ export class SettingsApp {
      * @returns The module row.
      */
     private createModuleRow(module: IModule): HTMLElement {
+        const moduleStatus = ModuleStatusService.getInstance().getStatus(module.id);
+        const badgeClass = `tpi-badge tpi-badge-${moduleStatus.effectiveStatus}`;
+
+        let badgeText = 'Inconnu';
+        if (moduleStatus.effectiveStatus === 'ok') badgeText = 'OK';
+        else if (moduleStatus.effectiveStatus === 'broken') badgeText = 'Cassé';
+        else if (moduleStatus.effectiveStatus === 'update_required') badgeText = 'MAJ Requise';
+
+        const badge = createElement('span', { class: badgeClass }, [badgeText]);
+
+        const labelContainer = createElement('div', { class: 'tpi-setting-label' }, [module.name, badge]);
+
+        const descChildren: (string | HTMLElement)[] = [module.description];
+
+        if (moduleStatus.effectiveStatus === 'broken' && moduleStatus.reason) {
+            const reasonText = createElement('div', { class: 'tpi-setting-reason' }, [`Détail API : ${moduleStatus.reason}`]);
+            descChildren.push(reasonText);
+        } else if (moduleStatus.effectiveStatus === 'update_required') {
+            const reasonMsg = moduleStatus.fixed_in_version ? `Corrigé dans la version ${moduleStatus.fixed_in_version}, veuillez mettre à jour TPI Toolbox.` : 'Une mise à jour est requise pour utiliser ce module.';
+            const reasonText = createElement('div', { class: 'tpi-setting-reason warning' }, [reasonMsg]);
+            descChildren.push(reasonText);
+        }
+
         const textContainer = createElement('div', { class: 'tpi-setting-info' }, [
-            createElement('div', { class: 'tpi-setting-label' }, [module.name]),
-            createElement('div', { class: 'tpi-setting-desc' }, [module.description]),
+            labelContainer,
+            createElement('div', { class: 'tpi-setting-desc' }, descChildren),
         ]);
 
         // Use the shared config renderer

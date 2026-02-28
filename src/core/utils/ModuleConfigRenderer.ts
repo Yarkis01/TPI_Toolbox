@@ -1,4 +1,5 @@
 import { createElement } from '../../utils/DomUtils';
+import { ModuleStatusService } from '../../services/ModuleStatusService';
 import IModule from '../interfaces/IModule';
 import { IConfigOption, IModuleConfigSchema } from '../interfaces/IModuleConfig';
 
@@ -21,16 +22,22 @@ export class ModuleConfigRenderer {
     ): { controls: HTMLElement; configPanel: HTMLElement | null } {
         const configSchema = module.getConfigSchema();
         const hasConfig = configSchema && configSchema.options.length > 0;
+        const moduleStatus = ModuleStatusService.getInstance().getStatus(module.id);
+        const isUnavailable = moduleStatus.effectiveStatus === 'broken' || moduleStatus.effectiveStatus === 'update_required';
 
         const checkbox = createElement('input', {
             type: 'checkbox',
             onchange: (e: Event) => {
+                if (isUnavailable) return;
                 const isChecked = (e.target as HTMLInputElement).checked;
                 onToggle(isChecked);
             },
         }) as HTMLInputElement;
 
-        checkbox.checked = module.isEnabled();
+        checkbox.checked = isUnavailable ? false : module.isEnabled();
+        if (isUnavailable) {
+            checkbox.disabled = true;
+        }
 
         const switchLabel = createElement('label', { class: 'tpi-switch' }, [
             checkbox,

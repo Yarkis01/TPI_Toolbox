@@ -1,4 +1,5 @@
 import { Logger } from '../../utils/Logger';
+import { ModuleStatusService } from '../../services/ModuleStatusService';
 import IModule from '../interfaces/IModule';
 import { SettingsManager } from './SettingsManager';
 
@@ -34,7 +35,20 @@ export class ModuleManager {
         this._modules.set(module.id, module);
         this._sortedModulesCache = null;
 
-        if (this._settingsManager.getModuleState(module.id, module.enabledByDefault)) {
+        const shouldBeEnabled = this._settingsManager.getModuleState(module.id, module.enabledByDefault);
+        const moduleStatus = ModuleStatusService.getInstance().getStatus(module.id);
+
+        if (shouldBeEnabled) {
+            if (moduleStatus.effectiveStatus === 'broken') {
+                this._logger.warn(`Module '${module.id}' is configured to be enabled but is currently broken. Force disabled.`);
+                return;
+            }
+
+            if (moduleStatus.effectiveStatus === 'update_required') {
+                this._logger.warn(`Module '${module.id}' is configured to be enabled but requires an app update. Force disabled.`);
+                return;
+            }
+
             module.init();
             try {
                 module.enable();
@@ -52,6 +66,18 @@ export class ModuleManager {
     public toggleModule(moduleId: string, enable: boolean): void {
         const module = this._modules.get(moduleId);
         if (module) {
+            const moduleStatus = ModuleStatusService.getInstance().getStatus(moduleId);
+
+            if (enable && moduleStatus.effectiveStatus === 'broken') {
+                this._logger.warn(`Attempt to enable broken module '${moduleId}'. Action blocked.`);
+                return;
+            }
+
+            if (enable && moduleStatus.effectiveStatus === 'update_required') {
+                this._logger.warn(`Attempt to enable module '${moduleId}' requiring an update. Action blocked.`);
+                return;
+            }
+
             if (enable) {
                 module.init();
                 module.enable();
