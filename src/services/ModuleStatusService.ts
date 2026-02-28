@@ -3,14 +3,14 @@ import { Logger } from '../utils/Logger';
 
 export interface ModuleStatusData {
     name: string;
-    status: 'ok' | 'broken' | 'fix' | 'unknown';
+    status: 'ok' | 'broken' | 'fix' | 'bug' | 'unknown';
     reason: string | null;
     broken_since: string | null;
     fixed_in_version?: string | null;
 }
 
 export interface EffectiveModuleStatus extends ModuleStatusData {
-    effectiveStatus: 'ok' | 'broken' | 'update_required' | 'unknown';
+    effectiveStatus: 'ok' | 'broken' | 'update_required' | 'bug' | 'unknown';
 }
 
 export interface ModuleStatusResponse {
@@ -90,7 +90,7 @@ export class ModuleStatusService {
             rawStatus = this._statusData[moduleId];
         }
 
-        let effectiveStatus: 'ok' | 'broken' | 'update_required' | 'unknown' = rawStatus.status as any;
+        let effectiveStatus: 'ok' | 'broken' | 'update_required' | 'bug' | 'unknown' = rawStatus.status as any;
 
         if (rawStatus.status === 'fix') {
             if (rawStatus.fixed_in_version && this.compareVersions(APP_INFORMATIONS.APP_VERSION, rawStatus.fixed_in_version) >= 0) {

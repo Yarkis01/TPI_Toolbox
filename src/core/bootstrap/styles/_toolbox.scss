@@ -188,6 +188,12 @@ body {
         border: 1px solid rgba(253, 126, 20, 0.5);
     }
 
+    &-bug {
+        background-color: rgba(255, 193, 7, 0.2);
+        color: #ffc107;
+        border: 1px solid rgba(255, 193, 7, 0.5);
+    }
+
     &-unknown {
         background-color: rgba(108, 117, 125, 0.2);
         color: #6c757d;

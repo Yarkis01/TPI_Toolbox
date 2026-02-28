@@ -169,6 +169,7 @@ export class Toolbox implements IBootstrap {
         if (moduleStatus.effectiveStatus === 'ok') badgeText = 'OK';
         else if (moduleStatus.effectiveStatus === 'broken') badgeText = 'Cassé';
         else if (moduleStatus.effectiveStatus === 'update_required') badgeText = 'MAJ Requise';
+        else if (moduleStatus.effectiveStatus === 'bug') badgeText = 'Bug';
 
         const badge = createElement('span', { class: badgeClass }, [badgeText]);
 
@@ -178,6 +179,9 @@ export class Toolbox implements IBootstrap {
 
         if (moduleStatus.effectiveStatus === 'broken' && moduleStatus.reason) {
             const reasonText = createElement('div', { class: 'tpi-setting-reason' }, [`Détail API : ${moduleStatus.reason}`]);
+            descChildren.push(reasonText);
+        } else if (moduleStatus.effectiveStatus === 'bug' && moduleStatus.reason) {
+            const reasonText = createElement('div', { class: 'tpi-setting-reason warning' }, [`Bug identifié : ${moduleStatus.reason}`]);
             descChildren.push(reasonText);
         } else if (moduleStatus.effectiveStatus === 'update_required') {
             const reasonMsg = moduleStatus.fixed_in_version ? `Corrigé dans la version ${moduleStatus.fixed_in_version}, veuillez mettre à jour TPI Toolbox.` : 'Une mise à jour est requise pour utiliser ce module.';

@@ -1,0 +1,91 @@
+diff --git a/src/core/bootstrap/Toolbox.ts b/src/core/bootstrap/Toolbox.ts
+index 69988aa..ab3b79b 100644
+--- a/src/core/bootstrap/Toolbox.ts
++++ b/src/core/bootstrap/Toolbox.ts
+@@ -169,6 +169,7 @@ export class Toolbox implements IBootstrap {
+         if (moduleStatus.effectiveStatus === 'ok') badgeText = 'OK';
+         else if (moduleStatus.effectiveStatus === 'broken') badgeText = 'Cassé';
+         else if (moduleStatus.effectiveStatus === 'update_required') badgeText = 'MAJ Requise';
++        else if (moduleStatus.effectiveStatus === 'bug') badgeText = 'Bug';
+ 
+         const badge = createElement('span', { class: badgeClass }, [badgeText]);
+ 
+@@ -179,6 +180,9 @@ export class Toolbox implements IBootstrap {
+         if (moduleStatus.effectiveStatus === 'broken' && moduleStatus.reason) {
+             const reasonText = createElement('div', { class: 'tpi-setting-reason' }, [`Détail API : ${moduleStatus.reason}`]);
+             descChildren.push(reasonText);
++        } else if (moduleStatus.effectiveStatus === 'bug' && moduleStatus.reason) {
++            const reasonText = createElement('div', { class: 'tpi-setting-reason warning' }, [`Bug identifié : ${moduleStatus.reason}`]);
++            descChildren.push(reasonText);
+         } else if (moduleStatus.effectiveStatus === 'update_required') {
+             const reasonMsg = moduleStatus.fixed_in_version ? `Corrigé dans la version ${moduleStatus.fixed_in_version}, veuillez mettre à jour TPI Toolbox.` : 'Une mise à jour est requise pour utiliser ce module.';
+             const reasonText = createElement('div', { class: 'tpi-setting-reason warning' }, [reasonMsg]);
+diff --git a/src/core/bootstrap/styles/_toolbox.scss b/src/core/bootstrap/styles/_toolbox.scss
+index 97afb16..51453a1 100644
+--- a/src/core/bootstrap/styles/_toolbox.scss
++++ b/src/core/bootstrap/styles/_toolbox.scss
+@@ -188,6 +188,12 @@ body {
+         border: 1px solid rgba(253, 126, 20, 0.5);
+     }
+ 
++    &-bug {
++        background-color: rgba(255, 193, 7, 0.2);
++        color: #ffc107;
++        border: 1px solid rgba(255, 193, 7, 0.5);
++    }
++
+     &-unknown {
+         background-color: rgba(108, 117, 125, 0.2);
+         color: #6c757d;
+diff --git a/src/modules/operatingSystem/apps/SettingsApp.ts b/src/modules/operatingSystem/apps/SettingsApp.ts
+index f3ff606..5bdfeea 100644
+--- a/src/modules/operatingSystem/apps/SettingsApp.ts
++++ b/src/modules/operatingSystem/apps/SettingsApp.ts
+@@ -104,6 +104,7 @@ export class SettingsApp {
+         if (moduleStatus.effectiveStatus === 'ok') badgeText = 'OK';
+         else if (moduleStatus.effectiveStatus === 'broken') badgeText = 'Cassé';
+         else if (moduleStatus.effectiveStatus === 'update_required') badgeText = 'MAJ Requise';
++        else if (moduleStatus.effectiveStatus === 'bug') badgeText = 'Bug';
+ 
+         const badge = createElement('span', { class: badgeClass }, [badgeText]);
+ 
+@@ -114,6 +115,9 @@ export class SettingsApp {
+         if (moduleStatus.effectiveStatus === 'broken' && moduleStatus.reason) {
+             const reasonText = createElement('div', { class: 'tpi-setting-reason' }, [`Détail API : ${moduleStatus.reason}`]);
+             descChildren.push(reasonText);
++        } else if (moduleStatus.effectiveStatus === 'bug' && moduleStatus.reason) {
++            const reasonText = createElement('div', { class: 'tpi-setting-reason warning' }, [`Bug identifié : ${moduleStatus.reason}`]);
++            descChildren.push(reasonText);
+         } else if (moduleStatus.effectiveStatus === 'update_required') {
+             const reasonMsg = moduleStatus.fixed_in_version ? `Corrigé dans la version ${moduleStatus.fixed_in_version}, veuillez mettre à jour TPI Toolbox.` : 'Une mise à jour est requise pour utiliser ce module.';
+             const reasonText = createElement('div', { class: 'tpi-setting-reason warning' }, [reasonMsg]);
+diff --git a/src/services/ModuleStatusService.ts b/src/services/ModuleStatusService.ts
+index 5ae4fec..8b15ccb 100644
+--- a/src/services/ModuleStatusService.ts
++++ b/src/services/ModuleStatusService.ts
+@@ -3,14 +3,14 @@ import { Logger } from '../utils/Logger';
+ 
+ export interface ModuleStatusData {
+     name: string;
+-    status: 'ok' | 'broken' | 'fix' | 'unknown';
++    status: 'ok' | 'broken' | 'fix' | 'bug' | 'unknown';
+     reason: string | null;
+     broken_since: string | null;
+     fixed_in_version?: string | null;
+ }
+ 
+ export interface EffectiveModuleStatus extends ModuleStatusData {
+-    effectiveStatus: 'ok' | 'broken' | 'update_required' | 'unknown';
++    effectiveStatus: 'ok' | 'broken' | 'update_required' | 'bug' | 'unknown';
+ }
+ 
+ export interface ModuleStatusResponse {
+@@ -90,7 +90,7 @@ export class ModuleStatusService {
+             rawStatus = this._statusData[moduleId];
+         }
+ 
+-        let effectiveStatus: 'ok' | 'broken' | 'update_required' | 'unknown' = rawStatus.status as any;
++        let effectiveStatus: 'ok' | 'broken' | 'update_required' | 'bug' | 'unknown' = rawStatus.status as any;
+ 
+         if (rawStatus.status === 'fix') {
+             if (rawStatus.fixed_in_version && this.compareVersions(APP_INFORMATIONS.APP_VERSION, rawStatus.fixed_in_version) >= 0) {
