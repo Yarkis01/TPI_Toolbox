@@ -1,4 +1,5 @@
 import { createElement } from '../../utils/DomUtils';
+import { ModuleStatusService } from '../../services/ModuleStatusService';
 import IModule from '../interfaces/IModule';
 import { IConfigOption, IModuleConfigSchema } from '../interfaces/IModuleConfig';
 
@@ -8,6 +9,66 @@ import { IConfigOption, IModuleConfigSchema } from '../interfaces/IModuleConfig'
  */
 export class ModuleConfigRenderer {
     private _expandedModuleId: string | null = null;
+
+    /**
+     * Creates a row for a module.
+     * @param module - The module.
+     * @param onToggle - Callback when module is toggled.
+     * @returns The row element.
+     */
+    public createModuleRow(module: IModule, onToggle: (isChecked: boolean) => void): HTMLElement {
+        const moduleStatus = ModuleStatusService.getInstance().getStatus(module.id);
+        const badgeClass = `tpi-badge tpi-badge-${moduleStatus.effectiveStatus}`;
+
+        let badgeText = 'Inconnu';
+        if (moduleStatus.effectiveStatus === 'ok') badgeText = 'OK';
+        else if (moduleStatus.effectiveStatus === 'broken') badgeText = 'Cassé';
+        else if (moduleStatus.effectiveStatus === 'update_required') badgeText = 'MAJ Requise';
+        else if (moduleStatus.effectiveStatus === 'bug') badgeText = 'Bug';
+
+        const badge = createElement('span', { class: badgeClass }, [badgeText]);
+
+        const labelContainer = createElement('div', { class: 'tpi-setting-label' }, [module.name, badge]);
+
+        const descChildren: (string | HTMLElement)[] = [module.description];
+
+        if (moduleStatus.effectiveStatus === 'broken' && moduleStatus.reason) {
+            const reasonText = createElement('div', { class: 'tpi-setting-reason' }, [`Détail API : ${moduleStatus.reason}`]);
+            descChildren.push(reasonText);
+        } else if (moduleStatus.effectiveStatus === 'bug' && moduleStatus.reason) {
+            const reasonText = createElement('div', { class: 'tpi-setting-reason warning' }, [`Bug identifié : ${moduleStatus.reason}`]);
+            descChildren.push(reasonText);
+        } else if (moduleStatus.effectiveStatus === 'update_required') {
+            const reasonMsg = moduleStatus.fixed_in_version ? `Corrigé dans la version ${moduleStatus.fixed_in_version}, veuillez mettre à jour TPI Toolbox.` : 'Une mise à jour est requise pour utiliser ce module.';
+            const reasonText = createElement('div', { class: 'tpi-setting-reason warning' }, [reasonMsg]);
+            descChildren.push(reasonText);
+        }
+
+        const textContainer = createElement('div', { class: 'tpi-setting-info' }, [
+            labelContainer,
+            createElement('div', { class: 'tpi-setting-desc' }, descChildren),
+        ]);
+
+        // Use the shared config renderer
+        const { controls, configPanel } = this.createModuleControls(module, onToggle);
+
+        const row = createElement(
+            'div',
+            {
+                class: 'tpi-setting-row tpi-module-row',
+                'data-module-id': module.id,
+                'data-search': `${module.name} ${module.description}`.toLowerCase(),
+            },
+            [textContainer, controls],
+        );
+
+        // Add config panel if it exists
+        if (configPanel) {
+            row.appendChild(configPanel);
+        }
+
+        return row;
+    }
 
     /**
      * Creates module row controls (config button + switch).
@@ -21,16 +82,22 @@ export class ModuleConfigRenderer {
     ): { controls: HTMLElement; configPanel: HTMLElement | null } {
         const configSchema = module.getConfigSchema();
         const hasConfig = configSchema && configSchema.options.length > 0;
+        const moduleStatus = ModuleStatusService.getInstance().getStatus(module.id);
+        const isUnavailable = moduleStatus.effectiveStatus === 'broken' || moduleStatus.effectiveStatus === 'update_required';
 
         const checkbox = createElement('input', {
             type: 'checkbox',
             onchange: (e: Event) => {
+                if (isUnavailable) return;
                 const isChecked = (e.target as HTMLInputElement).checked;
                 onToggle(isChecked);
             },
         }) as HTMLInputElement;
 
-        checkbox.checked = module.isEnabled();
+        checkbox.checked = isUnavailable ? false : module.isEnabled();
+        if (isUnavailable) {
+            checkbox.disabled = true;
+        }
 
         const switchLabel = createElement('label', { class: 'tpi-switch' }, [
             checkbox,
