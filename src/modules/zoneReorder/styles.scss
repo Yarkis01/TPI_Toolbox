@@ -1,0 +1,30 @@
+.tpi-zone-reorder-handle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    margin-right: 15px;
+    vertical-align: middle;
+    color: inherit;
+}
+
+.tpi-zone-reorder-handle:active {
+    cursor: grabbing;
+}
+
+.tpi-zone-group-dragging {
+    opacity: 0.5;
+}
+
+/* 
+ * We use an outline to highlight the whole block.
+ * We can also use padding on the zone group (via JS or CSS) to increase the hit area.
+ */
+.tpi-zone-group-drag-over {
+    /* Visual indicator that this block is the target */
+    outline: 2px dashed rgba(255, 255, 255, 0.7);
+    outline-offset: 4px;
+    border-radius: 8px;
+    /* Optional, slightly softer edges */
+    background-color: rgba(255, 255, 255, 0.05);
+}

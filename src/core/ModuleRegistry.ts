@@ -13,6 +13,7 @@ import { RideHypeAsTextModule } from '../modules/rideHypeAsText/module';
 import { SelectUntrainedModule } from '../modules/selectUntrained/module';
 import { UpdateNotificationModule } from '../modules/updateNotification/module';
 import { ZoneFilterModule } from '../modules/zoneFilters/module';
+import { ZoneReorderModule } from '../modules/zoneReorder/module';
 import { ModuleManager } from './managers/ModuleManager';
 
 /**
@@ -37,4 +38,5 @@ export function registerCommonModules(moduleManager: ModuleManager): void {
     moduleManager.register(new ParkWebSiteRedesingModule());
     moduleManager.register(new CollapsibleZonesModule());
     moduleManager.register(new UpdateNotificationModule());
+    moduleManager.register(new ZoneReorderModule());
 }
