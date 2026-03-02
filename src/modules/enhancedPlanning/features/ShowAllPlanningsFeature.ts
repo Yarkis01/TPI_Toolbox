@@ -198,15 +198,16 @@ export class ShowAllPlanningsFeature extends BaseFeature {
         const filters = document.querySelector(PLANNING_SELECTORS.FILTERS);
         if (!filters) return;
 
+        const actionsBar = filters.querySelector('.planning-filters__actions') ?? filters;
+
         this._btn = document.createElement('button');
         this._btn.type = 'button';
         this._btn.className = 'show-all-plannings__btn';
         this._btn.textContent = '📋 Afficher tous les plannings';
         this._btn.addEventListener('click', () => this._toggleAllPlannings());
 
-        filters.appendChild(this._btn);
+        actionsBar.appendChild(this._btn);
 
-        // Check initial visibility
         const typeSelect = document.querySelector<HTMLSelectElement>(
             PLANNING_SELECTORS.TYPE_SELECT,
         );

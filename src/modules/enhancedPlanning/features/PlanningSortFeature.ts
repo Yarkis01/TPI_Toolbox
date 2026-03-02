@@ -85,10 +85,10 @@ export class PlanningSortFeature extends BaseFeature {
         const filters = document.querySelector(PLANNING_SELECTORS.FILTERS);
         if (!filters) return;
 
-        // Don't inject if already present
         if (filters.querySelector('#planning-sort-select')) return;
 
-        // Build wrapper row matching the game's layout
+        const filtersTop = filters.querySelector('.planning-filters__top') ?? filters;
+
         this._wrapper = document.createElement('div');
         this._wrapper.className = 'planning-filters__row';
 
@@ -121,13 +121,7 @@ export class PlanningSortFeature extends BaseFeature {
         this._wrapper.appendChild(label);
         this._wrapper.appendChild(this._select);
 
-        // Insert before the "show all plannings" button if present, otherwise append
-        const showAllBtn = filters.querySelector('.show-all-plannings__btn');
-        if (showAllBtn) {
-            filters.insertBefore(this._wrapper, showAllBtn);
-        } else {
-            filters.appendChild(this._wrapper);
-        }
+        filtersTop.appendChild(this._wrapper);
     }
 
     /**

@@ -5,15 +5,14 @@
     background: rgba(53, 179, 175, 0.1);
     color: #35b3af;
     border-radius: 0;
-    padding: 0.5rem 0.75rem;
-    font-size: 0.95rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
     transition:
         background 0.15s ease,
         border-color 0.15s ease;
     margin-left: auto;
-    align-self: flex-end;
 
     &:hover {
         background: rgba(53, 179, 175, 0.25);
