@@ -33,10 +33,20 @@ export class ModuleConfigRenderer {
         const descChildren: (string | HTMLElement)[] = [module.description];
 
         if (moduleStatus.effectiveStatus === 'broken' && moduleStatus.reason) {
-            const reasonText = createElement('div', { class: 'tpi-setting-reason' }, [`Détail API : ${moduleStatus.reason}`]);
+            const reasonChildren: (string | HTMLElement)[] = [`Détail API : ${moduleStatus.reason}`];
+            if (moduleStatus.github_issue_url) {
+                const link = createElement('a', { class: 'tpi-setting-reason__link', href: moduleStatus.github_issue_url, target: '_blank', rel: 'noopener noreferrer' }, ['Voir GitHub']);
+                reasonChildren.push(' ', link);
+            }
+            const reasonText = createElement('div', { class: 'tpi-setting-reason' }, reasonChildren);
             descChildren.push(reasonText);
         } else if (moduleStatus.effectiveStatus === 'bug' && moduleStatus.reason) {
-            const reasonText = createElement('div', { class: 'tpi-setting-reason warning' }, [`Bug identifié : ${moduleStatus.reason}`]);
+            const reasonChildren: (string | HTMLElement)[] = [`Bug identifié : ${moduleStatus.reason}`];
+            if (moduleStatus.github_issue_url) {
+                const link = createElement('a', { class: 'tpi-setting-reason__link', href: moduleStatus.github_issue_url, target: '_blank', rel: 'noopener noreferrer' }, ['Voir GitHub']);
+                reasonChildren.push(' ', link);
+            }
+            const reasonText = createElement('div', { class: 'tpi-setting-reason warning' }, reasonChildren);
             descChildren.push(reasonText);
         } else if (moduleStatus.effectiveStatus === 'update_required') {
             const reasonMsg = moduleStatus.fixed_in_version ? `Corrigé dans la version ${moduleStatus.fixed_in_version}, veuillez mettre à jour TPI Toolbox.` : 'Une mise à jour est requise pour utiliser ce module.';

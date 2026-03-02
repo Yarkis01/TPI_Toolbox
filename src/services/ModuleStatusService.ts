@@ -7,6 +7,7 @@ export interface ModuleStatusData {
     reason: string | null;
     broken_since: string | null;
     fixed_in_version?: string | null;
+    github_issue_url?: string | null;
 }
 
 export interface EffectiveModuleStatus extends ModuleStatusData {

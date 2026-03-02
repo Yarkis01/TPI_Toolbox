@@ -210,6 +210,17 @@ body {
     &.warning {
         color: #fd7e14;
     }
+
+    &__link {
+        color: inherit;
+        text-decoration: underline;
+        opacity: 0.85;
+        transition: opacity 0.15s;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
 }
 
 .tpi-switch {
