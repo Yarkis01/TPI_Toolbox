@@ -2,17 +2,19 @@ import { AttractionSurfaceFilterModule } from '../modules/attractionSurfaceFilte
 import { StaffBuildingColorizerModule } from '../modules/backstage/StaffBuildingColorizer/module';
 import { WarehouseColorizerModule } from '../modules/backstage/warehouseColorizer/module';
 import { CollapsibleZonesModule } from '../modules/collapsibleZones/module';
+import { EnhancedPlanningModule } from '../modules/enhancedPlanning/module';
 import { EntityStatusColorizerModule } from '../modules/entityStatusColorizer/module';
 import { HideChatModule } from '../modules/hideChat/module';
 import { HideWarehousemanModule } from '../modules/hideWarehouseman/module';
-import { InvestSharesFilterModule } from '../modules/investSharesFilter/module';
+
 import { NewDayHistoryModule } from '../modules/newDayHistory/module';
 import { OperatingSystemModule } from '../modules/operatingSystem/module';
-import { ParkWebSiteRedesingModule } from '../modules/parkWebSiteRedesing/module';
+
 import { RideHypeAsTextModule } from '../modules/rideHypeAsText/module';
-import { SelectUntrainedModule } from '../modules/selectUntrained/module';
+
 import { UpdateNotificationModule } from '../modules/updateNotification/module';
 import { ZoneFilterModule } from '../modules/zoneFilters/module';
+import { ZoneReorderModule } from '../modules/zoneReorder/module';
 import { ModuleManager } from './managers/ModuleManager';
 
 /**
@@ -26,15 +28,17 @@ export function registerCommonModules(moduleManager: ModuleManager): void {
     moduleManager.register(new WarehouseColorizerModule());
     moduleManager.register(new EntityStatusColorizerModule());
     moduleManager.register(new HideChatModule());
-    moduleManager.register(new InvestSharesFilterModule());
+
     moduleManager.register(new NewDayHistoryModule());
     moduleManager.register(new RideHypeAsTextModule());
     moduleManager.register(new ZoneFilterModule());
     moduleManager.register(new HideWarehousemanModule());
-    moduleManager.register(new SelectUntrainedModule());
+
     moduleManager.register(new AttractionSurfaceFilterModule());
     moduleManager.register(new OperatingSystemModule(moduleManager));
-    moduleManager.register(new ParkWebSiteRedesingModule());
+
     moduleManager.register(new CollapsibleZonesModule());
     moduleManager.register(new UpdateNotificationModule());
+    moduleManager.register(new EnhancedPlanningModule());
+    moduleManager.register(new ZoneReorderModule());
 }

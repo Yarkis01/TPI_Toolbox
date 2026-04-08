@@ -1,0 +1,40 @@
+// Make the label a flex row so the nav can push to the far right
+.planning-filters__label:has(.enhanced-planning-nav) {
+    display: flex;
+    align-items: center;
+}
+
+.enhanced-planning-nav {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    margin-left: auto;
+
+    &__btn {
+        appearance: none;
+        border: 1px solid rgba(53, 179, 175, 0.4);
+        background: rgba(53, 179, 175, 0.1);
+        color: #35b3af;
+        border-radius: 4px;
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition:
+            background 0.15s ease,
+            border-color 0.15s ease,
+            transform 0.1s ease;
+
+        &:hover {
+            background: rgba(53, 179, 175, 0.25);
+            border-color: #35b3af;
+        }
+
+        &:active {
+            transform: scale(0.92);
+        }
+    }
+}

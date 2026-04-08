@@ -84,45 +84,13 @@ export class SettingsApp {
         }
 
         modules.forEach((mod) => {
-            list.appendChild(this.createModuleRow(mod));
+            list.appendChild(this.configRenderer.createModuleRow(
+                mod,
+                (isChecked) => this.moduleManager.toggleModule(mod.id, isChecked)
+            ));
         });
 
         return list;
-    }
-
-    /**
-     * Creates a row for a module.
-     * @param module - The module to create a row for.
-     * @returns The module row.
-     */
-    private createModuleRow(module: IModule): HTMLElement {
-        const textContainer = createElement('div', { class: 'tpi-setting-info' }, [
-            createElement('div', { class: 'tpi-setting-label' }, [module.name]),
-            createElement('div', { class: 'tpi-setting-desc' }, [module.description]),
-        ]);
-
-        // Use the shared config renderer
-        const { controls, configPanel } = this.configRenderer.createModuleControls(
-            module,
-            (isChecked) => this.moduleManager.toggleModule(module.id, isChecked),
-        );
-
-        const row = createElement(
-            'div',
-            {
-                class: 'tpi-setting-row tpi-module-row',
-                'data-module-id': module.id,
-                'data-search': `${module.name} ${module.description}`.toLowerCase(),
-            },
-            [textContainer, controls],
-        );
-
-        // Add config panel if it exists
-        if (configPanel) {
-            row.appendChild(configPanel);
-        }
-
-        return row;
     }
 
     /**

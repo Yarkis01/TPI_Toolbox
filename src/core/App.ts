@@ -1,4 +1,5 @@
 import { OperatingSystemModule } from '../modules/operatingSystem/module';
+import { ModuleStatusService } from '../services/ModuleStatusService';
 import { Logger } from '../utils/Logger';
 import { registerCommonModules } from './ModuleRegistry';
 import { BaseLayout } from './bootstrap/BaseLayout';
@@ -28,6 +29,9 @@ export class App implements IApp {
      */
     public async start(): Promise<void> {
         this._logger.info('🔧 Toolbox Starting...');
+
+        // Fetch module status before initializing modules
+        await ModuleStatusService.getInstance().fetchStatus();
 
         const settingsManager = new SettingsManager();
         const moduleManager = new ModuleManager(settingsManager);

@@ -152,7 +152,10 @@ export class OperatingSystemModule extends BaseModule {
         this.dock = new Dock((itemId) => this.handleAppLaunch(itemId));
         this.dock.mount(document.body);
 
-        this.restoreSession();
+        // Defer restoreSession to allow all modules to finish registering first.
+        // If not deferred, restoreSession might spawn SettingsApp before the loop finishes,
+        // causing missing modules and incorrect internal 'isEnabled' statuses.
+        setTimeout(() => this.restoreSession(), 0);
     }
 
     /**
