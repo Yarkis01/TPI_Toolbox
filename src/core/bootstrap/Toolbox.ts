@@ -137,7 +137,10 @@ export class Toolbox implements IBootstrap {
      */
     private _createBody(): HTMLElement {
         const modules = this._moduleManager.getModules();
-        const rows = modules.map((module) => this._createModuleRow(module));
+        const rows = modules.map((module) => this._configRenderer.createModuleRow(
+            module,
+            (isChecked) => this._moduleManager.toggleModule(module.id, isChecked)
+        ));
 
         if (rows.length === 0) {
             return createElement('div', { class: 'tpi-modal-empty' }, [
@@ -153,41 +156,6 @@ export class Toolbox implements IBootstrap {
             },
             rows,
         );
-    }
-
-    /**
-     * Creates a row for a module.
-     * @param module The module instance.
-     * @returns The row HTMLElement.
-     */
-    private _createModuleRow(module: IModule): HTMLElement {
-        const textContainer = createElement('div', { class: 'tpi-setting-info' }, [
-            createElement('div', { class: 'tpi-setting-label' }, [module.name]),
-            createElement('div', { class: 'tpi-setting-desc' }, [module.description]),
-        ]);
-
-        // Use the shared config renderer
-        const { controls, configPanel } = this._configRenderer.createModuleControls(
-            module,
-            (isChecked) => this._moduleManager.toggleModule(module.id, isChecked),
-        );
-
-        const row = createElement(
-            'div',
-            {
-                class: 'tpi-setting-row tpi-module-row',
-                'data-module-id': module.id,
-                'data-search': `${module.name} ${module.description}`.toLowerCase(),
-            },
-            [textContainer, controls],
-        );
-
-        // Add config panel if it exists
-        if (configPanel) {
-            row.appendChild(configPanel);
-        }
-
-        return row;
     }
 
     /**
