@@ -4,8 +4,6 @@ import { WarehouseColorizerModule } from '../modules/backstage/warehouseColorize
 import { CollapsibleZonesModule } from '../modules/collapsibleZones/module';
 import { EnhancedPlanningModule } from '../modules/enhancedPlanning/module';
 import { EntityStatusColorizerModule } from '../modules/entityStatusColorizer/module';
-import { HideChatModule } from '../modules/hideChat/module';
-import { HideWarehousemanModule } from '../modules/hideWarehouseman/module';
 
 import { NewDayHistoryModule } from '../modules/newDayHistory/module';
 import { OperatingSystemModule } from '../modules/operatingSystem/module';
@@ -27,12 +25,10 @@ export function registerCommonModules(moduleManager: ModuleManager): void {
     moduleManager.register(new StaffBuildingColorizerModule());
     moduleManager.register(new WarehouseColorizerModule());
     moduleManager.register(new EntityStatusColorizerModule());
-    moduleManager.register(new HideChatModule());
 
     moduleManager.register(new NewDayHistoryModule());
     moduleManager.register(new RideHypeAsTextModule());
     moduleManager.register(new ZoneFilterModule());
-    moduleManager.register(new HideWarehousemanModule());
 
     moduleManager.register(new AttractionSurfaceFilterModule());
     moduleManager.register(new OperatingSystemModule(moduleManager));

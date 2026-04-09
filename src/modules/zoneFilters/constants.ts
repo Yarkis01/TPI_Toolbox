@@ -4,19 +4,18 @@
 export const ZONE_SELECTORS = {
     PAGE_MATCH: 'attractions.php',
 
-    CARD: 'article.owned-attraction-card',
-    ZONE_BADGE: '.owned-attraction-card__zone-badge',
+    CARD: 'article.park-attractions-card',
 
-    ZONE_GROUP: '.owned-attractions__zone-group',
-    ZONE_HEADER_NAME: '.owned-attractions__zone-name',
+    ZONE_GROUP: 'section.park-attractions-group',
+    ZONE_HEADER_NAME: 'h2.dash-block__title',
 
-    FILTER_CONTAINER: '.owned-attractions__filters-container',
-    COUNTER: '#owned-filter-count',
-    RESET_BTN: '#owned-filter-reset-btn',
+    FILTER_CONTAINER: '.park-attractions-filters__grid',
+    COUNTER: '#attraction-filter-count',
+    RESET_BTN: '#attraction-filter-reset-btn',
 
-    SITE_FILTER_GROUP: 'owned-attractions__filter-group',
-    SITE_LABEL: 'owned-attractions__filter-label',
-    SITE_SELECT: 'owned-attractions__filter-select',
+    SITE_FILTER_GROUP: 'park-attractions-filter-group',
+    SITE_LABEL: 'park-attractions-label',
+    SITE_SELECT: 'park-attractions-input',
 
     FILTER_ID: 'tpi-zone-filter',
     HIDDEN_CLASS: 'tpi-hidden-by-zone',
