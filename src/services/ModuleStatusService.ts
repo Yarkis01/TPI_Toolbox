@@ -3,15 +3,19 @@ import { Logger } from '../utils/Logger';
 
 export interface ModuleStatusData {
     name: string;
-    status: 'ok' | 'broken' | 'fix' | 'bug' | 'unknown';
+    status: 'ok' | 'broken' | 'fix' | 'bug' | 'deprecated' | 'unknown';
     reason: string | null;
     broken_since: string | null;
     fixed_in_version?: string | null;
     github_issue_url?: string | null;
+    removal_version?: string | null;
+    is_archived?: boolean;
+    is_update_planned?: boolean;
+    planned_update_version?: string | null;
 }
 
 export interface EffectiveModuleStatus extends ModuleStatusData {
-    effectiveStatus: 'ok' | 'broken' | 'update_required' | 'bug' | 'unknown';
+    effectiveStatus: 'ok' | 'broken' | 'update_required' | 'bug' | 'deprecated' | 'unknown';
 }
 
 export interface ModuleStatusResponse {
@@ -85,13 +89,15 @@ export class ModuleStatusService {
                 name: moduleId,
                 status: 'unknown',
                 reason: null,
-                broken_since: null
+                broken_since: null,
+                is_archived: false,
+                is_update_planned: false
             };
         } else {
             rawStatus = this._statusData[moduleId];
         }
 
-        let effectiveStatus: 'ok' | 'broken' | 'update_required' | 'bug' | 'unknown' = rawStatus.status as any;
+        let effectiveStatus: 'ok' | 'broken' | 'update_required' | 'bug' | 'deprecated' | 'unknown' = rawStatus.status as any;
 
         if (rawStatus.status === 'fix') {
             if (rawStatus.fixed_in_version && this.compareVersions(APP_INFORMATIONS.APP_VERSION, rawStatus.fixed_in_version) >= 0) {

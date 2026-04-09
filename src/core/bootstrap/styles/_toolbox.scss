@@ -118,8 +118,15 @@
         scrollbar-width: thin;
         scrollbar-color: rgba($primary, 0.45) rgba(255, 255, 255, 0.04);
 
-        &::-webkit-scrollbar { width: 6px; }
-        &::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.04); border-radius: 999px; }
+        &::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        &::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 999px;
+        }
+
         &::-webkit-scrollbar-thumb {
             background: linear-gradient(180deg, rgba($primary, 0.55) 0%, rgba($primary, 0.35) 100%);
             border-radius: 999px;
@@ -170,9 +177,13 @@
     border-bottom: 1px solid $border-color;
     animation: tpiSlideIn 0.3s ease-out;
 
-    &:last-child { border-bottom: none; }
+    &:last-child {
+        border-bottom: none;
+    }
 
-    .tpi-setting-info { padding-right: 1rem; }
+    .tpi-setting-info {
+        padding-right: 1rem;
+    }
 
     .tpi-setting-label {
         color: $text-main;
@@ -223,6 +234,21 @@
         border: 1px solid rgba(255, 193, 7, 0.4);
     }
 
+    &-deprecated,
+    &-archived {
+        background: rgba(245, 158, 11, 0.15);
+        color: #f59e0b;
+        /* Amber/Orange */
+        border: 1px solid rgba(245, 158, 11, 0.4);
+    }
+
+    &-update_planned {
+        background: rgba(59, 130, 246, 0.15);
+        color: #3b82f6;
+        /* Blue */
+        border: 1px solid rgba(59, 130, 246, 0.4);
+    }
+
     &-unknown {
         background: rgba(108, 117, 125, 0.15);
         color: #8ea1b9;
@@ -236,14 +262,23 @@
     font-style: italic;
     margin-top: 0.25rem;
 
-    &.warning { color: #fd7e14; }
+    &.warning {
+        color: #fd7e14;
+    }
+
+    &.info {
+        color: #3b82f6;
+    }
 
     &__link {
         color: inherit;
         text-decoration: underline;
         opacity: 0.85;
         transition: opacity 0.15s;
-        &:hover { opacity: 1; }
+
+        &:hover {
+            opacity: 1;
+        }
     }
 }
 
@@ -254,7 +289,11 @@
     height: 24px;
     flex-shrink: 0;
 
-    input { opacity: 0; width: 0; height: 0; }
+    input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
 
     .tpi-slider {
         position: absolute;
@@ -278,21 +317,22 @@
         }
     }
 
-    input:disabled + .tpi-slider {
+    input:disabled+.tpi-slider {
         opacity: 0.4;
         cursor: not-allowed;
     }
 
-    input:checked + .tpi-slider {
+    input:checked+.tpi-slider {
         background: rgba($primary, 0.25);
         border-color: rgba($primary, 0.6);
+
         &:before {
             background: $primary;
             transform: translateX(20px);
         }
     }
 
-    input:focus + .tpi-slider {
+    input:focus+.tpi-slider {
         box-shadow: 0 0 0 2px rgba($primary, 0.25);
     }
 }
@@ -434,9 +474,18 @@
     transition: border-color 0.15s;
     min-width: 80px;
 
-    &:focus { border-color: rgba($primary, 0.5); }
-    &[type='number'] { width: 80px; text-align: center; }
-    &[type='text'] { min-width: 150px; }
+    &:focus {
+        border-color: rgba($primary, 0.5);
+    }
+
+    &[type='number'] {
+        width: 80px;
+        text-align: center;
+    }
+
+    &[type='text'] {
+        min-width: 150px;
+    }
 }
 
 .tpi-config-number {
@@ -457,24 +506,48 @@
     min-width: 120px;
     transition: border-color 0.15s;
 
-    &:focus { border-color: rgba($primary, 0.5); }
-    option { background: #172334; color: $text-main; }
+    &:focus {
+        border-color: rgba($primary, 0.5);
+    }
+
+    option {
+        background: #172334;
+        color: $text-main;
+    }
 }
 
 .tpi-switch--small {
     width: 36px;
     height: 20px;
 
-    .tpi-slider:before { height: 12px; width: 12px; }
-    input:checked + .tpi-slider:before { transform: translateX(16px); }
+    .tpi-slider:before {
+        height: 12px;
+        width: 12px;
+    }
+
+    input:checked+.tpi-slider:before {
+        transform: translateX(16px);
+    }
 }
 
 @keyframes tpiFadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 @keyframes tpiSlideIn {
-    from { opacity: 0; transform: translateY(4px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
