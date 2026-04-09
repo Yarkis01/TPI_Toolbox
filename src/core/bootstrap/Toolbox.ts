@@ -5,6 +5,7 @@ import { createElement } from '../../utils/DomUtils';
 import { Logger } from '../../utils/Logger';
 import { EVENTS, IDS, SELECTORS } from '../constants/LayoutConstants';
 import IBootstrap from '../interfaces/IBootstrap';
+import './styles/_header.scss';
 import './styles/_toolbox.scss';
 
 /**

@@ -2,9 +2,6 @@ import { OperatingSystemModule } from '../modules/operatingSystem/module';
 import { ModuleStatusService } from '../services/ModuleStatusService';
 import { Logger } from '../utils/Logger';
 import { registerCommonModules } from './ModuleRegistry';
-import { BaseLayout } from './bootstrap/BaseLayout';
-import { ChatLayout } from './bootstrap/ChatLayout';
-import { HeaderLayout } from './bootstrap/HeaderLayout';
 import { Toolbox } from './bootstrap/Toolbox';
 import IApp from './interfaces/IApp';
 import IBootstrap from './interfaces/IBootstrap';
@@ -54,9 +51,6 @@ export class App implements IApp {
         this._logger.info('⚙️ Running bootstrap processes...');
 
         const bootstraps: IBootstrap[] = [
-            new BaseLayout(),
-            new HeaderLayout(),
-            new ChatLayout(),
             new Toolbox(moduleManager),
         ];
 

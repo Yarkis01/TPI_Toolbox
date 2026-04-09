@@ -1,10 +1,5 @@
 @use './variables' as *;
 
-#tpi-chat-button {
-    border-radius: 0 !important;
-    width: 10em !important;
-}
-
 .app-sidebar__link--toolbox {
     color: $primary !important;
     border-color: rgba($primary, 0.3) !important;
