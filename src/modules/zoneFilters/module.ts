@@ -71,11 +71,10 @@ export class ZoneFilterModule extends BaseModule {
      */
     private _injectStyles(): void {
         this._styleElement = document.createElement('style');
-        this._styleElement.innerHTML = `
-            .${ZONE_SELECTORS.HIDDEN_CLASS} {
-                display: none !important;
-            }
-        `;
+        this._styleElement.textContent = [
+            `.${ZONE_SELECTORS.HIDDEN_CLASS} { display: none !important; }`,
+            `.park-attractions-filters__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }`,
+        ].join('\n');
         document.head.appendChild(this._styleElement);
     }
 
@@ -97,15 +96,6 @@ export class ZoneFilterModule extends BaseModule {
      * @param container The container element to inject the UI into.
      */
     private _injectUI(container: HTMLElement): void {
-        const label = createElement(
-            'label',
-            {
-                for: ZONE_SELECTORS.FILTER_ID,
-                class: ZONE_SELECTORS.SITE_LABEL,
-            },
-            [ZONE_STRINGS.LABEL],
-        );
-
         this._selectElement = createElement('select', {
             id: ZONE_SELECTORS.FILTER_ID,
             class: ZONE_SELECTORS.SITE_SELECT,
@@ -120,11 +110,9 @@ export class ZoneFilterModule extends BaseModule {
             });
 
         this._filterGroup = createElement(
-            'div',
-            {
-                class: ZONE_SELECTORS.SITE_FILTER_GROUP,
-            },
-            [label, this._selectElement],
+            'label',
+            { class: ZONE_SELECTORS.SITE_LABEL },
+            [ZONE_STRINGS.LABEL, this._selectElement],
         );
 
         container.appendChild(this._filterGroup);
