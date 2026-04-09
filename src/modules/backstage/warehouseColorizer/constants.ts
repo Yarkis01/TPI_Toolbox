@@ -19,9 +19,5 @@ export const CAPACITY_EVALUATION = {
  * Page configurations for entity status colorization.
  */
 export const PAGE_CONFIGS = [
-    {
-        urlFragment: 'backstage.php',
-        selector: '.backstage-card',
-        getStatus: (el: HTMLElement) => el.dataset.status?.toLowerCase() || '',
-    },
+    { urlFragment: 'backstage.php' },
 ];
