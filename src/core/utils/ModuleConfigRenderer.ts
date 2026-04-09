@@ -18,21 +18,49 @@ export class ModuleConfigRenderer {
      */
     public createModuleRow(module: IModule, onToggle: (isChecked: boolean) => void): HTMLElement {
         const moduleStatus = ModuleStatusService.getInstance().getStatus(module.id);
-        const badgeClass = `tpi-badge tpi-badge-${moduleStatus.effectiveStatus}`;
 
+        const badges: HTMLElement[] = [];
+
+        // 1. Badge de statut principal
+        let badgeClass = `tpi-badge tpi-badge-${moduleStatus.effectiveStatus}`;
         let badgeText = 'Inconnu';
         if (moduleStatus.effectiveStatus === 'ok') badgeText = 'OK';
         else if (moduleStatus.effectiveStatus === 'broken') badgeText = 'Cassé';
         else if (moduleStatus.effectiveStatus === 'update_required') badgeText = 'MAJ Requise';
         else if (moduleStatus.effectiveStatus === 'bug') badgeText = 'Bug';
+        else if (moduleStatus.effectiveStatus === 'deprecated') badgeText = 'Déprécié';
 
-        const badge = createElement('span', { class: badgeClass }, [badgeText]);
+        // Si le module n'est pas archivé, ou s'il l'est mais qu'on veut garder les deux badges
+        badges.push(createElement('span', { class: badgeClass }, [badgeText]));
 
-        const labelContainer = createElement('div', { class: 'tpi-setting-label' }, [module.name, badge]);
+        // 2. Badge Archivé
+        if (moduleStatus.is_archived) {
+            badges.push(createElement('span', { class: 'tpi-badge tpi-badge-archived' }, ['Archivé']));
+        }
+
+        // 3. Badge Mise à jour prévue
+        if (moduleStatus.is_update_planned) {
+            const versionText = moduleStatus.planned_update_version ? ` (v${moduleStatus.planned_update_version})` : '';
+            badges.push(createElement('span', { class: 'tpi-badge tpi-badge-update_planned' }, [`MAJ Prévue${versionText}`]));
+        }
+
+        const labelContainer = createElement('div', { class: 'tpi-setting-label' }, [module.name, ...badges]);
 
         const descChildren: (string | HTMLElement)[] = [module.description];
 
-        if (moduleStatus.effectiveStatus === 'broken' && moduleStatus.reason) {
+        // Affichage des raisons : On priorise l'état "Archivé" pour éviter les doublons de texte
+        if (moduleStatus.is_archived) {
+            const reasonChildren: (string | HTMLElement)[] = [`Ce module a été archivé.`];
+            if (moduleStatus.reason) {
+                reasonChildren.push(` Raison : ${moduleStatus.reason}`);
+            }
+            if (moduleStatus.effectiveStatus === 'deprecated' && moduleStatus.removal_version) {
+                reasonChildren.push(` (Sera retiré à la version ${moduleStatus.removal_version})`);
+            }
+            const reasonText = createElement('div', { class: 'tpi-setting-reason warning' }, reasonChildren);
+            descChildren.push(reasonText);
+
+        } else if (moduleStatus.effectiveStatus === 'broken' && moduleStatus.reason) {
             const reasonChildren: (string | HTMLElement)[] = [`Détail API : ${moduleStatus.reason}`];
             if (moduleStatus.github_issue_url) {
                 const link = createElement('a', { class: 'tpi-setting-reason__link', href: moduleStatus.github_issue_url, target: '_blank', rel: 'noopener noreferrer' }, ['Voir GitHub']);
@@ -40,6 +68,7 @@ export class ModuleConfigRenderer {
             }
             const reasonText = createElement('div', { class: 'tpi-setting-reason' }, reasonChildren);
             descChildren.push(reasonText);
+
         } else if (moduleStatus.effectiveStatus === 'bug' && moduleStatus.reason) {
             const reasonChildren: (string | HTMLElement)[] = [`Bug identifié : ${moduleStatus.reason}`];
             if (moduleStatus.github_issue_url) {
@@ -48,9 +77,35 @@ export class ModuleConfigRenderer {
             }
             const reasonText = createElement('div', { class: 'tpi-setting-reason warning' }, reasonChildren);
             descChildren.push(reasonText);
+
         } else if (moduleStatus.effectiveStatus === 'update_required') {
             const reasonMsg = moduleStatus.fixed_in_version ? `Corrigé dans la version ${moduleStatus.fixed_in_version}, veuillez mettre à jour TPI Toolbox.` : 'Une mise à jour est requise pour utiliser ce module.';
             const reasonText = createElement('div', { class: 'tpi-setting-reason warning' }, [reasonMsg]);
+            descChildren.push(reasonText);
+
+        } else if (moduleStatus.effectiveStatus === 'deprecated') {
+            const reasonChildren: (string | HTMLElement)[] = [];
+            if (moduleStatus.reason) {
+                reasonChildren.push(`Raison de dépréciation : ${moduleStatus.reason}`);
+            } else {
+                reasonChildren.push(`Ce module est déprécié et ne sera plus maintenu.`);
+            }
+            if (moduleStatus.removal_version) {
+                reasonChildren.push(` (Sera retiré à la version ${moduleStatus.removal_version})`);
+            }
+            const reasonText = createElement('div', { class: 'tpi-setting-reason warning' }, reasonChildren);
+            descChildren.push(reasonText);
+        }
+
+        // Raison de mise à jour prévue (s'ajoute en dessous indépendamment)
+        if (moduleStatus.is_update_planned) {
+            const reasonChildren: (string | HTMLElement)[] = [];
+            if (moduleStatus.planned_update_version) {
+                reasonChildren.push(`Une mise à jour est en cours de préparation et sera disponible dans la version ${moduleStatus.planned_update_version}.`);
+            } else {
+                reasonChildren.push(`Une mise à jour est prévue prochainement pour ce module.`);
+            }
+            const reasonText = createElement('div', { class: 'tpi-setting-reason info' }, reasonChildren);
             descChildren.push(reasonText);
         }
 
@@ -93,6 +148,9 @@ export class ModuleConfigRenderer {
         const configSchema = module.getConfigSchema();
         const hasConfig = configSchema && configSchema.options.length > 0;
         const moduleStatus = ModuleStatusService.getInstance().getStatus(module.id);
+
+        // Seuls 'broken' et 'update_required' empêchent l'activation. 
+        // Les modules archivés, dépréciés ou en attente de MAJ peuvent toujours être basculés.
         const isUnavailable = moduleStatus.effectiveStatus === 'broken' || moduleStatus.effectiveStatus === 'update_required';
 
         const checkbox = createElement('input', {
