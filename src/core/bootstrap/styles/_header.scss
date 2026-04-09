@@ -5,6 +5,10 @@
     border-color: rgba($primary, 0.3) !important;
     background: linear-gradient(180deg, rgba($primary, 0.18) 0%, rgba($primary-hover, 0.12) 100%), rgba(255, 255, 255, 0.02) !important;
 
+    .app-sidebar__link-icon {
+        opacity: 1;
+    }
+
     &:hover {
         color: #faf5ff !important;
         font-weight: 500;
