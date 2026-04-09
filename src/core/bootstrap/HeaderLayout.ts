@@ -1,6 +1,5 @@
 import { createElement } from '../../utils/DomUtils';
 import { Logger } from '../../utils/Logger';
-import { APP_INFORMATIONS } from '../constants/AppConstants';
 import { EVENTS, IDS, SELECTORS, STRINGS } from '../constants/LayoutConstants';
 import IBootstrap from '../interfaces/IBootstrap';
 import './styles/_header.scss';
@@ -33,7 +32,7 @@ export class HeaderLayout implements IBootstrap {
                 {
                     id: IDS.HEADERS_WIDGETS,
                 },
-                [this._createToolboxButton(), this._createChatButton()],
+                [this._createChatButton()],
             ),
         );
     }
@@ -52,26 +51,6 @@ export class HeaderLayout implements IBootstrap {
         }
 
         return header;
-    }
-
-    /**
-     * Creates the toolbox button.
-     * @returns The toolbox HTMLButtonElement.
-     */
-    private _createToolboxButton(): HTMLButtonElement {
-        return createElement(
-            'button',
-            {
-                id: IDS.TOOLBOX_BUTTON,
-                onclick: () => {
-                    document.dispatchEvent(new CustomEvent(EVENTS.TOOLBOX_TOGGLED));
-                },
-                style: {
-                    marginRight: '1em',
-                },
-            },
-            [APP_INFORMATIONS.APP_NAME],
-        );
     }
 
     /**

@@ -8,6 +8,7 @@ export const SELECTORS = {
     LOGOUT_BUTTON: 'a.game-header__link[href*="logout.php"]',
     CHAT_OPENED: 'tpi-chat-opened',
     HEADER: 'div.dashboard-welcome',
+    NEW_DAY_LINK: 'a.app-sidebar__link--new-day',
 } as const;
 
 /**
@@ -25,7 +26,7 @@ export const IDS = {
     HEADERS_WIDGETS: 'tpi-header-widgets',
     CHAT_BUTTON: 'tpi-chat-button',
     CHAT_OVERLAY: 'tpi-chat-overlay',
-    TOOLBOX_BUTTON: 'tpi-toolbox-button',
+    SIDEBAR_TOOLBOX_LINK: 'tpi-sidebar-toolbox-link',
     SETTINGS_MODAL: 'tpi-settings-modal',
     UPDATE_TOAST: 'tpi-update-toast',
 } as const;

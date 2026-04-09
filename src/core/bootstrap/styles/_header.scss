@@ -1,29 +1,19 @@
 @use './variables' as *;
 
-#tpi-toolbox-button {
-    background: rgba($primary, 0.2);
-    border: 1px solid rgba($primary, 0.5);
-    color: $primary;
-    padding: 0.5rem 1rem;
-    border-radius: 0;
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: 900;
-    transition: all 0.2s;
-
-    &:hover {
-        background: $primary;
-        color: white;
-        box-shadow: 0 3px 10px rgba($primary, 0.6);
-        transform: translateY(-1px);
-    }
-}
-
 #tpi-chat-button {
     border-radius: 0 !important;
+    width: 10em !important;
 }
 
-#tpi-toolbox-button,
-#tpi-chat-button {
-    width: 10em !important;
+.app-sidebar__link--toolbox {
+    color: $primary !important;
+    border-color: rgba($primary, 0.3) !important;
+    background: linear-gradient(180deg, rgba($primary, 0.18) 0%, rgba($primary-hover, 0.12) 100%), rgba(255, 255, 255, 0.02) !important;
+
+    &:hover {
+        color: #faf5ff !important;
+        font-weight: 500;
+        border-color: rgba($primary, 0.82) !important;
+        background: linear-gradient(180deg, rgba($primary, 0.46) 0%, rgba($primary-hover, 0.34) 100%), rgba(255, 255, 255, 0.02) !important;
+    }
 }
