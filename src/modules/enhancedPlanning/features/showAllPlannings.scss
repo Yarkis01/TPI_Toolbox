@@ -1,31 +1,29 @@
-// Only button styles — tables use the game's native CSS classes
+// Match the game's .planning-auto-fill-btn / .planning-reset-btn style
 .show-all-plannings__btn {
-    appearance: none;
-    border: 1px solid rgba(53, 179, 175, 0.4);
-    background: rgba(53, 179, 175, 0.1);
-    color: #35b3af;
-    border-radius: 0;
-    padding: 0.5rem 1rem;
-    font-size: 0.9rem;
+    padding: 0.45rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.82rem;
     font-weight: 600;
     cursor: pointer;
+    border: 1px solid rgba(0, 184, 198, 0.35);
+    background: rgba(0, 184, 198, 0.12);
+    color: var(--tpi-brand);
     transition:
         background 0.15s ease,
         border-color 0.15s ease;
-    margin-left: auto;
 
     &:hover {
-        background: rgba(53, 179, 175, 0.25);
-        border-color: #35b3af;
+        background: rgba(0, 184, 198, 0.25);
+        border-color: rgba(0, 184, 198, 0.65);
     }
 
     &--active {
-        background: #35b3af;
+        background: var(--tpi-brand);
         color: #1e2330;
-        border-color: #35b3af;
+        border-color: var(--tpi-brand);
 
         &:hover {
-            background: #2a9a96;
+            background: rgba(0, 184, 198, 0.85);
         }
     }
 }

@@ -192,13 +192,20 @@ export class ShowAllPlanningsFeature extends BaseFeature {
     }
 
     /**
-     * Injects the "Show all plannings" toggle button.
+     * Injects the "Show all plannings" toggle button into the game's actions bar
+     * (`.planning-filters__actions`), alongside the auto-fill and reset buttons.
+     * That bar is already shown/hidden per employee type by the game's JS,
+     * which aligns with the types that support this feature.
      */
     private _injectButton(): void {
         const filters = document.querySelector(PLANNING_SELECTORS.FILTERS);
         if (!filters) return;
 
-        const actionsBar = filters.querySelector('.planning-filters__actions') ?? filters;
+        // Inject inside the game's actions bar so the button is a sibling
+        // of the auto-fill / reset buttons and benefits from the same
+        // show/hide behaviour driven by the employee-type selector.
+        const actionsBar = filters.querySelector<HTMLElement>('.planning-filters__actions');
+        if (!actionsBar) return;
 
         this._btn = document.createElement('button');
         this._btn.type = 'button';

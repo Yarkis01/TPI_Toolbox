@@ -5,8 +5,8 @@ export const PLANNING_SELECTORS = {
     /** URL match to identify the planning page */
     PAGE_MATCH: 'planning.php',
 
-    /** Main planning content section */
-    PLANNING_CONTENT: '.planning-content',
+    /** Main planning stack container (was .planning-content in old HTML) */
+    PLANNING_CONTENT: '.park-planning-stack',
 
     /** Filters container */
     FILTERS: '.planning-filters',
