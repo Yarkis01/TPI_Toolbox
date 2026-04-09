@@ -56,6 +56,8 @@ export interface IPlanningData {
     techniciens: IPlanningEmployee[];
     operateursGuichet: IPlanningEmployee[];
     nombreGuichetsPhysiques: number;
+    /** Number of planned guichet slots (added in page update) */
+    emplacementsGuichetPlanning: number;
     agentsSecurite: IPlanningEmployee[];
     nombrePointsSecurite: number;
     cuisiniers: IPlanningEmployee[];
@@ -66,6 +68,8 @@ export interface IPlanningData {
     artistes: IPlanningEmployee[];
     spectacles: IPlanningSpectacle[];
     nextDay: number;
+    /** Entrance bonus percentages per guichet/security type (added in page update) */
+    entranceBonusPct: Record<string, number>;
 }
 
 /**

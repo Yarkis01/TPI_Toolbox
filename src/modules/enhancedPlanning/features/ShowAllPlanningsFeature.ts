@@ -75,6 +75,7 @@ const TYPE_MAPPING: Record<
  */
 export class ShowAllPlanningsFeature extends BaseFeature {
     private _btn: HTMLButtonElement | null = null;
+    private _btnWrapper: HTMLElement | null = null;
     private _container: HTMLElement | null = null;
     private _originalContent: HTMLElement | null = null;
     private _isShowingAll: boolean = false;
@@ -102,7 +103,8 @@ export class ShowAllPlanningsFeature extends BaseFeature {
 
     protected onDisable(): void {
         this._hideAllPlannings();
-        this._btn?.remove();
+        this._btnWrapper?.remove();
+        this._btnWrapper = null;
         this._btn = null;
 
         if (this._typeChangeListener) {
@@ -193,12 +195,20 @@ export class ShowAllPlanningsFeature extends BaseFeature {
 
     /**
      * Injects the "Show all plannings" toggle button.
+     * Inserts the button into a dedicated row in `.planning-filters__top`
+     * so it stays independent from the game's own actions bar
+     * (`.planning-filters__actions`), which shows/hides per employee type.
      */
     private _injectButton(): void {
         const filters = document.querySelector(PLANNING_SELECTORS.FILTERS);
         if (!filters) return;
 
-        const actionsBar = filters.querySelector('.planning-filters__actions') ?? filters;
+        // Target .planning-filters__top so the button is always visible
+        // and not tied to the game's action-bar visibility toggles.
+        const filtersTop = filters.querySelector('.planning-filters__top') ?? filters;
+
+        this._btnWrapper = document.createElement('div');
+        this._btnWrapper.className = 'planning-filters__row show-all-plannings__row';
 
         this._btn = document.createElement('button');
         this._btn.type = 'button';
@@ -206,7 +216,8 @@ export class ShowAllPlanningsFeature extends BaseFeature {
         this._btn.textContent = '📋 Afficher tous les plannings';
         this._btn.addEventListener('click', () => this._toggleAllPlannings());
 
-        actionsBar.appendChild(this._btn);
+        this._btnWrapper.appendChild(this._btn);
+        filtersTop.appendChild(this._btnWrapper);
 
         const typeSelect = document.querySelector<HTMLSelectElement>(
             PLANNING_SELECTORS.TYPE_SELECT,
