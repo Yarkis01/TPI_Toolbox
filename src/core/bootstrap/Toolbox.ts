@@ -1,7 +1,7 @@
 import { APP_INFORMATIONS } from '../../core/constants/AppConstants';
 import { ModuleManager } from '../../core/managers/ModuleManager';
-import { ModuleConfigRenderer } from '../../core/utils/ModuleConfigRenderer';
 import { SiteStatusService } from '../../core/services/SiteStatusService';
+import { ModuleConfigRenderer } from '../../core/utils/ModuleConfigRenderer';
 import { createElement } from '../../utils/DomUtils';
 import { Logger } from '../../utils/Logger';
 import { EVENTS, IDS, SELECTORS } from '../constants/LayoutConstants';
