@@ -74,6 +74,30 @@ export class ModuleManager {
     }
 
     /**
+     * Toggles a module's enabled state, bypassing broken/update-required checks.
+     * For dev/debug use only.
+     * @param moduleId The module identifier.
+     * @param enable Whether to enable or disable the module.
+     */
+    public forceToggleModule(moduleId: string, enable: boolean): void {
+        const module = this._modules.get(moduleId);
+        if (!module) return;
+
+        try {
+            if (enable) {
+                module.init();
+                module.enable();
+            } else {
+                module.disable();
+            }
+        } catch (error) {
+            this._logger.warn(`forceToggle '${moduleId}' threw: ${(error as Error).message}`);
+        }
+
+        this._settingsManager.setModuleState(moduleId, enable);
+    }
+
+    /**
      * Gets all registered modules.
      * @returns An array of registered modules.
      */

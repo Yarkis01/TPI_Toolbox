@@ -1,4 +1,5 @@
 import { ModuleManager } from '../../../managers/ModuleManager';
+import { ModuleStatusService } from '../../../../services/ModuleStatusService';
 import { makeBtn, makeTable, makeToolbar } from '../helpers';
 
 /**
@@ -32,11 +33,21 @@ export class ModulesTab {
             badge.textContent = m.isEnabled() ? 'Actif' : 'Inactif';
             statusCell.appendChild(badge);
 
+            const status = ModuleStatusService.getInstance().getStatus(m.id);
+            const isBlocked =
+                !m.isEnabled() &&
+                (status.effectiveStatus === 'broken' ||
+                    status.effectiveStatus === 'update_required');
+
             const actionCell = tr.insertCell();
             const toggleBtn = makeBtn(
-                m.isEnabled() ? 'Désactiver' : 'Activer',
+                m.isEnabled() ? 'Désactiver' : isBlocked ? '⚠️ Forcer' : 'Activer',
                 () => {
-                    this._moduleManager.toggleModule(m.id, !m.isEnabled());
+                    if (isBlocked) {
+                        this._moduleManager.forceToggleModule(m.id, !m.isEnabled());
+                    } else {
+                        this._moduleManager.toggleModule(m.id, !m.isEnabled());
+                    }
                     refresh();
                 },
                 m.isEnabled() ? 'tdbg-toggle--off' : 'tdbg-toggle--on',
