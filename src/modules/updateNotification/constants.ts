@@ -1,7 +1,7 @@
 /**
  * URL to check for the latest version.
  */
-export const UPDATE_CHECK_URL = 'https://tpitoolbox.yarkis.top/';
+export const UPDATE_CHECK_URL = 'https://tpitoolbox.yarkis.top/api/version';
 
 /**
  * Constant to force display the popup for testing purposes.
