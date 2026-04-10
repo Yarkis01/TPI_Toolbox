@@ -28,7 +28,7 @@ export class App implements IApp {
         this._logger.info('🔧 Toolbox Starting...');
 
         // Fetch module status before initializing modules
-        await ModuleStatusService.getInstance().fetchStatus();
+        ModuleStatusService.getInstance().fetchStatus();
 
         const settingsManager = new SettingsManager();
         const moduleManager = new ModuleManager(settingsManager);
