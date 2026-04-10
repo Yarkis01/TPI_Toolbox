@@ -174,7 +174,10 @@ export class ModuleStatusService {
         let isUpdatePlanned = rawStatus.is_update_planned;
         if (isUpdatePlanned && rawStatus.planned_update_version) {
             if (
-                this._compareVersions(APP_INFORMATIONS.APP_VERSION, rawStatus.planned_update_version) >= 0
+                this._compareVersions(
+                    APP_INFORMATIONS.APP_VERSION,
+                    rawStatus.planned_update_version,
+                ) >= 0
             ) {
                 isUpdatePlanned = false;
             }
