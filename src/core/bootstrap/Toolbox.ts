@@ -1,6 +1,7 @@
 import { APP_INFORMATIONS } from '../../core/constants/AppConstants';
 import { ModuleManager } from '../../core/managers/ModuleManager';
 import { ModuleConfigRenderer } from '../../core/utils/ModuleConfigRenderer';
+import { SiteStatusService } from '../../core/services/SiteStatusService';
 import { createElement } from '../../utils/DomUtils';
 import { Logger } from '../../utils/Logger';
 import { EVENTS, IDS, SELECTORS } from '../constants/LayoutConstants';
@@ -15,6 +16,7 @@ export class Toolbox implements IBootstrap {
     private readonly _logger: Logger;
     private readonly _moduleManager: ModuleManager;
     private readonly _configRenderer: ModuleConfigRenderer;
+    private readonly _siteStatusService: SiteStatusService;
     private _container: HTMLElement | null = null;
 
     /**
@@ -25,6 +27,7 @@ export class Toolbox implements IBootstrap {
         this._logger = new Logger('SettingsModal');
         this._moduleManager = moduleManager;
         this._configRenderer = new ModuleConfigRenderer();
+        this._siteStatusService = new SiteStatusService();
     }
 
     /**
@@ -115,8 +118,11 @@ export class Toolbox implements IBootstrap {
     private _open(): void {
         if (this._container) return;
 
+        const bannerContainer = this._createBannersContainer();
+
         const content = createElement('div', { class: 'tpi-modal-card' }, [
             this._createHeader(),
+            bannerContainer,
             this._createSearchBar(),
             this._createBody(),
             this._createFooter(),
@@ -145,6 +151,95 @@ export class Toolbox implements IBootstrap {
         this._container?.remove();
         this._container = null;
         this._configRenderer.resetExpandedState();
+    }
+
+    /**
+     * Creates the banners container and fetches data asynchronously.
+     * @returns The banners container HTMLElement.
+     */
+    private _createBannersContainer(): HTMLElement {
+        const container = createElement('div', { class: 'tpi-banners-container' });
+
+        this._siteStatusService.fetchStatus().then((status) => {
+            if (!status) return;
+
+            const banners: HTMLElement[] = [];
+
+            if (status.maintenance?.is_active) {
+                banners.push(
+                    this._createBannerItem(
+                        `Maintenance en cours. Fin estimée : ${status.maintenance.estimation_duration || 'bientôt'}`,
+                        'danger',
+                    ),
+                );
+            }
+
+            if (status.pre_maintenance?.is_active) {
+                banners.push(
+                    this._createBannerItem(
+                        status.pre_maintenance.text,
+                        'warning',
+                        undefined,
+                        'Pré-maintenance',
+                    ),
+                );
+            }
+
+            if (status.public_banner?.is_active) {
+                banners.push(
+                    this._createBannerItem(
+                        status.public_banner.text,
+                        status.public_banner.type || 'info',
+                        status.public_banner.link,
+                        'Information',
+                    ),
+                );
+            }
+
+            if (banners.length > 0) {
+                banners.forEach((banner) => {
+                    const track = createElement('div', { class: 'tpi-banner-track' }, [banner]);
+                    const row = createElement('div', { class: 'tpi-banner-row' }, [track]);
+                    container.appendChild(row);
+                });
+                container.classList.add('tpi-banners-container--active');
+            }
+        });
+
+        return container;
+    }
+
+    /**
+     * Creates a single banner item.
+     */
+    private _createBannerItem(
+        text: string,
+        type: string,
+        link?: string,
+        title?: string,
+    ): HTMLElement {
+        const contentNodes: (string | HTMLElement)[] = [];
+
+        if (title) {
+            contentNodes.push(createElement('strong', {}, [`[${title}] `]));
+        }
+
+        contentNodes.push(text);
+
+        if (link) {
+            contentNodes.push(' ');
+            contentNodes.push(
+                createElement('a', { href: link, target: '_blank', rel: 'noopener noreferrer' }, [
+                    'En savoir plus',
+                ]),
+            );
+        }
+
+        return createElement(
+            'div',
+            { class: `tpi-banner-item tpi-banner-item--${type}` },
+            contentNodes,
+        );
     }
 
     /**
