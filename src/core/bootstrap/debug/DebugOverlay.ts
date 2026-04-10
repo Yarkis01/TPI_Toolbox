@@ -9,6 +9,9 @@ import { StorageTab } from './tabs/StorageTab';
 
 type TabId = 'modules' | 'logs' | 'perf' | 'storage';
 
+const TAB_STORAGE_KEY = 'tpitoolbox:debug:activeTab';
+const TAB_IDS: TabId[] = ['modules', 'logs', 'perf', 'storage'];
+
 const TAB_DEFS: { id: TabId; label: string }[] = [
     { id: 'modules', label: '📦 Modules' },
     { id: 'logs',    label: '📋 Logs' },
@@ -29,7 +32,9 @@ export class DebugOverlay implements IBootstrap {
     private _panel: HTMLElement | null = null;
     private _body: HTMLElement | null = null;
     private _toggleBtn: HTMLElement | null = null;
-    private _activeTab: TabId = 'modules';
+    private _activeTab: TabId = (TAB_IDS.includes(localStorage.getItem(TAB_STORAGE_KEY) as TabId)
+        ? (localStorage.getItem(TAB_STORAGE_KEY) as TabId)
+        : 'modules');
     private _currentTabInstance: { destroy?(): void } | null = null;
 
     private _isDragging = false;
@@ -139,6 +144,7 @@ export class DebugOverlay implements IBootstrap {
             btn.textContent = label;
             btn.addEventListener('click', () => {
                 this._activeTab = id;
+                localStorage.setItem(TAB_STORAGE_KEY, id);
                 bar.querySelectorAll<HTMLElement>('.tdbg-tab').forEach((t) =>
                     t.classList.toggle('tdbg-tab--active', t.dataset.tab === id),
                 );
