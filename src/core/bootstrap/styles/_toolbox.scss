@@ -62,7 +62,10 @@
             font-size: 1.35rem;
             line-height: 1;
             cursor: pointer;
-            transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+            transition:
+                color 0.15s ease,
+                background 0.15s ease,
+                border-color 0.15s ease;
 
             &:hover {
                 color: $text-main;
@@ -96,7 +99,9 @@
             color: $text-main;
             font-size: 0.86rem;
             outline: none;
-            transition: border-color 0.15s ease, background 0.15s ease;
+            transition:
+                border-color 0.15s ease,
+                background 0.15s ease;
 
             &::placeholder {
                 color: $text-muted;
@@ -118,8 +123,13 @@
         scrollbar-width: thin;
         scrollbar-color: rgba($primary, 0.45) rgba(255, 255, 255, 0.04);
 
-        &::-webkit-scrollbar { width: 6px; }
-        &::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.04); border-radius: 999px; }
+        &::-webkit-scrollbar {
+            width: 6px;
+        }
+        &::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 999px;
+        }
         &::-webkit-scrollbar-thumb {
             background: linear-gradient(180deg, rgba($primary, 0.55) 0%, rgba($primary, 0.35) 100%);
             border-radius: 999px;
@@ -152,7 +162,9 @@
             font-size: 0.84rem;
             font-weight: 600;
             cursor: pointer;
-            transition: background 0.15s ease, border-color 0.15s ease;
+            transition:
+                background 0.15s ease,
+                border-color 0.15s ease;
 
             &:hover {
                 background: $primary-hover;
@@ -170,9 +182,13 @@
     border-bottom: 1px solid $border-color;
     animation: tpiSlideIn 0.3s ease-out;
 
-    &:last-child { border-bottom: none; }
+    &:last-child {
+        border-bottom: none;
+    }
 
-    .tpi-setting-info { padding-right: 1rem; }
+    .tpi-setting-info {
+        padding-right: 1rem;
+    }
 
     .tpi-setting-label {
         color: $text-main;
@@ -236,14 +252,18 @@
     font-style: italic;
     margin-top: 0.25rem;
 
-    &.warning { color: #fd7e14; }
+    &.warning {
+        color: #fd7e14;
+    }
 
     &__link {
         color: inherit;
         text-decoration: underline;
         opacity: 0.85;
         transition: opacity 0.15s;
-        &:hover { opacity: 1; }
+        &:hover {
+            opacity: 1;
+        }
     }
 }
 
@@ -254,7 +274,11 @@
     height: 24px;
     flex-shrink: 0;
 
-    input { opacity: 0; width: 0; height: 0; }
+    input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
 
     .tpi-slider {
         position: absolute;
@@ -434,9 +458,16 @@
     transition: border-color 0.15s;
     min-width: 80px;
 
-    &:focus { border-color: rgba($primary, 0.5); }
-    &[type='number'] { width: 80px; text-align: center; }
-    &[type='text'] { min-width: 150px; }
+    &:focus {
+        border-color: rgba($primary, 0.5);
+    }
+    &[type='number'] {
+        width: 80px;
+        text-align: center;
+    }
+    &[type='text'] {
+        min-width: 150px;
+    }
 }
 
 .tpi-config-number {
@@ -457,24 +488,130 @@
     min-width: 120px;
     transition: border-color 0.15s;
 
-    &:focus { border-color: rgba($primary, 0.5); }
-    option { background: #172334; color: $text-main; }
+    &:focus {
+        border-color: rgba($primary, 0.5);
+    }
+    option {
+        background: #172334;
+        color: $text-main;
+    }
 }
 
 .tpi-switch--small {
     width: 36px;
     height: 20px;
 
-    .tpi-slider:before { height: 12px; width: 12px; }
-    input:checked + .tpi-slider:before { transform: translateX(16px); }
+    .tpi-slider:before {
+        height: 12px;
+        width: 12px;
+    }
+    input:checked + .tpi-slider:before {
+        transform: translateX(16px);
+    }
 }
 
 @keyframes tpiFadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 @keyframes tpiSlideIn {
-    from { opacity: 0; transform: translateY(4px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ==========================================================================
+   Banners (Marquee)
+   ========================================================================== */
+.tpi-banners-container {
+    background: rgba(8, 18, 31, 0.4);
+    border-bottom: 1px solid $border-color;
+    display: none;
+    flex-shrink: 0;
+
+    &--active {
+        display: block;
+    }
+}
+
+.tpi-banner-row {
+    position: relative;
+    overflow: hidden;
+    white-space: nowrap;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+    &:last-child {
+        border-bottom: none;
+    }
+}
+
+.tpi-banner-track {
+    display: inline-flex;
+    align-items: center;
+    gap: 3rem;
+    padding: 0.65rem 100%; /* Pad right so it starts from right side off-screen completely */
+    animation: tpiMarquee 30s linear infinite;
+    min-width: 100%;
+
+    &:hover {
+        animation-play-state: paused;
+    }
+}
+
+.tpi-banner-item {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: $text-main;
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+
+    strong {
+        margin-right: 0.35rem;
+        font-weight: 700;
+    }
+
+    a {
+        color: inherit;
+        text-decoration: underline;
+        margin-left: 0.4rem;
+        font-weight: 600;
+        opacity: 0.85;
+        transition: opacity 0.15s;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+
+    &--danger {
+        color: $danger;
+    }
+
+    &--warning {
+        color: #fd7e14;
+    }
+
+    &--info {
+        color: $primary;
+    }
+}
+
+@keyframes tpiMarquee {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
 }
