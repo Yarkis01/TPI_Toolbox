@@ -2,9 +2,7 @@ import { OperatingSystemModule } from '../modules/operatingSystem/module';
 import { ModuleStatusService } from '../services/ModuleStatusService';
 import { Logger } from '../utils/Logger';
 import { registerCommonModules } from './ModuleRegistry';
-import { BaseLayout } from './bootstrap/BaseLayout';
-import { ChatLayout } from './bootstrap/ChatLayout';
-import { HeaderLayout } from './bootstrap/HeaderLayout';
+import { SupportWarning } from './bootstrap/SupportWarning';
 import { Toolbox } from './bootstrap/Toolbox';
 import IApp from './interfaces/IApp';
 import IBootstrap from './interfaces/IBootstrap';
@@ -31,7 +29,7 @@ export class App implements IApp {
         this._logger.info('🔧 Toolbox Starting...');
 
         // Fetch module status before initializing modules
-        await ModuleStatusService.getInstance().fetchStatus();
+        ModuleStatusService.getInstance().fetchStatus();
 
         const settingsManager = new SettingsManager();
         const moduleManager = new ModuleManager(settingsManager);
@@ -53,12 +51,7 @@ export class App implements IApp {
     private _runBootstrapProcesses(moduleManager: ModuleManager): void {
         this._logger.info('⚙️ Running bootstrap processes...');
 
-        const bootstraps: IBootstrap[] = [
-            new BaseLayout(),
-            new HeaderLayout(),
-            new ChatLayout(),
-            new Toolbox(moduleManager),
-        ];
+        const bootstraps: IBootstrap[] = [new Toolbox(moduleManager), new SupportWarning()];
 
         bootstraps.forEach((bootstrap) => {
             try {

@@ -2,16 +2,24 @@
  * CSS selectors used for the zone reorder module.
  */
 export const REORDER_SELECTORS = {
-    PAGE_MATCH: 'park/attractions.php',
-    ZONE_LIST: '.owned-attractions__list',
-    ZONE_GROUP: '.owned-attractions__zone-group',
-    ZONE_HEADER: '.owned-attractions__zone-header',
-    ZONE_NAME: '.owned-attractions__zone-name',
+    PAGE_MATCHES: [
+        'park/attractions.php',
+        'park/spectacles.php',
+        'park/boutiques.php',
+        'park/restaurants.php',
+    ],
+    ZONE_LIST:
+        '.park-attractions-main, .park-spectacles-main, .park-boutiques-main, .park-restaurants-main',
+    ZONE_GROUP:
+        '.park-attractions-group, .park-spectacles-group, .park-boutiques-group, .park-restaurants-group',
+    ZONE_HEADER: '.dash-block__head',
+    ZONE_NAME: '.dash-block__title',
     DRAGGING_CLASS: 'tpi-zone-group-dragging',
     DRAG_OVER_CLASS: 'tpi-zone-group-drag-over',
     HANDLE_CLASS: 'tpi-zone-reorder-handle',
     HANDLE_CLASS_SELECTOR: '.tpi-zone-reorder-handle',
-    HEADER_CONTENT: '.owned-attractions__zone-header-content'
+    HEADER_CONTENT: '.dash-block__head',
+    ENABLED_CLASS: 'tpi-reorder-enabled',
 };
 
 /**

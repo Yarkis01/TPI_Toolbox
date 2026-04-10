@@ -6,7 +6,6 @@ import { PAGE_CONFIGS, STATUS_COLORS } from './constants';
 const CONFIG_KEYS = {
     ATTRACTIONS: 'enableAttractions',
     RESTAURANTS: 'enableRestaurants',
-    ENTRANCE: 'enableEntrance',
     SPECTACLES: 'enableSpectacles',
     BOUTIQUES: 'enableBoutiques',
 } as const;
@@ -15,7 +14,6 @@ const CONFIG_KEYS = {
 const URL_TO_CONFIG: Record<string, string> = {
     'attractions.php': CONFIG_KEYS.ATTRACTIONS,
     'restaurants.php': CONFIG_KEYS.RESTAURANTS,
-    'entrance.php': CONFIG_KEYS.ENTRANCE,
     'spectacles.php': CONFIG_KEYS.SPECTACLES,
     'boutiques.php': CONFIG_KEYS.BOUTIQUES,
 };
@@ -64,13 +62,6 @@ export class EntityStatusColorizerModule extends BaseModule {
                     key: CONFIG_KEYS.RESTAURANTS,
                     label: 'Restaurants',
                     description: 'Coloriser les cartes sur la page des restaurants.',
-                    type: 'boolean',
-                    defaultValue: true,
-                },
-                {
-                    key: CONFIG_KEYS.ENTRANCE,
-                    label: 'Entrées (guichets)',
-                    description: 'Coloriser les lignes sur la page des entrées.',
                     type: 'boolean',
                     defaultValue: true,
                 },

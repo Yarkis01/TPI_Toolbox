@@ -53,8 +53,7 @@ export class EnhancedPlanningModule extends BaseModule {
                 {
                     key: CONFIG_KEYS.QUICK_NAVIGATION,
                     label: 'Navigation rapide',
-                    description:
-                        'Ajoute des flèches ◄ ► pour naviguer entre les sous-plannings.',
+                    description: 'Ajoute des flèches ◄ ► pour naviguer entre les sous-plannings.',
                     type: 'boolean',
                     defaultValue: true,
                 },
@@ -70,7 +69,7 @@ export class EnhancedPlanningModule extends BaseModule {
                     key: CONFIG_KEYS.PLANNING_SORT,
                     label: 'Tri du planning',
                     description:
-                        'Ajoute des boutons pour trier les employés par nom ou par nombre d\'affectations.',
+                        "Ajoute des boutons pour trier les employés par nom ou par nombre d'affectations.",
                     type: 'boolean',
                     defaultValue: true,
                 },
@@ -142,23 +141,13 @@ export class EnhancedPlanningModule extends BaseModule {
      * Enables features based on current configuration values.
      */
     private _enableFeaturesFromConfig(): void {
-        const quickNavEnabled = this.getConfigValue<boolean>(
-            CONFIG_KEYS.QUICK_NAVIGATION,
-            true,
-        );
+        const quickNavEnabled = this.getConfigValue<boolean>(CONFIG_KEYS.QUICK_NAVIGATION, true);
         this._featureRegistry.toggleFeature('quick_navigation', quickNavEnabled);
 
-        const showAllEnabled = this.getConfigValue<boolean>(
-            CONFIG_KEYS.SHOW_ALL_PLANNINGS,
-            true,
-        );
+        const showAllEnabled = this.getConfigValue<boolean>(CONFIG_KEYS.SHOW_ALL_PLANNINGS, true);
         this._featureRegistry.toggleFeature('show_all_plannings', showAllEnabled);
 
-        const sortEnabled = this.getConfigValue<boolean>(
-            CONFIG_KEYS.PLANNING_SORT,
-            true,
-        );
+        const sortEnabled = this.getConfigValue<boolean>(CONFIG_KEYS.PLANNING_SORT, true);
         this._featureRegistry.toggleFeature('planning_sort', sortEnabled);
     }
 }
-

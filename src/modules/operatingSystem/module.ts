@@ -620,7 +620,7 @@ export class OperatingSystemModule extends BaseModule {
         this._logger.info(`Starting async monitoring: ${strategy}`);
 
         let isFinalized = false;
-        let cleanup: () => void = () => { };
+        let cleanup: () => void = () => {};
 
         const finalize = (success: boolean) => {
             if (isFinalized) return;

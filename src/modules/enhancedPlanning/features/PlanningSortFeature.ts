@@ -1,6 +1,6 @@
+import { StorageService } from '../../../services/StorageService';
 import { BaseFeature } from '../abstract/BaseFeature';
 import { PLANNING_SELECTORS } from '../constants';
-import { StorageService } from '../../../services/StorageService';
 
 /** Sort modes available */
 type SortMode = 'name' | 'assignments-asc' | 'assignments-desc';
@@ -39,7 +39,7 @@ export class PlanningSortFeature extends BaseFeature {
     }
 
     public get description(): string {
-        return 'Permet de trier les employés du planning par nom ou par nombre d\'affectations.';
+        return "Permet de trier les employés du planning par nom ou par nombre d'affectations.";
     }
 
     protected onEnable(): void {
@@ -155,9 +155,7 @@ export class PlanningSortFeature extends BaseFeature {
                     if (!assignedA && !assignedB) return 0;
 
                     // Both assigned: sort by first day
-                    return mode === 'assignments-asc'
-                        ? dayA - dayB
-                        : dayB - dayA;
+                    return mode === 'assignments-asc' ? dayA - dayB : dayB - dayA;
                 }
 
                 default:
@@ -206,15 +204,11 @@ export class PlanningSortFeature extends BaseFeature {
      */
     private _getFirstAssignedDay(row: HTMLTableRowElement): number {
         // Try location-specific assignments first
-        let assignedCells = row.querySelectorAll(
-            '.planning-grid__day-cell--this-restaurant',
-        );
+        let assignedCells = row.querySelectorAll('.planning-grid__day-cell--this-restaurant');
 
         // Fallback to any assigned cell (for types without a specific location)
         if (assignedCells.length === 0) {
-            assignedCells = row.querySelectorAll(
-                '.planning-grid__day-cell--set',
-            );
+            assignedCells = row.querySelectorAll('.planning-grid__day-cell--set');
         }
 
         if (assignedCells.length === 0) return 6; // Unassigned: after j5

@@ -2,8 +2,7 @@ import { BaseModule } from '../../../core/abstract/BaseModule';
 import { CAPACITY_COLORS, CAPACITY_EVALUATION, PAGE_CONFIGS } from './constants';
 
 /**
- * Module to colorize the warehouse card based on storage capacity and add a stacked fill bar
- * for restaurant types (foodtrucks / fastfoods / sit-down).
+ * Module to colorize the warehouse card based on storage capacity.
  */
 export class WarehouseColorizerModule extends BaseModule {
     private _modifiedElements: HTMLElement[] = [];
@@ -19,14 +18,14 @@ export class WarehouseColorizerModule extends BaseModule {
      * @inheritdoc
      */
     public get name(): string {
-        return 'Colorisation de l’entrepôt';
+        return "Colorisation de l'entrepôt";
     }
 
     /**
      * @inheritdoc
      */
     public get description(): string {
-        return "Ajoute une bordure colorée selon la capacité de l'entrepôt et une barre de remplissage par type.";
+        return "Ajoute une bordure colorée selon la capacité de l'entrepôt.";
     }
 
     /**
@@ -39,12 +38,11 @@ export class WarehouseColorizerModule extends BaseModule {
 
         const warehouseCard = this._findWarehouseCard();
         if (!warehouseCard) {
-            this._logger.debug('Warehouse card not found (#expand-entrepot-restaurant-btn).');
+            this._logger.debug('Warehouse card not found (#expand-entrepot-open).');
             return;
         }
 
         this._applyCapacityBorder(warehouseCard);
-        this._injectRestaurantTypesFillBar(warehouseCard);
     }
 
     /**
@@ -52,7 +50,6 @@ export class WarehouseColorizerModule extends BaseModule {
      */
     protected onDisable(): void {
         this._removeCapacityBorders();
-        this._removeRestaurantTypesFillBars();
         this._modifiedElements = [];
     }
 
@@ -68,12 +65,12 @@ export class WarehouseColorizerModule extends BaseModule {
      * Finds the warehouse card in the DOM.
      */
     private _findWarehouseCard(): HTMLElement | null {
-        const expandButton = document.querySelector<HTMLElement>('#expand-entrepot-restaurant-btn');
+        const expandButton = document.querySelector<HTMLElement>('#expand-entrepot-open');
         if (!expandButton) {
             return null;
         }
 
-        return expandButton.closest<HTMLElement>('.backstage-card');
+        return expandButton.closest<HTMLElement>('section.dash-block');
     }
 
     /**
@@ -95,7 +92,7 @@ export class WarehouseColorizerModule extends BaseModule {
     }
 
     /**
-     * Extracts capacity data from the warehouse card badge (e.g. "20400 / 32000").
+     * Extracts capacity data from the warehouse card badge (e.g. "19 800 / 20 000").
      *
      * @param warehouseCard - The warehouse card element.
      * @returns The current and maximum capacity, or null if unavailable/invalid.
@@ -103,22 +100,22 @@ export class WarehouseColorizerModule extends BaseModule {
     private _extractCapacityData(
         warehouseCard: HTMLElement,
     ): { current: number; max: number } | null {
-        const badge = warehouseCard.querySelector<HTMLElement>('.backstage-card__badge');
+        const badge = warehouseCard.querySelector<HTMLElement>('.park-backstage-head-badge');
         if (!badge) {
             return null;
         }
 
         const rawText = this._normalizeText(badge.textContent);
-        const match = rawText.match(/(\d+)\s*\/\s*(\d+)/);
+        const match = rawText.match(/([\d\s]+)\/([\d\s]+)/);
 
         if (!match) {
             return null;
         }
 
-        const current = Number(match[1]);
-        const max = Number(match[2]);
+        const current = this._parseNumberWithSpaces(match[1]);
+        const max = this._parseNumberWithSpaces(match[2]);
 
-        if (Number.isNaN(current) || Number.isNaN(max)) {
+        if (current === null || max === null) {
             return null;
         }
 
@@ -147,217 +144,6 @@ export class WarehouseColorizerModule extends BaseModule {
     }
 
     /**
-     * Injects a stacked fill bar (foodtrucks / fastfoods / sit-down) above
-     * the "Espace necessaire aux foodtrucks :" line.
-     *
-     * Each segment is expressed as a percentage of the warehouse maximum capacity.
-     *
-     * @param warehouseCard - The warehouse card element.
-     */
-    private _injectRestaurantTypesFillBar(warehouseCard: HTMLElement): void {
-        const capacity = this._extractCapacityData(warehouseCard);
-        if (!capacity) {
-            return;
-        }
-
-        const anchorItem = this._findFoodtrucksInfoItem(warehouseCard);
-        if (!anchorItem) {
-            return;
-        }
-
-        if (this._restaurantTypesFillBarAlreadyExists(warehouseCard)) {
-            return;
-        }
-
-        const info = this._extractRestaurantTypesSpaces(warehouseCard);
-        if (!info) {
-            return;
-        }
-
-        const bar = this._createRestaurantTypesFillBar(info, capacity.max);
-        anchorItem.parentElement?.insertBefore(bar, anchorItem);
-    }
-
-    /**
-     * Finds the info item matching "Espace necessaire aux foodtrucks :".
-     *
-     * @param warehouseCard - The warehouse card element.
-     * @returns The matching info item element, or null if not found.
-     */
-    private _findFoodtrucksInfoItem(warehouseCard: HTMLElement): HTMLElement | null {
-        const infoItems = warehouseCard.querySelectorAll<HTMLElement>('.backstage-card__info-item');
-
-        for (const item of infoItems) {
-            const label = item.querySelector<HTMLElement>('.backstage-card__info-label');
-            const labelText = this._normalizeText(label?.textContent).toLowerCase();
-
-            if (labelText.startsWith('espace necessaire aux foodtrucks')) {
-                return item;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Checks if the restaurant types fill bar already exists for this card.
-     */
-    private _restaurantTypesFillBarAlreadyExists(warehouseCard: HTMLElement): boolean {
-        return warehouseCard.querySelector('[data-warehouse-types-fill-bar="1"]') !== null;
-    }
-
-    /**
-     * Extracts the required spaces for the three restaurant types from the info list.
-     *
-     * @param warehouseCard - The warehouse card element.
-     * @returns The spaces for foodtrucks, fastfoods, sitDown, or null if missing/invalid.
-     */
-    private _extractRestaurantTypesSpaces(
-        warehouseCard: HTMLElement,
-    ): { foodtrucks: number; fastfoods: number; sitDown: number } | null {
-        const mapping: Array<{
-            key: 'foodtrucks' | 'fastfoods' | 'sitDown';
-            labelStartsWith: string;
-        }> = [
-            { key: 'foodtrucks', labelStartsWith: 'espace necessaire aux foodtrucks' },
-            { key: 'fastfoods', labelStartsWith: 'espace necessaire aux fastfoods' },
-            { key: 'sitDown', labelStartsWith: 'espace necessaire aux restaurants' },
-        ];
-
-        const result: Partial<Record<'foodtrucks' | 'fastfoods' | 'sitDown', number>> = {};
-
-        const infoItems = warehouseCard.querySelectorAll<HTMLElement>('.backstage-card__info-item');
-
-        for (const item of infoItems) {
-            const labelEl = item.querySelector<HTMLElement>('.backstage-card__info-label');
-            const valueEl = item.querySelector<HTMLElement>('.backstage-card__info-value');
-            if (!labelEl || !valueEl) {
-                continue;
-            }
-
-            const labelText = this._normalizeText(labelEl.textContent).toLowerCase();
-            const rawValue = this._normalizeText(valueEl.textContent);
-            const value = this._parseNumberWithSpaces(rawValue);
-
-            if (value === null) {
-                continue;
-            }
-
-            for (const m of mapping) {
-                if (labelText.startsWith(m.labelStartsWith)) {
-                    result[m.key] = value;
-                }
-            }
-        }
-
-        const foodtrucks = result.foodtrucks;
-        const fastfoods = result.fastfoods;
-        const sitDown = result.sitDown;
-
-        if (
-            typeof foodtrucks !== 'number' ||
-            typeof fastfoods !== 'number' ||
-            typeof sitDown !== 'number'
-        ) {
-            return null;
-        }
-
-        return { foodtrucks, fastfoods, sitDown };
-    }
-
-    /**
-     * Creates the stacked bar element.
-     *
-     * @param spaces - Spaces per type.
-     * @param maxCapacity - Warehouse max capacity.
-     * @returns The bar wrapper element.
-     */
-    private _createRestaurantTypesFillBar(
-        spaces: { foodtrucks: number; fastfoods: number; sitDown: number },
-        maxCapacity: number,
-    ): HTMLElement {
-        const wrap = document.createElement('div');
-        wrap.setAttribute('data-warehouse-types-fill-bar', '1');
-
-        Object.assign(wrap.style, {
-            width: '100%',
-            margin: '6px 0 12px 0',
-        });
-
-        const foodPct = this._toPercent(spaces.foodtrucks, maxCapacity);
-        const fastPct = this._toPercent(spaces.fastfoods, maxCapacity);
-        const sitPct = this._toPercent(spaces.sitDown, maxCapacity);
-        const filledPct = Math.max(0, Math.min(100, foodPct + fastPct + sitPct));
-        const emptyPct = Math.max(0, 100 - filledPct);
-
-        const bar = document.createElement('div');
-        Object.assign(bar.style, {
-            width: '100%',
-            height: '14px',
-            overflow: 'hidden',
-            position: 'relative',
-            display: 'flex',
-            background: 'rgba(0,0,0,0.08)',
-            boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.12)',
-        });
-
-        const makeSeg = (pct: number, color: string): HTMLElement => {
-            const seg = document.createElement('span');
-
-            Object.assign(seg.style, {
-                height: '100%',
-                background: color,
-                flexGrow: String(pct),
-                flexBasis: `${pct}%`,
-                minWidth: pct > 0 ? '6px' : '0px',
-            });
-
-            return seg;
-        };
-
-        const foodSeg = makeSeg(foodPct, '#4C6FFF');
-        const fastSeg = makeSeg(fastPct, '#FF9F0A');
-        const sitSeg = makeSeg(sitPct, '#34C759');
-
-        // Keep an explicit "empty" segment so the filled colors don't get stretched.
-        const emptySeg = document.createElement('span');
-        Object.assign(emptySeg.style, {
-            height: '100%',
-            background: 'transparent',
-            flexGrow: String(emptyPct),
-            flexBasis: `${emptyPct}%`,
-            minWidth: '0px',
-        });
-
-        bar.appendChild(foodSeg);
-        bar.appendChild(fastSeg);
-        bar.appendChild(sitSeg);
-        bar.appendChild(emptySeg);
-
-        const legend = document.createElement('div');
-        Object.assign(legend.style, {
-            marginTop: '8px',
-            fontSize: '12px',
-            opacity: '0.9',
-        });
-
-        legend.textContent = `Foodtrucks: ${foodPct}% • Fastfoods: ${fastPct}% • Restaurants: ${sitPct}%`;
-
-        wrap.appendChild(bar);
-        wrap.appendChild(legend);
-
-        return wrap;
-    }
-
-    /**
-     * Removes all restaurant types fill bars created by this module.
-     */
-    private _removeRestaurantTypesFillBars(): void {
-        const bars = document.querySelectorAll<HTMLElement>('[data-warehouse-types-fill-bar="1"]');
-        bars.forEach((bar) => bar.remove());
-    }
-
-    /**
      * Removes all capacity borders applied by this module.
      */
     private _removeCapacityBorders(): void {
@@ -367,18 +153,7 @@ export class WarehouseColorizerModule extends BaseModule {
     }
 
     /**
-     * Converts a value to a [0..100] percentage of max.
-     */
-    private _toPercent(value: number, max: number): number {
-        if (!Number.isFinite(value) || !Number.isFinite(max) || max <= 0) {
-            return 0;
-        }
-
-        return Math.max(0, Math.min(100, Math.round((value / max) * 100)));
-    }
-
-    /**
-     * Parses a number that may contain spaces as thousands separators (e.g. "6 400").
+     * Parses a number that may contain spaces as thousands separators (e.g. "19 800").
      *
      * @param raw - Raw numeric text.
      * @returns Parsed number, or null if invalid.

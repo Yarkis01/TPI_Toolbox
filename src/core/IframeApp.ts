@@ -1,4 +1,3 @@
-import { injectStyle } from '../utils/DomUtils';
 import { Logger } from '../utils/Logger';
 import { registerCommonModules } from './ModuleRegistry';
 import IApp from './interfaces/IApp';
@@ -31,26 +30,6 @@ export class IframeApp implements IApp {
 
             const moduleManager = new ModuleManager(settingsManager);
             this._initializeModules(moduleManager);
-        }
-
-        this._logger.info('🧼 Applying Chat Cleaner in iframe context...');
-
-        if (window.location.href.endsWith('chat.php')) {
-            injectStyle(`
-                button.chat-window__close {
-                    display: none !important;
-                    visibility: hidden !important;
-                }
-
-                div.chat-window__header {
-                    flex-direction: column !important;
-                    height: auto !important;
-                }
-
-                div#chat-messages {
-                    max-height: none !important;
-                }
-            `);
         }
     }
 

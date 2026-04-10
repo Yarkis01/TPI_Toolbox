@@ -15,32 +15,22 @@ export const STATUS_COLORS = {
 export const PAGE_CONFIGS = [
     {
         urlFragment: 'attractions.php',
-        selector: 'article.owned-attraction-card',
+        selector: 'article.park-attractions-card',
         getStatus: (el: HTMLElement) => el.dataset.status?.toLowerCase() || '',
     },
     {
         urlFragment: 'restaurants.php',
-        selector: 'article.owned-restaurant-card',
+        selector: 'article.park-restaurants-card',
         getStatus: (el: HTMLElement) => el.dataset.status?.toLowerCase() || '',
     },
     {
-        urlFragment: 'entrance.php',
-        selector: 'li.booth-row',
-        getStatus: (el: HTMLElement) =>
-            el.querySelector('.booth-row__status')?.textContent?.toLowerCase() || '',
-    },
-    {
         urlFragment: 'spectacles.php',
-        selector: 'article.spectacle-card',
-        getStatus: (el: HTMLElement) =>
-            el
-                .querySelector('.spectacle-card__manage-btn')
-                ?.getAttribute('data-status')
-                ?.toLowerCase() || '',
+        selector: 'article.park-spectacles-card',
+        getStatus: (el: HTMLElement) => el.dataset.status?.toLowerCase() || '',
     },
     {
         urlFragment: 'boutiques.php',
-        selector: 'article.owned-boutique-card',
+        selector: 'article.park-boutiques-card',
         getStatus: (el: HTMLElement) => el.dataset.status?.toLowerCase() || '',
     },
 ];
