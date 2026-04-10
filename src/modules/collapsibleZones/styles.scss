@@ -1,5 +1,8 @@
 body.tpi-collapsible-enabled {
-    .park-attractions-group {
+    .park-attractions-group,
+    .park-spectacles-group,
+    .park-boutiques-group,
+    .park-restaurants-group {
         .dash-block__head {
             cursor: pointer;
             position: relative;
