@@ -34,18 +34,19 @@ export class App implements IApp {
         const settingsManager = new SettingsManager();
         const moduleManager = new ModuleManager(settingsManager);
 
+        // Debug Overlay for development
         if (import.meta.env.DEV) {
             const { DebugOverlay } = await import('./bootstrap/debug/DebugOverlay');
             new DebugOverlay(moduleManager).run();
         }
 
+        // Run bootstrap processes if OS is disabled
         if (!settingsManager.getModuleState('operating_system', false)) {
             this._logger.info('OS is disabled, running bootstrap processes.');
             this._runBootstrapProcesses(moduleManager);
         }
 
         this._initializeModules(moduleManager);
-
 
         this._logger.info('🚀 Toolbox Started.');
     }

@@ -1,5 +1,5 @@
-import { ModuleManager } from '../../../managers/ModuleManager';
 import { ModuleStatusService } from '../../../../services/ModuleStatusService';
+import { ModuleManager } from '../../../managers/ModuleManager';
 import { makeBtn, makeTable, makeToolbar } from '../helpers';
 
 /**

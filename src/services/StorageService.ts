@@ -94,7 +94,11 @@ export class StorageService {
             if (!fullKey?.startsWith(this._prefix)) continue;
             const raw = localStorage.getItem(fullKey) ?? '';
             let value: unknown = raw;
-            try { value = JSON.parse(raw); } catch { /* keep raw string */ }
+            try {
+                value = JSON.parse(raw);
+            } catch {
+                /* keep raw string */
+            }
             results.push({ key: fullKey.slice(this._prefix.length), value });
         }
         return results;

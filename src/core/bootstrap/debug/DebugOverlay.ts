@@ -14,8 +14,8 @@ const TAB_IDS: TabId[] = ['modules', 'logs', 'perf', 'storage'];
 
 const TAB_DEFS: { id: TabId; label: string }[] = [
     { id: 'modules', label: '📦 Modules' },
-    { id: 'logs',    label: '📋 Logs' },
-    { id: 'perf',    label: '⚡ Perf' },
+    { id: 'logs', label: '📋 Logs' },
+    { id: 'perf', label: '⚡ Perf' },
     { id: 'storage', label: '💾 Storage' },
 ];
 
@@ -32,9 +32,9 @@ export class DebugOverlay implements IBootstrap {
     private _panel: HTMLElement | null = null;
     private _body: HTMLElement | null = null;
     private _toggleBtn: HTMLElement | null = null;
-    private _activeTab: TabId = (TAB_IDS.includes(localStorage.getItem(TAB_STORAGE_KEY) as TabId)
+    private _activeTab: TabId = TAB_IDS.includes(localStorage.getItem(TAB_STORAGE_KEY) as TabId)
         ? (localStorage.getItem(TAB_STORAGE_KEY) as TabId)
-        : 'modules');
+        : 'modules';
     private _currentTabInstance: { destroy?(): void } | null = null;
 
     private _isDragging = false;
@@ -43,8 +43,8 @@ export class DebugOverlay implements IBootstrap {
 
     public constructor(moduleManager: ModuleManager) {
         this._modulesTab = new ModulesTab(moduleManager);
-        this._logsTab    = new LogsTab();
-        this._perfTab    = new PerfTab(performance.now());
+        this._logsTab = new LogsTab();
+        this._perfTab = new PerfTab(performance.now());
         this._storageTab = new StorageTab(StorageService.getInstance());
     }
 

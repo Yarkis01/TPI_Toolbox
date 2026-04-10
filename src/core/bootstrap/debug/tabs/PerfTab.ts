@@ -10,9 +10,9 @@ export class PerfTab {
     }
 
     public render(container: HTMLElement): void {
-        const nav = performance.getEntriesByType(
-            'navigation',
-        )[0] as PerformanceNavigationTiming | undefined;
+        const nav = performance.getEntriesByType('navigation')[0] as
+            | PerformanceNavigationTiming
+            | undefined;
 
         const rows: [string, string][] = [];
 
@@ -83,8 +83,7 @@ export class PerfTab {
             if (now - last >= 1000) {
                 const fps = frames;
                 fpsVal.textContent = String(fps);
-                fpsVal.style.color =
-                    fps >= 55 ? '#a6e3a1' : fps >= 30 ? '#f9e2af' : '#f38ba8';
+                fpsVal.style.color = fps >= 55 ? '#a6e3a1' : fps >= 30 ? '#f9e2af' : '#f38ba8';
                 frames = 0;
                 last = now;
             }

@@ -39,7 +39,12 @@ const CONSOLE_STYLES = {
  * Optional hook called on every log entry — used by the dev debug overlay.
  * No-op in production (the overlay is never loaded).
  */
-export type DebugLogEntry = { level: LogLevel; context: string; message: string; timestamp: string };
+export type DebugLogEntry = {
+    level: LogLevel;
+    context: string;
+    message: string;
+    timestamp: string;
+};
 
 /**
  * Logger class for logging messages with different severity levels.

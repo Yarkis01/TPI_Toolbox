@@ -93,7 +93,11 @@ export class StorageTab {
                     if (!newKey) return;
 
                     let parsed: unknown = rawVal;
-                    try { parsed = JSON.parse(rawVal); } catch { /* keep as string */ }
+                    try {
+                        parsed = JSON.parse(rawVal);
+                    } catch {
+                        /* keep as string */
+                    }
 
                     if (newKey !== key) this._storage.remove(key);
                     this._storage.save(newKey, parsed);
