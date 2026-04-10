@@ -134,7 +134,7 @@ export class UpdateNotificationModule extends BaseModule {
             <div class="tpi-update-notif__content">
                 ${description}
                 <br>
-                <a href="https://github.com/Yarkis01/TPI_Toolbox" target="_blank" class="tpi-update-notif__link">
+                <a href="https://tpitoolbox.yarkis.top/" target="_blank" class="tpi-update-notif__link">
                     Télécharger la mise à jour
                 </a>
             </div>

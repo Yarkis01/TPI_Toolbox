@@ -317,14 +317,24 @@ export class Toolbox implements IBootstrap {
     private _createFooter(): HTMLElement {
         return createElement('div', { class: 'tpi-modal-card__footer' }, [
             createElement('span', { class: 'tpi-version' }, [`v${APP_INFORMATIONS.APP_VERSION}`]),
-            createElement(
-                'button',
-                {
-                    class: 'tpi-btn-primary',
-                    onclick: () => window.location.reload(),
-                },
-                ['Recharger la page ↻'],
-            ),
+            createElement('div', { class: 'tpi-modal-card__footer__actions' }, [
+                createElement(
+                    'button',
+                    {
+                        class: 'tpi-btn-secondary',
+                        onclick: () => window.open('https://tpitoolbox.yarkis.top/', '_blank'),
+                    },
+                    ['TPI Toolbox Website 🌐'],
+                ),
+                createElement(
+                    'button',
+                    {
+                        class: 'tpi-btn-primary',
+                        onclick: () => window.location.reload(),
+                    },
+                    ['Recharger la page ↻'],
+                ),
+            ]),
         ]);
     }
 
