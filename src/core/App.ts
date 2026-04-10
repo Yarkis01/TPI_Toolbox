@@ -41,6 +41,11 @@ export class App implements IApp {
 
         this._initializeModules(moduleManager);
 
+        if (import.meta.env.DEV) {
+            const { DebugOverlay } = await import('./bootstrap/DebugOverlay');
+            new DebugOverlay(moduleManager).run();
+        }
+
         this._logger.info('🚀 Toolbox Started.');
     }
 

@@ -83,6 +83,24 @@ export class StorageService {
     }
 
     /**
+     * Returns all key-value pairs stored by the Toolbox (dev use only).
+     * Only enumerates localStorage — works when running via Vite dev server
+     * where GM_getValue is unavailable and localStorage is the fallback.
+     */
+    public listAll(): { key: string; value: unknown }[] {
+        const results: { key: string; value: unknown }[] = [];
+        for (let i = 0; i < localStorage.length; i++) {
+            const fullKey = localStorage.key(i);
+            if (!fullKey?.startsWith(this._prefix)) continue;
+            const raw = localStorage.getItem(fullKey) ?? '';
+            let value: unknown = raw;
+            try { value = JSON.parse(raw); } catch { /* keep raw string */ }
+            results.push({ key: fullKey.slice(this._prefix.length), value });
+        }
+        return results;
+    }
+
+    /**
      * Removes an item from storage.
      * @param key The key to remove.
      */
