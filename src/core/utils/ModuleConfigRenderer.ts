@@ -1,5 +1,5 @@
-import { createElement } from '../../utils/DomUtils';
 import { ModuleStatusService } from '../../services/ModuleStatusService';
+import { createElement } from '../../utils/DomUtils';
 import IModule from '../interfaces/IModule';
 import { IConfigOption, IModuleConfigSchema } from '../interfaces/IModuleConfig';
 
@@ -28,29 +28,66 @@ export class ModuleConfigRenderer {
 
         const badge = createElement('span', { class: badgeClass }, [badgeText]);
 
-        const labelContainer = createElement('div', { class: 'tpi-setting-label' }, [module.name, badge]);
+        const labelContainer = createElement('div', { class: 'tpi-setting-label' }, [
+            module.name,
+            badge,
+        ]);
 
         const descChildren: (string | HTMLElement)[] = [module.description];
 
         if (moduleStatus.effectiveStatus === 'broken' && moduleStatus.reason) {
-            const reasonChildren: (string | HTMLElement)[] = [`Détail API : ${moduleStatus.reason}`];
+            const reasonChildren: (string | HTMLElement)[] = [
+                `Détail API : ${moduleStatus.reason}`,
+            ];
             if (moduleStatus.github_issue_url) {
-                const link = createElement('a', { class: 'tpi-setting-reason__link', href: moduleStatus.github_issue_url, target: '_blank', rel: 'noopener noreferrer' }, ['Voir GitHub']);
+                const link = createElement(
+                    'a',
+                    {
+                        class: 'tpi-setting-reason__link',
+                        href: moduleStatus.github_issue_url,
+                        target: '_blank',
+                        rel: 'noopener noreferrer',
+                    },
+                    ['Voir GitHub'],
+                );
                 reasonChildren.push(' ', link);
             }
-            const reasonText = createElement('div', { class: 'tpi-setting-reason' }, reasonChildren);
+            const reasonText = createElement(
+                'div',
+                { class: 'tpi-setting-reason' },
+                reasonChildren,
+            );
             descChildren.push(reasonText);
         } else if (moduleStatus.effectiveStatus === 'bug' && moduleStatus.reason) {
-            const reasonChildren: (string | HTMLElement)[] = [`Bug identifié : ${moduleStatus.reason}`];
+            const reasonChildren: (string | HTMLElement)[] = [
+                `Bug identifié : ${moduleStatus.reason}`,
+            ];
             if (moduleStatus.github_issue_url) {
-                const link = createElement('a', { class: 'tpi-setting-reason__link', href: moduleStatus.github_issue_url, target: '_blank', rel: 'noopener noreferrer' }, ['Voir GitHub']);
+                const link = createElement(
+                    'a',
+                    {
+                        class: 'tpi-setting-reason__link',
+                        href: moduleStatus.github_issue_url,
+                        target: '_blank',
+                        rel: 'noopener noreferrer',
+                    },
+                    ['Voir GitHub'],
+                );
                 reasonChildren.push(' ', link);
             }
-            const reasonText = createElement('div', { class: 'tpi-setting-reason warning' }, reasonChildren);
+            const reasonText = createElement(
+                'div',
+                { class: 'tpi-setting-reason warning' },
+                reasonChildren,
+            );
             descChildren.push(reasonText);
         } else if (moduleStatus.effectiveStatus === 'update_required') {
-            const reasonMsg = moduleStatus.fixed_in_version ? `Corrigé dans la version ${moduleStatus.fixed_in_version}, veuillez mettre à jour TPI Toolbox.` : 'Une mise à jour est requise pour utiliser ce module.';
-            const reasonText = createElement('div', { class: 'tpi-setting-reason warning' }, [reasonMsg]);
+            const reasonMsg = moduleStatus.fixed_in_version
+                ? `Corrigé dans la version ${moduleStatus.fixed_in_version}, veuillez mettre à jour TPI Toolbox.`
+                : 'Une mise à jour est requise pour utiliser ce module.';
+            const reasonText = createElement('div', { class: 'tpi-setting-reason warning' }, [
+                reasonMsg,
+            ]);
             descChildren.push(reasonText);
         }
 
@@ -93,7 +130,9 @@ export class ModuleConfigRenderer {
         const configSchema = module.getConfigSchema();
         const hasConfig = configSchema && configSchema.options.length > 0;
         const moduleStatus = ModuleStatusService.getInstance().getStatus(module.id);
-        const isUnavailable = moduleStatus.effectiveStatus === 'broken' || moduleStatus.effectiveStatus === 'update_required';
+        const isUnavailable =
+            moduleStatus.effectiveStatus === 'broken' ||
+            moduleStatus.effectiveStatus === 'update_required';
 
         const checkbox = createElement('input', {
             type: 'checkbox',

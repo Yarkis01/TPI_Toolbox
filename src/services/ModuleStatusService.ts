@@ -60,11 +60,13 @@ export class ModuleStatusService {
             }
 
             if (!response.ok) {
-                this._logger.warn(`API returned ${response.status}. Skipping module status override.`);
+                this._logger.warn(
+                    `API returned ${response.status}. Skipping module status override.`,
+                );
                 return;
             }
 
-            const data = await response.json() as ModuleStatusResponse;
+            const data = (await response.json()) as ModuleStatusResponse;
             this._statusData = data.modules;
             this._isLoaded = true;
             this._logger.info('Module status data successfully fetched.');
@@ -85,29 +87,36 @@ export class ModuleStatusService {
                 name: moduleId,
                 status: 'unknown',
                 reason: null,
-                broken_since: null
+                broken_since: null,
             };
         } else {
             rawStatus = this._statusData[moduleId];
         }
 
-        let effectiveStatus: 'ok' | 'broken' | 'update_required' | 'bug' | 'unknown' = rawStatus.status as any;
+        let effectiveStatus: 'ok' | 'broken' | 'update_required' | 'bug' | 'unknown' =
+            rawStatus.status as any;
 
         if (rawStatus.status === 'fix') {
-            if (rawStatus.fixed_in_version && this.compareVersions(APP_INFORMATIONS.APP_VERSION, rawStatus.fixed_in_version) >= 0) {
+            if (
+                rawStatus.fixed_in_version &&
+                this.compareVersions(APP_INFORMATIONS.APP_VERSION, rawStatus.fixed_in_version) >= 0
+            ) {
                 effectiveStatus = 'ok';
             } else {
                 effectiveStatus = 'update_required';
             }
         } else if (rawStatus.status === 'ok') {
-            if (rawStatus.fixed_in_version && this.compareVersions(APP_INFORMATIONS.APP_VERSION, rawStatus.fixed_in_version) < 0) {
+            if (
+                rawStatus.fixed_in_version &&
+                this.compareVersions(APP_INFORMATIONS.APP_VERSION, rawStatus.fixed_in_version) < 0
+            ) {
                 effectiveStatus = 'update_required';
             }
         }
 
         return {
             ...rawStatus,
-            effectiveStatus
+            effectiveStatus,
         };
     }
 

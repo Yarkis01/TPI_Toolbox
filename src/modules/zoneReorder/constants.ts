@@ -11,7 +11,7 @@ export const REORDER_SELECTORS = {
     DRAG_OVER_CLASS: 'tpi-zone-group-drag-over',
     HANDLE_CLASS: 'tpi-zone-reorder-handle',
     HANDLE_CLASS_SELECTOR: '.tpi-zone-reorder-handle',
-    HEADER_CONTENT: '.owned-attractions__zone-header-content'
+    HEADER_CONTENT: '.owned-attractions__zone-header-content',
 };
 
 /**

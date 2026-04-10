@@ -18,6 +18,4 @@ export const CAPACITY_EVALUATION = {
 /**
  * Page configurations for entity status colorization.
  */
-export const PAGE_CONFIGS = [
-    { urlFragment: 'backstage.php' },
-];
+export const PAGE_CONFIGS = [{ urlFragment: 'backstage.php' }];

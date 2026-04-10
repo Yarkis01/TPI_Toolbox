@@ -109,11 +109,10 @@ export class ZoneFilterModule extends BaseModule {
                 this._selectElement?.add(new Option(zone, zone));
             });
 
-        this._filterGroup = createElement(
-            'label',
-            { class: ZONE_SELECTORS.SITE_LABEL },
-            [ZONE_STRINGS.LABEL, this._selectElement],
-        );
+        this._filterGroup = createElement('label', { class: ZONE_SELECTORS.SITE_LABEL }, [
+            ZONE_STRINGS.LABEL,
+            this._selectElement,
+        ]);
 
         container.appendChild(this._filterGroup);
     }

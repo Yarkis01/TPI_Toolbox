@@ -236,7 +236,9 @@ export class ModalFilterInstance {
         if (!desc) return 0;
 
         const text = desc.innerHTML;
-        const match = text.match(/(?:Emprise au sol|Surface occupée)\s*:\s*<strong>\s*([\d\s]+)\s*m²?/i);
+        const match = text.match(
+            /(?:Emprise au sol|Surface occupée)\s*:\s*<strong>\s*([\d\s]+)\s*m²?/i,
+        );
 
         if (match && match[1]) {
             return parseInt(match[1].replace(/\s/g, ''));
@@ -302,8 +304,12 @@ export class ModalFilterInstance {
         const cards = this._modal.querySelectorAll<HTMLElement>(SURFACE_SELECTORS.CARD);
         let max = 0;
 
-        const typeFilter = this._modal.querySelector<HTMLSelectElement>(SURFACE_SELECTORS.TYPE_FILTER);
-        const constructorFilter = this._modal.querySelector<HTMLSelectElement>(SURFACE_SELECTORS.CONSTRUCTOR_FILTER);
+        const typeFilter = this._modal.querySelector<HTMLSelectElement>(
+            SURFACE_SELECTORS.TYPE_FILTER,
+        );
+        const constructorFilter = this._modal.querySelector<HTMLSelectElement>(
+            SURFACE_SELECTORS.CONSTRUCTOR_FILTER,
+        );
 
         const selectedType = typeFilter ? typeFilter.value : '';
         const selectedConstructor = constructorFilter ? constructorFilter.value : '';

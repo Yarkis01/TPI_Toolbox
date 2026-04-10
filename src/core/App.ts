@@ -50,9 +50,7 @@ export class App implements IApp {
     private _runBootstrapProcesses(moduleManager: ModuleManager): void {
         this._logger.info('⚙️ Running bootstrap processes...');
 
-        const bootstraps: IBootstrap[] = [
-            new Toolbox(moduleManager),
-        ];
+        const bootstraps: IBootstrap[] = [new Toolbox(moduleManager)];
 
         bootstraps.forEach((bootstrap) => {
             try {

@@ -87,7 +87,9 @@ export class ZoneReorderModule extends BaseModule {
         const listContainer = document.querySelector(REORDER_SELECTORS.ZONE_LIST);
         if (!listContainer) return;
 
-        const groups = Array.from(listContainer.querySelectorAll<HTMLElement>(REORDER_SELECTORS.ZONE_GROUP));
+        const groups = Array.from(
+            listContainer.querySelectorAll<HTMLElement>(REORDER_SELECTORS.ZONE_GROUP),
+        );
 
         // Load order
         const savedOrder = this._storage.load<string[]>(STORAGE_KEYS.ZONE_ORDER, []);
@@ -96,7 +98,9 @@ export class ZoneReorderModule extends BaseModule {
         }
 
         // Apply drag attributes and UI
-        const sortedGroups = Array.from(listContainer.querySelectorAll<HTMLElement>(REORDER_SELECTORS.ZONE_GROUP));
+        const sortedGroups = Array.from(
+            listContainer.querySelectorAll<HTMLElement>(REORDER_SELECTORS.ZONE_GROUP),
+        );
         sortedGroups.forEach((group) => {
             this._setupDraggableGroup(group);
         });
@@ -113,7 +117,7 @@ export class ZoneReorderModule extends BaseModule {
      */
     private _reorderDOM(container: HTMLElement, groups: HTMLElement[], savedOrder: string[]): void {
         const map = new Map<string, HTMLElement>();
-        groups.forEach(group => {
+        groups.forEach((group) => {
             const name = this._getZoneName(group);
             if (name) {
                 map.set(name, group);
@@ -121,7 +125,7 @@ export class ZoneReorderModule extends BaseModule {
         });
 
         // Append in saved order
-        savedOrder.forEach(name => {
+        savedOrder.forEach((name) => {
             const group = map.get(name);
             if (group) {
                 container.appendChild(group);
@@ -130,7 +134,7 @@ export class ZoneReorderModule extends BaseModule {
         });
 
         // Append remaining that were not in saved order
-        map.forEach(group => {
+        map.forEach((group) => {
             container.appendChild(group);
         });
     }
@@ -230,7 +234,7 @@ export class ZoneReorderModule extends BaseModule {
         const target = e.currentTarget as HTMLElement;
         target.classList.remove(REORDER_SELECTORS.DRAGGING_CLASS);
 
-        document.querySelectorAll(REORDER_SELECTORS.ZONE_GROUP).forEach(g => {
+        document.querySelectorAll(REORDER_SELECTORS.ZONE_GROUP).forEach((g) => {
             g.classList.remove(REORDER_SELECTORS.DRAG_OVER_CLASS);
         });
 
@@ -325,7 +329,9 @@ export class ZoneReorderModule extends BaseModule {
         const dropY = e.clientY;
 
         let targetBefore: HTMLElement | null = null;
-        const groups = Array.from(container.querySelectorAll<HTMLElement>(REORDER_SELECTORS.ZONE_GROUP));
+        const groups = Array.from(
+            container.querySelectorAll<HTMLElement>(REORDER_SELECTORS.ZONE_GROUP),
+        );
 
         // Find the group just below the mouse pointer
         for (const group of groups) {
@@ -355,8 +361,10 @@ export class ZoneReorderModule extends BaseModule {
         const listContainer = document.querySelector(REORDER_SELECTORS.ZONE_LIST);
         if (!listContainer) return;
 
-        const groups = Array.from(listContainer.querySelectorAll<HTMLElement>(REORDER_SELECTORS.ZONE_GROUP));
-        const order = groups.map(g => this._getZoneName(g)).filter(n => n !== '');
+        const groups = Array.from(
+            listContainer.querySelectorAll<HTMLElement>(REORDER_SELECTORS.ZONE_GROUP),
+        );
+        const order = groups.map((g) => this._getZoneName(g)).filter((n) => n !== '');
 
         this._storage.save(STORAGE_KEYS.ZONE_ORDER, order);
     }

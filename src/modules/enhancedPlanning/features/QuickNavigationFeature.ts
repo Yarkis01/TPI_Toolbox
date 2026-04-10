@@ -1,9 +1,8 @@
+import { injectStyle } from '../../../utils/DomUtils';
 import { BaseFeature } from '../abstract/BaseFeature';
 import { PLANNING_SELECTORS } from '../constants';
-
 // @ts-ignore
 import styles from './quickNavigation.scss?inline';
-import { injectStyle } from '../../../utils/DomUtils';
 
 /**
  * Identifiers for the secondary select wrappers paired with their select element.

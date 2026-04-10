@@ -6,11 +6,13 @@ export const SURFACE_SELECTORS = {
     FILTER_CONTAINER: '.attraction-store-modal__filters',
     FILTER_GROUP: '.attraction-store-modal__filter-group',
     TYPE_FILTER: 'select[id$="-filter-type"], #attraction-filter-type, #second-hand-filter-type',
-    CONSTRUCTOR_FILTER: 'select[id$="-filter-constructor"], #attraction-filter-constructor, #second-hand-filter-constructor',
+    CONSTRUCTOR_FILTER:
+        'select[id$="-filter-constructor"], #attraction-filter-constructor, #second-hand-filter-constructor',
     CARD: '.attraction-card',
     CARD_DESCRIPTION: '.attraction-card__description, .attraction-card__details',
     COUNTER: '[id$="-filter-count"], #attraction-filter-count, #second-hand-filter-count',
-    RESET_BTN: 'button[id$="-reset-btn"], #attraction-filter-reset-btn, #second-hand-filter-reset-btn',
+    RESET_BTN:
+        'button[id$="-reset-btn"], #attraction-filter-reset-btn, #second-hand-filter-reset-btn',
     HIDDEN_CLASS: 'attraction-card--hidden-by-surface',
 };
 
