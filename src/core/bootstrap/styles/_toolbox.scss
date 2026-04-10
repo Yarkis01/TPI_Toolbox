@@ -147,6 +147,32 @@
             color: $text-muted;
         }
 
+        &__actions {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .tpi-btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.5rem 0.9rem;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(8, 18, 31, 0.55);
+            color: $text-main;
+            font-size: 0.84rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+
+            &:hover {
+                background: rgba(255, 255, 255, 0.06);
+                border-color: rgba(255, 255, 255, 0.25);
+            }
+        }
+
         .tpi-btn-primary {
             display: inline-flex;
             align-items: center;
