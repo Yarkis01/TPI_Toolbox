@@ -1,131 +1,195 @@
 @use './variables' as *;
-@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Inter:wght@300;400;500;600;700&display=swap');
-
-body {
-    font-family: 'Inter', sans-serif;
-}
 
 .tpi-modal-overlay {
     position: fixed;
     inset: 0;
     z-index: 10000;
-    background: $bg-overlay;
-    backdrop-filter: blur(5px);
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: clamp(1rem, 4vw, 2rem);
+    background: $bg-overlay;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
     animation: tpiFadeIn 0.2s ease-out;
 }
 
 .tpi-modal-card {
-    width: 750px;
-    max-width: 90vw;
-    max-height: 85vh;
-    background: $bg-card;
-    border-radius: 0;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    position: relative;
+    width: min(700px, 100%);
+    max-height: 80vh;
     display: flex;
     flex-direction: column;
+    border-radius: 12px;
+    border: 1px solid $border-strong;
+    background: linear-gradient(180deg, rgba(26, 39, 58, 0.98) 0%, rgba(18, 28, 42, 0.99) 100%);
+    box-shadow:
+        0 24px 48px rgba(0, 0, 0, 0.45),
+        0 0 0 1px rgba($primary, 0.12);
     overflow: hidden;
-    border: 1px solid rgba($primary, 0.3);
+    min-height: 0;
 
     &__header {
-        padding: 1rem 1.5rem;
-        background: $bg-header;
         display: flex;
-        justify-content: space-between;
         align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        padding: 0.85rem 1rem;
         border-bottom: 1px solid $border-color;
+        background: rgba($primary, 0.1);
+        flex-shrink: 0;
 
         h2 {
             margin: 0;
-            color: $primary;
-            font-family: 'Fredoka One', cursive;
-            font-size: 1.2rem;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: $text-main;
+            line-height: 1.3;
         }
 
         .tpi-close-btn {
-            background: none;
-            border: none;
+            flex-shrink: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.25rem;
+            height: 2.25rem;
+            padding: 0;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 10px;
+            background: rgba(8, 18, 31, 0.55);
             color: $text-muted;
-            font-size: 1.8rem;
+            font-size: 1.35rem;
             line-height: 1;
             cursor: pointer;
-            transition: color 0.2s;
+            transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
 
             &:hover {
                 color: $text-main;
+                border-color: rgba($primary, 0.35);
+                background: rgba($primary, 0.12);
             }
         }
     }
 
     .tpi-search-bar {
-        padding: 1rem 1.5rem 0.5rem 1.5rem;
+        padding: 0.85rem 1rem 0.5rem;
         position: relative;
         display: flex;
         align-items: center;
+        flex-shrink: 0;
 
         .tpi-search-icon {
             position: absolute;
-            left: 2.2rem;
-            opacity: 0.5;
-            font-size: 0.9rem;
+            left: 1.85rem;
+            opacity: 0.45;
+            font-size: 0.85rem;
+            pointer-events: none;
         }
 
         .tpi-search-input {
             width: 100%;
-            background: rgba(0, 0, 0, 0.2);
+            background: rgba(8, 18, 31, 0.55);
             border: 1px solid $border-color;
-            border-radius: 0;
-            padding: 0.6rem 0.6rem 0.6rem 2.2rem;
+            border-radius: 10px;
+            padding: 0.55rem 0.75rem 0.55rem 2.2rem;
             color: $text-main;
-            font-size: 0.9rem;
+            font-size: 0.86rem;
             outline: none;
-            transition: border-color 0.2s;
+            transition: border-color 0.15s ease, background 0.15s ease;
+
+            &::placeholder {
+                color: $text-muted;
+            }
 
             &:focus {
-                border-color: $primary;
+                border-color: rgba($primary, 0.5);
+                background: rgba(8, 18, 31, 0.72);
             }
         }
     }
 
     &__body {
-        padding: 0.5rem 1.5rem 1.5rem 1.5rem;
+        padding: 0.5rem 1rem 1rem;
         overflow-y: auto;
         flex: 1;
+        min-height: 0;
+
+        scrollbar-width: thin;
+        scrollbar-color: rgba($primary, 0.45) rgba(255, 255, 255, 0.04);
 
         &::-webkit-scrollbar {
             width: 6px;
         }
 
+        &::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 999px;
+        }
+
         &::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 0;
+            background: linear-gradient(180deg, rgba($primary, 0.55) 0%, rgba($primary, 0.35) 100%);
+            border-radius: 999px;
         }
     }
 
     &__footer {
-        padding: 1rem 1.5rem;
-        background: $bg-header;
+        padding: 0.85rem 1rem;
         border-top: 1px solid $border-color;
+        background: rgba(8, 18, 31, 0.35);
         display: flex;
         justify-content: space-between;
         align-items: center;
-        color: $text-muted;
+        flex-shrink: 0;
 
-        .tpi-btn-primary {
-            background: rgba($primary, 0.2);
-            border: 1px solid rgba($primary, 0.5);
-            color: $primary;
-            padding: 0.5rem 1rem;
-            border-radius: 0;
-            cursor: pointer;
+        .tpi-version {
+            font-size: 0.78rem;
+            color: $text-muted;
+        }
+
+        &__actions {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .tpi-btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.5rem 0.9rem;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(8, 18, 31, 0.55);
+            color: $text-main;
+            font-size: 0.84rem;
             font-weight: 600;
-            transition: all 0.2s;
+            cursor: pointer;
+            transition: all 0.15s ease;
 
             &:hover {
-                background: $primary;
-                color: white;
+                background: rgba(255, 255, 255, 0.06);
+                border-color: rgba(255, 255, 255, 0.25);
+            }
+        }
+
+        .tpi-btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.5rem 0.9rem;
+            border-radius: 10px;
+            border: 1px solid $primary;
+            background: $primary;
+            color: #062025;
+            font-size: 0.84rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s ease, border-color 0.15s ease;
+
+            &:hover {
+                background: $primary-hover;
+                border-color: $primary-hover;
             }
         }
     }
@@ -135,7 +199,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 0;
+    padding: 0.85rem 0;
     border-bottom: 1px solid $border-color;
     animation: tpiSlideIn 0.3s ease-out;
 
@@ -150,65 +214,86 @@ body {
     .tpi-setting-label {
         color: $text-main;
         font-weight: 600;
+        font-size: 0.88rem;
         margin-bottom: 0.2rem;
     }
 
     .tpi-setting-desc {
         color: $text-muted;
-        font-size: 0.85rem;
+        font-size: 0.82rem;
         line-height: 1.4;
     }
 }
 
 .tpi-badge {
     display: inline-block;
-    padding: 0.15rem 0.4rem;
+    padding: 0.15rem 0.45rem;
     font-size: 0.65rem;
     font-weight: 700;
     text-transform: uppercase;
-    border-radius: 4px;
+    letter-spacing: 0.04em;
+    border-radius: 6px;
     margin-left: 0.5rem;
     vertical-align: middle;
 
     &-ok {
-        background-color: rgba(40, 167, 69, 0.2);
-        color: #28a745;
-        border: 1px solid rgba(40, 167, 69, 0.5);
+        background: rgba(0, 184, 198, 0.15);
+        color: $primary;
+        border: 1px solid rgba($primary, 0.4);
     }
 
     &-broken {
-        background-color: rgba(220, 53, 69, 0.2);
-        color: #dc3545;
-        border: 1px solid rgba(220, 53, 69, 0.5);
+        background: rgba($danger, 0.15);
+        color: $danger;
+        border: 1px solid rgba($danger, 0.4);
     }
 
     &-update_required {
-        background-color: rgba(253, 126, 20, 0.2);
+        background: rgba(253, 126, 20, 0.15);
         color: #fd7e14;
-        border: 1px solid rgba(253, 126, 20, 0.5);
+        border: 1px solid rgba(253, 126, 20, 0.4);
     }
 
     &-bug {
-        background-color: rgba(255, 193, 7, 0.2);
+        background: rgba(255, 193, 7, 0.15);
         color: #ffc107;
-        border: 1px solid rgba(255, 193, 7, 0.5);
+        border: 1px solid rgba(255, 193, 7, 0.4);
+    }
+
+    &-deprecated,
+    &-archived {
+        background: rgba(245, 158, 11, 0.15);
+        color: #f59e0b;
+        /* Amber/Orange */
+        border: 1px solid rgba(245, 158, 11, 0.4);
+    }
+
+    &-update_planned {
+        background: rgba(59, 130, 246, 0.15);
+        color: #3b82f6;
+        /* Blue */
+        border: 1px solid rgba(59, 130, 246, 0.4);
     }
 
     &-unknown {
-        background-color: rgba(108, 117, 125, 0.2);
-        color: #6c757d;
-        border: 1px solid rgba(108, 117, 125, 0.5);
+        background: rgba(108, 117, 125, 0.15);
+        color: #8ea1b9;
+        border: 1px solid rgba(108, 117, 125, 0.4);
     }
 }
 
 .tpi-setting-reason {
-    color: #dc3545;
+    color: $danger;
     font-size: 0.8rem;
     font-style: italic;
     margin-top: 0.25rem;
 
     &.warning {
         color: #fd7e14;
+    }
+
+    &.info {
+        color: #3b82f6;
     }
 
     &__link {
@@ -240,38 +325,41 @@ body {
         position: absolute;
         cursor: pointer;
         inset: 0;
-        background-color: #4f545c;
-        transition: 0.3s;
-        border-radius: 0;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid $border-strong;
+        transition: 0.25s;
+        border-radius: 999px;
 
         &:before {
             position: absolute;
             content: '';
-            height: 18px;
-            width: 18px;
+            height: 16px;
+            width: 16px;
             left: 3px;
             bottom: 3px;
-            background-color: white;
-            transition: 0.3s;
-            border-radius: 0;
+            background: $text-muted;
+            transition: 0.25s;
+            border-radius: 50%;
         }
     }
 
     input:disabled+.tpi-slider {
-        background-color: rgba(79, 84, 92, 0.5);
+        opacity: 0.4;
         cursor: not-allowed;
     }
 
     input:checked+.tpi-slider {
-        background-color: $primary;
+        background: rgba($primary, 0.25);
+        border-color: rgba($primary, 0.6);
+
+        &:before {
+            background: $primary;
+            transform: translateX(20px);
+        }
     }
 
     input:focus+.tpi-slider {
-        box-shadow: 0 0 1px $primary;
-    }
-
-    input:checked+.tpi-slider:before {
-        transform: translateX(20px);
+        box-shadow: 0 0 0 2px rgba($primary, 0.25);
     }
 }
 
@@ -282,54 +370,17 @@ body {
     font-size: 0.9rem;
 }
 
-@keyframes tpiFadeIn {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes tpiSlideIn {
-    from {
-        opacity: 0;
-        transform: translateY(5px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-// Settings section header
 .tpi-settings-section-header {
-    font-weight: 600;
+    font-weight: 700;
     color: $primary;
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin: 1rem 0 0.5rem 0;
+    letter-spacing: 0.07em;
+    margin: 1rem 0 0.5rem;
     padding-bottom: 0.5rem;
     border-bottom: 1px solid $border-color;
 }
 
-// Module row with config support
-.tpi-module-row {
-
-    // Only wrap when expanded (to allow config panel to go below)
-    &--expanded {
-        flex-wrap: wrap;
-        background: rgba(0, 0, 0, 0.2);
-        margin: 0 -1.5rem;
-        padding: 1rem 1.5rem;
-        border-radius: 0;
-    }
-}
-
-// Settings controls container (config button + switch)
 .tpi-setting-controls {
     display: flex;
     align-items: center;
@@ -337,33 +388,42 @@ body {
     flex-shrink: 0;
 }
 
-// Config button
+.tpi-module-row {
+    &--expanded {
+        flex-wrap: wrap;
+        background: rgba(0, 0, 0, 0.2);
+        margin: 0 -1rem;
+        padding: 0.85rem 1rem;
+        border-radius: 8px;
+    }
+}
+
 .tpi-config-btn {
-    background: rgba($primary, 0.15);
-    border: 1px solid rgba($primary, 0.3);
-    color: $text-main;
+    background: rgba($primary, 0.1);
+    border: 1px solid rgba($primary, 0.25);
+    color: $text-muted;
     width: 32px;
     height: 32px;
-    border-radius: 0;
+    border-radius: 8px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1rem;
-    transition: all 0.2s;
+    transition: all 0.15s;
 
     &:hover {
-        background: rgba($primary, 0.3);
-        border-color: $primary;
+        background: rgba($primary, 0.2);
+        border-color: rgba($primary, 0.5);
+        color: $text-main;
     }
 }
 
-// Configuration panel
 .tpi-config-panel {
     width: 100%;
     margin-top: 1rem;
     padding-top: 1rem;
-    border-top: 1px dashed rgba($primary, 0.3);
+    border-top: 1px dashed rgba($primary, 0.25);
     animation: tpiSlideIn 0.2s ease-out;
 
     &__header {
@@ -371,45 +431,42 @@ body {
         justify-content: space-between;
         align-items: center;
         margin-bottom: 0.75rem;
-        font-size: 0.85rem;
+        font-size: 0.82rem;
         color: $primary;
         font-weight: 600;
     }
 }
 
-// Config reset button
 .tpi-config-reset-btn {
     background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     color: $text-muted;
     padding: 0.25rem 0.5rem;
     font-size: 0.75rem;
     cursor: pointer;
-    border-radius: 0;
-    transition: all 0.2s;
+    border-radius: 6px;
+    transition: all 0.15s;
 
     &:hover {
-        background: rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.06);
         color: $text-main;
     }
 }
 
-// Config options container
 .tpi-config-options {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.65rem;
 }
 
-// Individual config option
 .tpi-config-option {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.5rem 0.75rem;
-    background: rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 0;
+    padding: 0.55rem 0.75rem;
+    background: rgba(8, 18, 31, 0.4);
+    border: 1px solid $border-color;
+    border-radius: 8px;
 
     &__label {
         display: flex;
@@ -432,20 +489,19 @@ body {
     }
 }
 
-// Config input styles
 .tpi-config-input {
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 0;
+    background: rgba(8, 18, 31, 0.55);
+    border: 1px solid $border-color;
+    border-radius: 8px;
     padding: 0.4rem 0.6rem;
     color: $text-main;
     font-size: 0.85rem;
     outline: none;
-    transition: border-color 0.2s;
+    transition: border-color 0.15s;
     min-width: 80px;
 
     &:focus {
-        border-color: $primary;
+        border-color: rgba($primary, 0.5);
     }
 
     &[type='number'] {
@@ -458,47 +514,148 @@ body {
     }
 }
 
-// Config number container
 .tpi-config-number {
     display: flex;
     align-items: center;
     gap: 0.5rem;
 }
 
-// Config select styles
 .tpi-config-select {
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 0;
+    background: rgba(8, 18, 31, 0.55);
+    border: 1px solid $border-color;
+    border-radius: 8px;
     padding: 0.4rem 0.6rem;
     color: $text-main;
     font-size: 0.85rem;
     outline: none;
     cursor: pointer;
     min-width: 120px;
-    transition: border-color 0.2s;
+    transition: border-color 0.15s;
 
     &:focus {
-        border-color: $primary;
+        border-color: rgba($primary, 0.5);
     }
 
     option {
-        background: $bg-card;
+        background: #172334;
         color: $text-main;
     }
 }
 
-// Small switch variant for config panel
 .tpi-switch--small {
     width: 36px;
     height: 20px;
 
     .tpi-slider:before {
-        height: 14px;
-        width: 14px;
+        height: 12px;
+        width: 12px;
     }
 
     input:checked+.tpi-slider:before {
         transform: translateX(16px);
     }
+}
+
+@keyframes tpiFadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes tpiSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ==========================================================================
+   Banners (Marquee)
+   ========================================================================== */
+.tpi-banners-container {
+    background: rgba(8, 18, 31, 0.4);
+    border-bottom: 1px solid $border-color;
+    display: none;
+    flex-shrink: 0;
+
+    &--active {
+        display: block;
+    }
+}
+
+.tpi-banner-row {
+    position: relative;
+    overflow: hidden;
+    white-space: nowrap;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+    &:last-child {
+        border-bottom: none;
+    }
+}
+
+.tpi-banner-track {
+    display: inline-flex;
+    align-items: center;
+    gap: 3rem;
+    padding: 0.65rem 100%; /* Pad right so it starts from right side off-screen completely */
+    animation: tpiMarquee 30s linear infinite;
+    min-width: 100%;
+
+    &:hover {
+        animation-play-state: paused;
+    }
+}
+
+.tpi-banner-item {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: $text-main;
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+
+    strong {
+        margin-right: 0.35rem;
+        font-weight: 700;
+    }
+
+    a {
+        color: inherit;
+        text-decoration: underline;
+        margin-left: 0.4rem;
+        font-weight: 600;
+        opacity: 0.85;
+        transition: opacity 0.15s;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+
+    &--danger {
+        color: $danger;
+    }
+
+    &--warning {
+        color: #fd7e14;
+    }
+
+    &--info {
+        color: $primary;
+    }
+}
+
+@keyframes tpiMarquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
 }

@@ -1,5 +1,5 @@
-import { Logger } from '../../utils/Logger';
 import { ModuleStatusService } from '../../services/ModuleStatusService';
+import { Logger } from '../../utils/Logger';
 import IModule from '../interfaces/IModule';
 import { SettingsManager } from './SettingsManager';
 
@@ -35,7 +35,10 @@ export class ModuleManager {
         this._modules.set(module.id, module);
         this._sortedModulesCache = null;
 
-        const shouldBeEnabled = this._settingsManager.getModuleState(module.id, module.enabledByDefault);
+        const shouldBeEnabled = this._settingsManager.getModuleState(
+            module.id,
+            module.enabledByDefault,
+        );
 
         if (shouldBeEnabled) {
             if (!this._canEnableModule(module.id, 'register')) return;
@@ -76,8 +79,8 @@ export class ModuleManager {
      */
     public getModules(): IModule[] {
         if (!this._sortedModulesCache) {
-            this._sortedModulesCache = Array.from(this._modules.values()).toSorted(
-                (a, b) => a.name.localeCompare(b.name),
+            this._sortedModulesCache = Array.from(this._modules.values()).toSorted((a, b) =>
+                a.name.localeCompare(b.name),
             );
         }
 
@@ -94,17 +97,19 @@ export class ModuleManager {
         const moduleStatus = ModuleStatusService.getInstance().getStatus(moduleId);
 
         if (moduleStatus.effectiveStatus === 'broken') {
-            const message = action === 'register'
-                ? `Module '${moduleId}' is configured to be enabled but is currently broken. Force disabled.`
-                : `Attempt to enable broken module '${moduleId}'. Action blocked.`;
+            const message =
+                action === 'register'
+                    ? `Module '${moduleId}' is configured to be enabled but is currently broken. Force disabled.`
+                    : `Attempt to enable broken module '${moduleId}'. Action blocked.`;
             this._logger.warn(message);
             return false;
         }
 
         if (moduleStatus.effectiveStatus === 'update_required') {
-            const message = action === 'register'
-                ? `Module '${moduleId}' is configured to be enabled but requires an app update. Force disabled.`
-                : `Attempt to enable module '${moduleId}' requiring an update. Action blocked.`;
+            const message =
+                action === 'register'
+                    ? `Module '${moduleId}' is configured to be enabled but requires an app update. Force disabled.`
+                    : `Attempt to enable module '${moduleId}' requiring an update. Action blocked.`;
             this._logger.warn(message);
             return false;
         }

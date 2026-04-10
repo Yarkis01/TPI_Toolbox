@@ -2,10 +2,10 @@
  * Css selectors and colors for the ride hype feature.
  */
 export const HYPE_SELECTORS = {
-    PAGE_MATCH: 'attractions.php',
-    CONTAINER: 'span.attraction-card__hype',
-    DOTS: 'span.attraction-card__hype-dot',
-    DOT_ON: 'span.attraction-card__hype-dot--on',
+    PAGE_MATCH: 'attractions_buy',
+    CONTAINER: 'div.park-attractions-hype',
+    DOTS: 'span.park-attractions-hype__dot',
+    DOT_ON: 'span.park-attractions-hype__dot.is-on',
 };
 
 /**
