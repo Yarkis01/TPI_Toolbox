@@ -2,90 +2,141 @@
 
 @keyframes tpiUpdateNotifIn {
     from {
-        transform: translateY(6px);
+        transform: translateY(12px) scale(0.98);
         opacity: 0;
     }
     to {
-        transform: translateY(0);
+        transform: translateY(0) scale(1);
         opacity: 1;
     }
 }
 
 .tpi-update-notif {
     position: fixed;
-    right: 18px;
-    bottom: 18px;
+    right: 20px;
+    bottom: 20px;
     z-index: 10001;
-    width: 360px;
-    max-width: calc(100vw - 36px);
-    background: $bg-card;
-    border: 1px solid $border-color;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-    border-radius: 0;
-    padding: 14px 14px 12px 14px;
+    width: 380px;
+    max-width: calc(100vw - 40px);
+    background: rgba(23, 35, 52, 0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(168, 85, 247, 0.25);
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 16px;
     color: $text-main;
-    font-family: inherit;
-    animation: tpiUpdateNotifIn 0.2s ease-out;
+    font-family: 'Inter', sans-serif;
+    animation: tpiUpdateNotifIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    gap: 16px;
+
+    &__icon {
+        flex-shrink: 0;
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        background: rgba(168, 85, 247, 0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: $primary;
+        box-shadow: 0 0 15px rgba(168, 85, 247, 0.2);
+    }
+
+    &__body {
+        flex: 1;
+        min-width: 0;
+    }
 
     &__close {
         position: absolute;
-        top: 6px;
+        top: 8px;
         right: 8px;
-        background: none;
+        background: rgba(255, 255, 255, 0.05);
         border: none;
         color: $text-muted;
-        font-size: 1.4rem;
-        line-height: 1;
+        width: 24px;
+        height: 24px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
         cursor: pointer;
-        padding: 0;
-        transition: color 0.2s;
+        transition: all 0.2s;
 
         &:hover {
             color: $text-main;
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(90deg);
         }
     }
 
     &__title {
         font-weight: 700;
-        color: $primary;
-        margin: 0 1.3rem 0.35rem 0;
-        font-size: 0.95rem;
+        color: #fff;
+        margin: 0 0 4px 0;
+        font-size: 1rem;
+        letter-spacing: -0.01em;
     }
 
     &__versions {
         color: $text-muted;
-        font-size: 0.82rem;
-        margin-bottom: 0.55rem;
+        font-size: 0.78rem;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        line-height: 1;
+
+        &::before {
+            content: "";
+            background: $primary;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+        }
+
+        .tpi-version-separator {
+            display: inline-flex;
+            align-items: center;
+            height: 100%;
+            font-size: 1.1rem;
+            margin: 0 2px;
+            opacity: 0.6;
+        }
     }
 
     &__content {
-        color: $text-main;
-        font-size: 0.9rem;
-        line-height: 1.35;
+        color: rgba($text-main, 0.85);
+        font-size: 0.86rem;
+        line-height: 1.5;
+        margin-bottom: 12px;
+    }
+
+    &__actions {
+        display: flex;
+        align-items: center;
     }
 
     &__link {
-        display: inline-block;
-        margin-left: 0.25rem;
-        color: $primary;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: #35b3af;
         font-weight: 600;
         text-decoration: none;
-        border-bottom: 1px solid rgba(168, 85, 247, 0.35);
-        padding-bottom: 1px;
-        transition:
-            color 0.2s,
-            border-color 0.2s,
-            background 0.2s;
+        font-size: 0.84rem;
+        padding: 6px 10px;
+        background: rgba(53, 179, 175, 0.1);
+        border-radius: 6px;
+        transition: all 0.2s;
 
         &:hover {
-            color: $text-main;
-            background: rgba(168, 85, 247, 0.18);
-            border-color: rgba(168, 85, 247, 0.6);
-        }
-
-        &:focus {
-            outline: 2px solid $primary-hover;
-            outline-offset: 2px;
+            background: rgba(53, 179, 175, 0.2);
+            color: lighten(#35b3af, 5%);
+            transform: translateX(2px);
         }
     }
 }

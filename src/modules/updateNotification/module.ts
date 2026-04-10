@@ -127,16 +127,24 @@ export class UpdateNotificationModule extends BaseModule {
         popup.className = 'tpi-update-notif';
         popup.innerHTML = `
             <button class="tpi-update-notif__close" aria-label="Fermer">&times;</button>
-            <div class="tpi-update-notif__title">Mise à jour disponible !</div>
-            <div class="tpi-update-notif__versions">
-                Version actuelle : ${localVersion} -> Nouvelle version : ${remoteVersion}
+            <div class="tpi-update-notif__icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+                </svg>
             </div>
-            <div class="tpi-update-notif__content">
-                ${description}
-                <br>
-                <a href="https://tpitoolbox.yarkis.top/" target="_blank" class="tpi-update-notif__link">
-                    Télécharger la mise à jour
-                </a>
+            <div class="tpi-update-notif__body">
+                <div class="tpi-update-notif__title">Mise à jour disponible !</div>
+                <div class="tpi-update-notif__versions">
+                    ${localVersion} <span class="tpi-version-separator">→</span> ${remoteVersion}
+                </div>
+                <div class="tpi-update-notif__content">
+                    ${description}
+                </div>
+                <div class="tpi-update-notif__actions">
+                    <a href="https://tpitoolbox.yarkis.top/" target="_blank" class="tpi-update-notif__link">
+                        Télécharger maintenant
+                    </a>
+                </div>
             </div>
         `;
 
