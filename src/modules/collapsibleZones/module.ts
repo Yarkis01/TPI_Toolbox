@@ -65,7 +65,9 @@ export class CollapsibleZonesModule extends BaseModule {
      * Checks if the current page is the target page.
      */
     private _isTargetPage(): boolean {
-        return document.location.href.includes(COLLAPSE_SELECTORS.PAGE_MATCH);
+        return COLLAPSE_SELECTORS.PAGE_MATCHES.some((match) =>
+            document.location.href.includes(match),
+        );
     }
 
     /**
