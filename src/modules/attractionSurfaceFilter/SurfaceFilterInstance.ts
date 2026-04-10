@@ -47,15 +47,19 @@ export class SurfaceFilterInstance {
     private _injectUI(container: HTMLElement): void {
         // Use the appropriate class based on the context (modal vs page)
         const isModal = this._root.classList.contains('attraction-store-modal');
-        const labelClass = isModal ? 'attraction-store-modal__filter-label' : 'park-attractions-label';
-        const groupClass = isModal ? 'attraction-store-modal__filter-group' : 'park-attractions-label';
+        const labelClass = isModal
+            ? 'attraction-store-modal__filter-label'
+            : 'park-attractions-label';
+        const groupClass = isModal
+            ? 'attraction-store-modal__filter-group'
+            : 'park-attractions-label';
 
         const label = createElement(
             'label',
             {
                 class: labelClass,
                 for: this._uniqueId,
-                style: isModal ? '' : 'display: block; width: 100%;'
+                style: isModal ? '' : 'display: block; width: 100%;',
             },
             [SURFACE_STRINGS.LABEL],
         );
@@ -80,13 +84,19 @@ export class SurfaceFilterInstance {
             [SURFACE_STRINGS.ALL],
         );
 
-        const labelContainer = createElement('div', { style: 'display: flex; justify-content: space-between; align-items: center; width: 100%;' }, [label, this._valueDisplay]);
+        const labelContainer = createElement(
+            'div',
+            {
+                style: 'display: flex; justify-content: space-between; align-items: center; width: 100%;',
+            },
+            [label, this._valueDisplay],
+        );
 
         this._sliderGroup = createElement(
             'div',
             {
                 class: groupClass,
-                style: isModal ? '' : 'flex: 1; min-width: 200px; margin-right: 15px;'
+                style: isModal ? '' : 'flex: 1; min-width: 200px; margin-right: 15px;',
             },
             [labelContainer, this._slider],
         );
@@ -295,7 +305,10 @@ export class SurfaceFilterInstance {
 
         cards.forEach((card) => {
             const style = window.getComputedStyle(card);
-            if (style.display !== 'none' && !card.classList.contains(SURFACE_SELECTORS.HIDDEN_CLASS)) {
+            if (
+                style.display !== 'none' &&
+                !card.classList.contains(SURFACE_SELECTORS.HIDDEN_CLASS)
+            ) {
                 visibleCount++;
             }
         });
