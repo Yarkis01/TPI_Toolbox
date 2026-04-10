@@ -1,3 +1,4 @@
+@use 'sass:color';
 @use '../../core/bootstrap/styles/variables' as *;
 
 @keyframes tpiUpdateNotifIn {
@@ -135,7 +136,7 @@
 
         &:hover {
             background: rgba(53, 179, 175, 0.2);
-            color: lighten(#35b3af, 5%);
+            color: color.adjust(#35b3af, $lightness: 5%);
             transform: translateX(2px);
         }
     }
