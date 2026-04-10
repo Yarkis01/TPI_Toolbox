@@ -2,10 +2,10 @@ import { createElement } from '../../utils/DomUtils';
 import { SURFACE_DEFAULTS, SURFACE_SELECTORS, SURFACE_STRINGS } from './constants';
 
 /**
- * Represents a single instance of the surface area filter applied to a specific modal.
+ * Represents a single instance of the surface area filter applied to a specific container (modal or page).
  */
-export class ModalFilterInstance {
-    private _modal: HTMLElement;
+export class SurfaceFilterInstance {
+    private _root: HTMLElement;
     private _sliderGroup: HTMLElement | null = null;
     private _slider: HTMLInputElement | null = null;
     private _valueDisplay: HTMLElement | null = null;
@@ -14,13 +14,13 @@ export class ModalFilterInstance {
     private _updateTimeout: number | null = null;
 
     /**
-     * Initializes the filter instance for the given modal element.
-     * @param modal The modal element to attach the filter to.
+     * Initializes the filter instance for the given root element.
+     * @param root The root element (modal or page main area) to attach the filter to.
      */
-    constructor(modal: HTMLElement) {
-        this._modal = modal;
+    constructor(root: HTMLElement) {
+        this._root = root;
         this._uniqueId = 'attraction-filter-surface-' + Math.random().toString(36).substring(2, 9);
-        const filterContainer = modal.querySelector(SURFACE_SELECTORS.FILTER_CONTAINER);
+        const filterContainer = root.querySelector(SURFACE_SELECTORS.FILTER_CONTAINER);
         if (filterContainer) {
             this._injectUI(filterContainer as HTMLElement);
             this._setupInteractions();
@@ -37,7 +37,7 @@ export class ModalFilterInstance {
         if (this._updateTimeout !== null) {
             window.clearTimeout(this._updateTimeout);
         }
-        this._modal.removeAttribute('data-surface-filter-initialized');
+        this._root.removeAttribute('data-surface-filter-initialized');
     }
 
     /**
@@ -45,11 +45,17 @@ export class ModalFilterInstance {
      * @param container The container element.
      */
     private _injectUI(container: HTMLElement): void {
+        // Use the appropriate class based on the context (modal vs page)
+        const isModal = this._root.classList.contains('attraction-store-modal');
+        const labelClass = isModal ? 'attraction-store-modal__filter-label' : 'park-attractions-label';
+        const groupClass = isModal ? 'attraction-store-modal__filter-group' : 'park-attractions-label';
+
         const label = createElement(
             'label',
             {
-                class: 'attraction-store-modal__filter-label',
+                class: labelClass,
                 for: this._uniqueId,
+                style: isModal ? '' : 'display: block; width: 100%;'
             },
             [SURFACE_STRINGS.LABEL],
         );
@@ -57,7 +63,7 @@ export class ModalFilterInstance {
         this._slider = createElement('input', {
             type: 'range',
             id: this._uniqueId,
-            class: 'attraction-store-modal__range attraction-surface-slider',
+            class: 'attraction-surface-slider',
             min: SURFACE_DEFAULTS.MIN.toString(),
             max: this._calculateMaxSurface().toString(),
             step: SURFACE_DEFAULTS.STEP.toString(),
@@ -74,18 +80,20 @@ export class ModalFilterInstance {
             [SURFACE_STRINGS.ALL],
         );
 
-        const labelContainer = createElement('div', {}, [label, this._valueDisplay]);
+        const labelContainer = createElement('div', { style: 'display: flex; justify-content: space-between; align-items: center; width: 100%;' }, [label, this._valueDisplay]);
 
         this._sliderGroup = createElement(
             'div',
             {
-                class: 'attraction-store-modal__filter-group',
+                class: groupClass,
+                style: isModal ? '' : 'flex: 1; min-width: 200px; margin-right: 15px;'
             },
             [labelContainer, this._slider],
         );
 
+        // Try to insert before the last group or at the end
         const lastGroup = container.lastElementChild;
-        if (lastGroup) {
+        if (lastGroup && isModal) {
             container.insertBefore(this._sliderGroup, lastGroup);
         } else {
             container.appendChild(this._sliderGroup);
@@ -107,7 +115,7 @@ export class ModalFilterInstance {
     }
 
     /**
-     * Sets up event listeners and the MutationObserver for the modal.
+     * Sets up event listeners and the MutationObserver for the container.
      */
     private _setupInteractions(): void {
         if (!this._slider) return;
@@ -118,7 +126,7 @@ export class ModalFilterInstance {
             this._applyFilter();
         });
 
-        const resetBtn = this._modal.querySelector(SURFACE_SELECTORS.RESET_BTN);
+        const resetBtn = this._root.querySelector(SURFACE_SELECTORS.RESET_BTN);
         if (resetBtn) {
             resetBtn.addEventListener('click', () => {
                 if (this._slider) {
@@ -136,18 +144,18 @@ export class ModalFilterInstance {
             this._handleContentUpdateDebounced();
         });
 
-        const cardsContainer = this._modal.querySelector('.attraction-store-modal__body');
+        const cardsContainer = this._root.querySelector(SURFACE_SELECTORS.LIST_CONTAINER);
         if (cardsContainer) {
             this._contentObserver.observe(cardsContainer, {
                 attributes: true,
-                attributeFilter: ['style'], // Removed 'class' to stop infinite loops when we attach our own hidden class!
+                attributeFilter: ['style'],
                 childList: true,
                 subtree: true,
             });
         }
 
-        const typeSelect = this._modal.querySelector(SURFACE_SELECTORS.TYPE_FILTER);
-        const constructorSelect = this._modal.querySelector(SURFACE_SELECTORS.CONSTRUCTOR_FILTER);
+        const typeSelect = this._root.querySelector(SURFACE_SELECTORS.TYPE_FILTER);
+        const constructorSelect = this._root.querySelector(SURFACE_SELECTORS.CONSTRUCTOR_FILTER);
 
         const updateHandler = () => {
             this._handleContentUpdateDebounced();
@@ -207,7 +215,7 @@ export class ModalFilterInstance {
 
         const maxSurface = parseInt(this._slider.value);
         const limit = parseInt(this._slider.max);
-        const cards = this._modal.querySelectorAll<HTMLElement>(SURFACE_SELECTORS.CARD);
+        const cards = this._root.querySelectorAll<HTMLElement>(SURFACE_SELECTORS.CARD);
 
         cards.forEach((card) => {
             if (maxSurface >= limit) {
@@ -236,8 +244,9 @@ export class ModalFilterInstance {
         if (!desc) return 0;
 
         const text = desc.innerHTML;
+        // Updated regex to support "Surface:" label used in the new pages
         const match = text.match(
-            /(?:Emprise au sol|Surface occupée)\s*:\s*<strong>\s*([\d\s]+)\s*m²?/i,
+            /(?:Emprise au sol|Surface occupée|Surface)\s*:\s*<strong>\s*([\d\s]+)\s*m²?/i,
         );
 
         if (match && match[1]) {
@@ -256,39 +265,37 @@ export class ModalFilterInstance {
         const min = parseInt(this._slider.min) || 0;
         const max = parseInt(this._slider.max) || 100;
 
-        // Prevent division by zero if max equals min
         if (max === min) {
             this._slider.style.background = `#35b3af`;
             return;
         }
 
         const percentage = ((val - min) * 100) / (max - min);
-
         this._slider.style.background = `linear-gradient(to right, #35b3af 0%, #35b3af ${percentage}%, #2a2a2a ${percentage}%, #2a2a2a 100%)`;
     }
 
     /**
-     * Removes the hidden class from all cards inside the modal.
+     * Removes the hidden class from all cards inside the root.
      */
     private _removeFilters(): void {
-        this._modal.querySelectorAll(`.${SURFACE_SELECTORS.HIDDEN_CLASS}`).forEach((el) => {
+        this._root.querySelectorAll(`.${SURFACE_SELECTORS.HIDDEN_CLASS}`).forEach((el) => {
             el.classList.remove(SURFACE_SELECTORS.HIDDEN_CLASS);
         });
     }
 
     /**
-     * Updates the counter of visible attractions in the modal header.
+     * Updates the counter of visible attractions.
      */
     private _updateCounter(): void {
-        const counterEl = this._modal.querySelector(SURFACE_SELECTORS.COUNTER);
+        const counterEl = this._root.querySelector(SURFACE_SELECTORS.COUNTER);
         if (!counterEl) return;
 
-        const cards = this._modal.querySelectorAll<HTMLElement>(SURFACE_SELECTORS.CARD);
+        const cards = this._root.querySelectorAll<HTMLElement>(SURFACE_SELECTORS.CARD);
         let visibleCount = 0;
 
         cards.forEach((card) => {
             const style = window.getComputedStyle(card);
-            if (style.display !== 'none') {
+            if (style.display !== 'none' && !card.classList.contains(SURFACE_SELECTORS.HIDDEN_CLASS)) {
                 visibleCount++;
             }
         });
@@ -301,13 +308,13 @@ export class ModalFilterInstance {
      * @returns The dynamically calculated maximum surface, rounded to the step grid, or fallback default.
      */
     private _calculateMaxSurface(): number {
-        const cards = this._modal.querySelectorAll<HTMLElement>(SURFACE_SELECTORS.CARD);
+        const cards = this._root.querySelectorAll<HTMLElement>(SURFACE_SELECTORS.CARD);
         let max = 0;
 
-        const typeFilter = this._modal.querySelector<HTMLSelectElement>(
+        const typeFilter = this._root.querySelector<HTMLSelectElement>(
             SURFACE_SELECTORS.TYPE_FILTER,
         );
-        const constructorFilter = this._modal.querySelector<HTMLSelectElement>(
+        const constructorFilter = this._root.querySelector<HTMLSelectElement>(
             SURFACE_SELECTORS.CONSTRUCTOR_FILTER,
         );
 
@@ -335,7 +342,6 @@ export class ModalFilterInstance {
             }
         });
 
-        // Round up to nearest step for cleaner UI
         if (max > 0) {
             return Math.ceil(max / SURFACE_DEFAULTS.STEP) * SURFACE_DEFAULTS.STEP;
         }
