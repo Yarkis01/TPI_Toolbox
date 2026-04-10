@@ -2,6 +2,7 @@ import { OperatingSystemModule } from '../modules/operatingSystem/module';
 import { ModuleStatusService } from '../services/ModuleStatusService';
 import { Logger } from '../utils/Logger';
 import { registerCommonModules } from './ModuleRegistry';
+import { SupportWarning } from './bootstrap/SupportWarning';
 import { Toolbox } from './bootstrap/Toolbox';
 import IApp from './interfaces/IApp';
 import IBootstrap from './interfaces/IBootstrap';
@@ -50,7 +51,7 @@ export class App implements IApp {
     private _runBootstrapProcesses(moduleManager: ModuleManager): void {
         this._logger.info('⚙️ Running bootstrap processes...');
 
-        const bootstraps: IBootstrap[] = [new Toolbox(moduleManager)];
+        const bootstraps: IBootstrap[] = [new Toolbox(moduleManager), new SupportWarning()];
 
         bootstraps.forEach((bootstrap) => {
             try {
