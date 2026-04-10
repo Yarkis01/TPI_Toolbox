@@ -279,10 +279,12 @@ export class DebugOverlay implements IBootstrap {
             .tdbg-checkbox { color: #a6adc8; font-size: 11px; cursor: pointer; }
             .tdbg-table {
                 width: 100%; border-collapse: collapse; font-size: 11px;
+                table-layout: fixed;
             }
             .tdbg-table th, .tdbg-table td {
                 padding: 4px 8px; text-align: left;
                 border-bottom: 1px solid #313244; vertical-align: middle;
+                overflow: hidden;
             }
             .tdbg-table thead th {
                 background: #181825; color: #7f849c;
@@ -317,10 +319,26 @@ export class DebugOverlay implements IBootstrap {
                 margin-top: 12px; padding: 10px 12px;
                 background: #181825; border-radius: 6px; font-size: 13px;
             }
-            .tdbg-storage-val {
-                margin: 0; white-space: pre-wrap; word-break: break-all;
-                max-width: 320px; color: #a6e3a1; font: inherit;
+            .tdbg-storage-key, .tdbg-storage-val {
+                display: block; max-width: 100%;
+                overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
             }
+            .tdbg-storage-val { color: #a6e3a1; font: inherit; font-size: 11px; margin: 0; }
+            .tdbg-storage-input {
+                width: 100%; background: #181825; border: 1px solid #45475a;
+                border-radius: 3px; color: #a6e3a1; font: inherit; font-size: 11px;
+                padding: 2px 4px; box-sizing: border-box;
+            }
+            .tdbg-storage-input:focus { outline: none; border-color: #cba6f7; }
+            .tdbg-storage-textarea {
+                resize: vertical; min-height: 40px; max-height: 120px;
+                white-space: pre; overflow: auto;
+            }
+            .tdbg-storage-actions {
+                display: flex; gap: 4px; white-space: nowrap; vertical-align: top;
+            }
+            .tdbg-btn--danger { background: #3a1e1e; color: #f38ba8; border-color: #5a2d2d; }
+            .tdbg-btn--danger:hover { background: #5a2d2d; }
         `;
         document.head.appendChild(style);
     }
