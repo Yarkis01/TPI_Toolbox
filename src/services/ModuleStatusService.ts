@@ -1,5 +1,6 @@
 import { APP_INFORMATIONS } from '../core/constants/AppConstants';
 import { Logger } from '../utils/Logger';
+import { StorageService } from './StorageService';
 
 export interface ModuleStatusData {
     name: string;
@@ -22,6 +23,14 @@ export interface ModuleStatusResponse {
     generated_at: string;
     modules: Record<string, ModuleStatusData>;
 }
+
+interface ModuleStatusCache {
+    ts: number;
+    modules: Record<string, ModuleStatusData>;
+}
+
+const CACHE_KEY = 'module_status_cache';
+const CACHE_TTL = 5 * 60 * 1000;
 
 /**
  * Service to fetch and store module statuses from the API.
@@ -47,11 +56,42 @@ export class ModuleStatusService {
     }
 
     /**
-     * Fetches module statuses from the remote API.
+     * Loads module statuses from cache instantly, then refreshes in background if cache is stale.
      */
-    public async fetchStatus(): Promise<void> {
+    public fetchStatus(): void {
+        this._loadFromCache();
+        this._refreshInBackground();
+    }
+
+    /**
+     * Loads module statuses from the local cache (synchronous, instantaneous).
+     */
+    private _loadFromCache(): void {
+        const cached = StorageService.getInstance().load<ModuleStatusCache | null>(CACHE_KEY, null);
+
+        if (!cached) {
+            this._logger.info('No cache found, modules will start as unknown.');
+            return;
+        }
+
+        this._statusData = cached.modules;
+        this._isLoaded = true;
+        this._logger.info('Module status loaded from cache.');
+    }
+
+    /**
+     * Refreshes module statuses from the remote API in the background.
+     * Skipped if the cache is still fresh (within TTL).
+     */
+    private async _refreshInBackground(): Promise<void> {
         if (!navigator.onLine) {
-            this._logger.info('Device is offline. Skipping module status override.');
+            this._logger.info('Device is offline. Skipping module status refresh.');
+            return;
+        }
+
+        const cached = StorageService.getInstance().load<ModuleStatusCache | null>(CACHE_KEY, null);
+        if (cached && Date.now() - cached.ts < CACHE_TTL) {
+            this._logger.info('Cache is fresh, skipping API refresh.');
             return;
         }
 
@@ -59,13 +99,13 @@ export class ModuleStatusService {
             const response = await fetch('https://tpitoolbox.yarkis.top/api/modules/status');
 
             if (response.status === 503) {
-                this._logger.info('API returned 503. Skipping module status override.');
+                this._logger.info('API returned 503. Skipping module status refresh.');
                 return;
             }
 
             if (!response.ok) {
                 this._logger.warn(
-                    `API returned ${response.status}. Skipping module status override.`,
+                    `API returned ${response.status}. Skipping module status refresh.`,
                 );
                 return;
             }
@@ -73,9 +113,15 @@ export class ModuleStatusService {
             const data = (await response.json()) as ModuleStatusResponse;
             this._statusData = data.modules;
             this._isLoaded = true;
-            this._logger.info('Module status data successfully fetched.');
+
+            StorageService.getInstance().save<ModuleStatusCache>(CACHE_KEY, {
+                ts: Date.now(),
+                modules: data.modules,
+            });
+
+            this._logger.info('Module status refreshed and cached.');
         } catch (error) {
-            this._logger.error(`Error fetching module status: ${error}`);
+            this._logger.error(`Error refreshing module status: ${error}`);
         }
     }
 
@@ -110,7 +156,7 @@ export class ModuleStatusService {
         if (rawStatus.status === 'fix') {
             if (
                 rawStatus.fixed_in_version &&
-                this.compareVersions(APP_INFORMATIONS.APP_VERSION, rawStatus.fixed_in_version) >= 0
+                this._compareVersions(APP_INFORMATIONS.APP_VERSION, rawStatus.fixed_in_version) >= 0
             ) {
                 effectiveStatus = 'ok';
             } else {
@@ -119,7 +165,7 @@ export class ModuleStatusService {
         } else if (rawStatus.status === 'ok') {
             if (
                 rawStatus.fixed_in_version &&
-                this.compareVersions(APP_INFORMATIONS.APP_VERSION, rawStatus.fixed_in_version) < 0
+                this._compareVersions(APP_INFORMATIONS.APP_VERSION, rawStatus.fixed_in_version) < 0
             ) {
                 effectiveStatus = 'update_required';
             }
@@ -132,10 +178,10 @@ export class ModuleStatusService {
     }
 
     /**
-     * Compare two semantic versions.
-     * @returns > 0 if v1 > v2, < 0 if v1 < v2, 0 if v1 == v2
+     * Compares two semantic versions.
+     * @returns > 0 if v1 > v2, < 0 if v1 < v2, 0 if equal
      */
-    private compareVersions(v1: string, v2: string): number {
+    private _compareVersions(v1: string, v2: string): number {
         const parts1 = v1.split('.').map(Number);
         const parts2 = v2.split('.').map(Number);
         const len = Math.max(parts1.length, parts2.length);
