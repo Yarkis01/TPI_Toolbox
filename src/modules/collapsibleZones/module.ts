@@ -40,6 +40,7 @@ export class CollapsibleZonesModule extends BaseModule {
      */
     protected onEnable(): void {
         if (this._isTargetPage()) {
+            document.body.classList.add(COLLAPSE_SELECTORS.ENABLED_CLASS);
             this._loadState();
             this._setupCollapsibles();
         }
@@ -49,6 +50,7 @@ export class CollapsibleZonesModule extends BaseModule {
      * @inheritdoc
      */
     protected onDisable(): void {
+        document.body.classList.remove(COLLAPSE_SELECTORS.ENABLED_CLASS);
         this._listeners.forEach((listener, element) => {
             element.removeEventListener('click', listener);
         });
@@ -92,8 +94,7 @@ export class CollapsibleZonesModule extends BaseModule {
             if (!header) return;
 
             // Get zone identifier (name)
-            const zoneName =
-                group.querySelector('.owned-attractions__zone-name')?.textContent?.trim() || '';
+            const zoneName = group.querySelector('.dash-block__title')?.textContent?.trim() || '';
             if (!zoneName) return;
 
             // Apply initial state
