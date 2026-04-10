@@ -1,14 +1,14 @@
 import { BaseModule } from '../../core/abstract/BaseModule';
-import { ModalFilterInstance } from './ModalFilterInstance';
+import { SurfaceFilterInstance } from './SurfaceFilterInstance';
 import { SURFACE_SELECTORS } from './constants';
 
 /**
  * Module to filter attractions by surface area in the marketplace.
  */
 export class AttractionSurfaceFilterModule extends BaseModule {
-    private _instances: ModalFilterInstance[] = [];
+    private _instances: SurfaceFilterInstance[] = [];
     private _styleElement: HTMLStyleElement | null = null;
-    private _modalObserver: MutationObserver | null = null;
+    private _containerObserver: MutationObserver | null = null;
 
     /**
      * @inheritdoc
@@ -36,7 +36,7 @@ export class AttractionSurfaceFilterModule extends BaseModule {
      */
     protected onEnable(): void {
         this._injectStyles();
-        this._waitForModal();
+        this._waitForContainers();
     }
 
     /**
@@ -46,18 +46,18 @@ export class AttractionSurfaceFilterModule extends BaseModule {
         this._styleElement?.remove();
         this._styleElement = null;
 
-        this._modalObserver?.disconnect();
-        this._modalObserver = null;
+        this._containerObserver?.disconnect();
+        this._containerObserver = null;
 
         this._instances.forEach((instance) => instance.destroy());
         this._instances = [];
     }
 
     /**
-     * Waits for attraction store modals to appear.
+     * Waits for attraction store containers (modals or buy pages) to appear.
      */
-    private _waitForModal(): void {
-        this._modalObserver = new MutationObserver((mutations) => {
+    private _waitForContainers(): void {
+        this._containerObserver = new MutationObserver((mutations) => {
             let hasRemovedElements = false;
 
             for (const m of mutations) {
@@ -66,17 +66,17 @@ export class AttractionSurfaceFilterModule extends BaseModule {
                     if (node.nodeType === Node.ELEMENT_NODE) {
                         const el = node as HTMLElement;
 
-                        // Check if the added node itself is the modal
-                        if (el.matches && el.matches(SURFACE_SELECTORS.MODAL)) {
-                            this._initModal(el);
+                        // Check if the added node itself is a root container
+                        if (el.matches && el.matches(SURFACE_SELECTORS.ROOT)) {
+                            this._initInstance(el);
                         }
 
-                        // Check if the modal is inside the newly added subtree
+                        // Check if a root container is inside the newly added subtree
                         if (el.querySelectorAll) {
-                            const childModals = el.querySelectorAll<HTMLElement>(
-                                SURFACE_SELECTORS.MODAL,
+                            const childRoots = el.querySelectorAll<HTMLElement>(
+                                SURFACE_SELECTORS.ROOT,
                             );
-                            childModals.forEach((child) => this._initModal(child));
+                            childRoots.forEach((child) => this._initInstance(child));
                         }
                     }
                 });
@@ -92,11 +92,11 @@ export class AttractionSurfaceFilterModule extends BaseModule {
                 }
             }
 
-            // Clean up instances for removed modals
+            // Clean up instances for removed containers
             if (hasRemovedElements && this._instances.length > 0) {
                 this._instances = this._instances.filter((instance) => {
-                    const modal = (instance as any)._modal;
-                    if (!document.contains(modal)) {
+                    const root = (instance as any)._root;
+                    if (!document.contains(root)) {
                         instance.destroy();
                         return false;
                     }
@@ -105,24 +105,24 @@ export class AttractionSurfaceFilterModule extends BaseModule {
             }
         });
 
-        this._modalObserver.observe(document.body, { childList: true, subtree: true });
+        this._containerObserver.observe(document.body, { childList: true, subtree: true });
 
-        // Initial check
-        const modals = document.querySelectorAll(SURFACE_SELECTORS.MODAL);
-        modals.forEach((modal) => {
-            this._initModal(modal as HTMLElement);
+        // Initial check for existing containers
+        const roots = document.querySelectorAll(SURFACE_SELECTORS.ROOT);
+        roots.forEach((root) => {
+            this._initInstance(root as HTMLElement);
         });
     }
 
     /**
-     * Initializes a modal instance if not already initialized.
-     * @param modal The modal element
+     * Initializes a filter instance if not already initialized.
+     * @param root The root element
      */
-    private _initModal(modal: HTMLElement): void {
-        if (!modal.hasAttribute('data-surface-filter-initialized')) {
-            const instance = new ModalFilterInstance(modal);
+    private _initInstance(root: HTMLElement): void {
+        if (!root.hasAttribute('data-surface-filter-initialized')) {
+            const instance = new SurfaceFilterInstance(root);
             this._instances.push(instance);
-            modal.setAttribute('data-surface-filter-initialized', 'true');
+            root.setAttribute('data-surface-filter-initialized', 'true');
         }
     }
 
