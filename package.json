@@ -28,6 +28,6 @@
     "scripts": {
         "dev": "vite",
         "build": "vite build",
-        "format": "prettier --write ."
+        "format": "prettier --write 'src/**/*.{ts,tsx,js,jsx}'"
     }
 }

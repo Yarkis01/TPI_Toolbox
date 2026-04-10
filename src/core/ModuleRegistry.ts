@@ -4,12 +4,9 @@ import { WarehouseColorizerModule } from '../modules/backstage/warehouseColorize
 import { CollapsibleZonesModule } from '../modules/collapsibleZones/module';
 import { EnhancedPlanningModule } from '../modules/enhancedPlanning/module';
 import { EntityStatusColorizerModule } from '../modules/entityStatusColorizer/module';
-
 import { NewDayHistoryModule } from '../modules/newDayHistory/module';
 import { OperatingSystemModule } from '../modules/operatingSystem/module';
-
 import { RideHypeAsTextModule } from '../modules/rideHypeAsText/module';
-
 import { UpdateNotificationModule } from '../modules/updateNotification/module';
 import { ZoneFilterModule } from '../modules/zoneFilters/module';
 import { ZoneReorderModule } from '../modules/zoneReorder/module';

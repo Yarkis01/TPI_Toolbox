@@ -84,10 +84,11 @@ export class SettingsApp {
         }
 
         modules.forEach((mod) => {
-            list.appendChild(this.configRenderer.createModuleRow(
-                mod,
-                (isChecked) => this.moduleManager.toggleModule(mod.id, isChecked)
-            ));
+            list.appendChild(
+                this.configRenderer.createModuleRow(mod, (isChecked) =>
+                    this.moduleManager.toggleModule(mod.id, isChecked),
+                ),
+            );
         });
 
         return list;

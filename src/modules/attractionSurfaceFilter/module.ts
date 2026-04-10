@@ -1,6 +1,6 @@
 import { BaseModule } from '../../core/abstract/BaseModule';
-import { SURFACE_SELECTORS } from './constants';
 import { ModalFilterInstance } from './ModalFilterInstance';
+import { SURFACE_SELECTORS } from './constants';
 
 /**
  * Module to filter attractions by surface area in the marketplace.
@@ -49,7 +49,7 @@ export class AttractionSurfaceFilterModule extends BaseModule {
         this._modalObserver?.disconnect();
         this._modalObserver = null;
 
-        this._instances.forEach(instance => instance.destroy());
+        this._instances.forEach((instance) => instance.destroy());
         this._instances = [];
     }
 
@@ -73,8 +73,10 @@ export class AttractionSurfaceFilterModule extends BaseModule {
 
                         // Check if the modal is inside the newly added subtree
                         if (el.querySelectorAll) {
-                            const childModals = el.querySelectorAll<HTMLElement>(SURFACE_SELECTORS.MODAL);
-                            childModals.forEach(child => this._initModal(child));
+                            const childModals = el.querySelectorAll<HTMLElement>(
+                                SURFACE_SELECTORS.MODAL,
+                            );
+                            childModals.forEach((child) => this._initModal(child));
                         }
                     }
                 });
@@ -92,7 +94,7 @@ export class AttractionSurfaceFilterModule extends BaseModule {
 
             // Clean up instances for removed modals
             if (hasRemovedElements && this._instances.length > 0) {
-                this._instances = this._instances.filter(instance => {
+                this._instances = this._instances.filter((instance) => {
                     const modal = (instance as any)._modal;
                     if (!document.contains(modal)) {
                         instance.destroy();
@@ -166,4 +168,3 @@ export class AttractionSurfaceFilterModule extends BaseModule {
         document.head.appendChild(this._styleElement);
     }
 }
-

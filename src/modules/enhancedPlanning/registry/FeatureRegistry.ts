@@ -69,8 +69,6 @@ export class FeatureRegistry {
      * @returns An array of registered features.
      */
     public getFeatures(): IFeature[] {
-        return Array.from(this._features.values()).toSorted((a, b) =>
-            a.name.localeCompare(b.name),
-        );
+        return Array.from(this._features.values()).toSorted((a, b) => a.name.localeCompare(b.name));
     }
 }

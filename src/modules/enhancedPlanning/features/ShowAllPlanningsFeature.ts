@@ -1,15 +1,20 @@
+import { injectStyle } from '../../../utils/DomUtils';
 import { BaseFeature } from '../abstract/BaseFeature';
 import { PLANNING_SELECTORS } from '../constants';
 import { ILocationInfo, IPlanningData, IPlanningEmployee } from '../types';
-
 // @ts-ignore
 import styles from './showAllPlannings.scss?inline';
-import { injectStyle } from '../../../utils/DomUtils';
 
 /** Day keys used in planningData */
 const DAY_KEYS = ['jour1', 'jour2', 'jour3', 'jour4', 'jour5'] as const;
 
-const DAY_LABELS = ['Jour 1 (Semaine)', 'Jour 2 (Semaine)', 'Jour 3 (Semaine)', 'Jour 4 (Week-end)', 'Jour 5 (Week-end)'];
+const DAY_LABELS = [
+    'Jour 1 (Semaine)',
+    'Jour 2 (Semaine)',
+    'Jour 3 (Semaine)',
+    'Jour 4 (Week-end)',
+    'Jour 5 (Week-end)',
+];
 
 /** Mapping of employee type select values to their data keys in planningData */
 const TYPE_MAPPING: Record<
@@ -253,12 +258,17 @@ export class ShowAllPlanningsFeature extends BaseFeature {
         if (!mapping) return;
 
         const employees = planningData[mapping.employeesKey] as IPlanningEmployee[];
-        const rawLocations = planningData[mapping.locationsKey] as unknown as Record<string, unknown>[];
+        const rawLocations = planningData[mapping.locationsKey] as unknown as Record<
+            string,
+            unknown
+        >[];
         const locations = rawLocations.map(mapping.locationMapper);
         const nextDay = planningData.nextDay;
 
         // Save original content
-        const resultContent = document.querySelector<HTMLElement>(PLANNING_SELECTORS.PLANNING_RESULT);
+        const resultContent = document.querySelector<HTMLElement>(
+            PLANNING_SELECTORS.PLANNING_RESULT,
+        );
         if (!resultContent) return;
 
         this._originalContent = resultContent.cloneNode(true) as HTMLElement;
@@ -268,7 +278,12 @@ export class ShowAllPlanningsFeature extends BaseFeature {
         this._container.className = 'planning-result__content show-all-plannings--readonly';
 
         for (const location of locations) {
-            const section = this._buildLocationSection(location, employees, nextDay, mapping.locationLabel);
+            const section = this._buildLocationSection(
+                location,
+                employees,
+                nextDay,
+                mapping.locationLabel,
+            );
             this._container.appendChild(section);
         }
 
@@ -290,7 +305,9 @@ export class ShowAllPlanningsFeature extends BaseFeature {
     private _hideAllPlannings(): void {
         if (!this._isShowingAll) return;
 
-        const resultContent = document.querySelector<HTMLElement>(PLANNING_SELECTORS.PLANNING_RESULT);
+        const resultContent = document.querySelector<HTMLElement>(
+            PLANNING_SELECTORS.PLANNING_RESULT,
+        );
         if (resultContent && this._originalContent) {
             resultContent.innerHTML = this._originalContent.innerHTML;
         }
@@ -382,10 +399,11 @@ export class ShowAllPlanningsFeature extends BaseFeature {
             capacitySpan.className = 'planning-grid__day-capacity';
 
             const countSpan = document.createElement('span');
-            countSpan.className = `planning-grid__day-maintainable ${count >= location.minEmployees
-                ? 'planning-grid__day-maintainable--ok'
-                : 'planning-grid__day-maintainable--short'
-                }`;
+            countSpan.className = `planning-grid__day-maintainable ${
+                count >= location.minEmployees
+                    ? 'planning-grid__day-maintainable--ok'
+                    : 'planning-grid__day-maintainable--short'
+            }`;
             countSpan.textContent = String(count);
 
             capacitySpan.textContent = 'Assignés : ';
@@ -404,17 +422,14 @@ export class ShowAllPlanningsFeature extends BaseFeature {
         // Tbody
         const tbody = document.createElement('tbody');
 
-        const sortedEmployees = [...assignedEmployees].sort((a, b) =>
-            a.name.localeCompare(b.name),
-        );
+        const sortedEmployees = [...assignedEmployees].sort((a, b) => a.name.localeCompare(b.name));
 
         for (const emp of sortedEmployees) {
             const row = document.createElement('tr');
 
             // Check if employee is fully assigned to this location on all working days
             const isFullRow = DAY_KEYS.every(
-                (day) =>
-                    emp.lieu_planning[day] === location.id || emp.lieu_planning[day] === 0,
+                (day) => emp.lieu_planning[day] === location.id || emp.lieu_planning[day] === 0,
             );
             if (isFullRow) {
                 row.className = 'planning-grid__row--full';

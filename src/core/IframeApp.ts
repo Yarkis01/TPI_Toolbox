@@ -31,7 +31,6 @@ export class IframeApp implements IApp {
             const moduleManager = new ModuleManager(settingsManager);
             this._initializeModules(moduleManager);
         }
-
     }
 
     /**
