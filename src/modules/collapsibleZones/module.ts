@@ -94,8 +94,7 @@ export class CollapsibleZonesModule extends BaseModule {
             if (!header) return;
 
             // Get zone identifier (name)
-            const zoneName =
-                group.querySelector('.dash-block__title')?.textContent?.trim() || '';
+            const zoneName = group.querySelector('.dash-block__title')?.textContent?.trim() || '';
             if (!zoneName) return;
 
             // Apply initial state
