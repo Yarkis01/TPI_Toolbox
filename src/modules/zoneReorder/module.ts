@@ -40,6 +40,7 @@ export class ZoneReorderModule extends BaseModule {
      */
     protected onEnable(): void {
         if (this._isTargetPage()) {
+            document.body.classList.add(REORDER_SELECTORS.ENABLED_CLASS);
             this._setupZoneReorder();
         }
     }
@@ -48,6 +49,7 @@ export class ZoneReorderModule extends BaseModule {
      * @inheritdoc
      */
     protected onDisable(): void {
+        document.body.classList.remove(REORDER_SELECTORS.ENABLED_CLASS);
         this._listeners.forEach((events, element) => {
             events.forEach(({ type, listener }) => {
                 element.removeEventListener(type, listener);
@@ -77,7 +79,9 @@ export class ZoneReorderModule extends BaseModule {
      * Checks if the current page is the target page.
      */
     private _isTargetPage(): boolean {
-        return document.location.href.includes(REORDER_SELECTORS.PAGE_MATCH);
+        return REORDER_SELECTORS.PAGE_MATCHES.some((match) =>
+            document.location.href.includes(match),
+        );
     }
 
     /**
@@ -153,11 +157,11 @@ export class ZoneReorderModule extends BaseModule {
      * @param group The group element.
      */
     private _setupDraggableGroup(group: HTMLElement): void {
-        const titleElement = group.querySelector<HTMLElement>(REORDER_SELECTORS.ZONE_NAME);
-        if (!titleElement) return;
+        const header = group.querySelector<HTMLElement>(REORDER_SELECTORS.ZONE_HEADER);
+        if (!header) return;
 
-        // If exist, prevent double add
-        if (titleElement.querySelector(REORDER_SELECTORS.HANDLE_CLASS_SELECTOR)) return;
+        // If handle already exists, don't add it again
+        if (header.querySelector(REORDER_SELECTORS.HANDLE_CLASS_SELECTOR)) return;
 
         const handle = document.createElement('span');
         handle.className = REORDER_SELECTORS.HANDLE_CLASS;
@@ -169,8 +173,8 @@ export class ZoneReorderModule extends BaseModule {
             </svg>
         `;
 
-        // Prepend the handle inside the title
-        titleElement.insertBefore(handle, titleElement.firstChild);
+        // Prepend the handle inside the header (to the left of everything, including blue dot)
+        header.insertBefore(handle, header.firstChild);
 
         group.setAttribute('draggable', 'true');
 
@@ -190,7 +194,6 @@ export class ZoneReorderModule extends BaseModule {
         addEvent(group, 'dragover', this._handleDragOver.bind(this) as EventListener);
         addEvent(group, 'dragenter', this._handleDragEnter.bind(this) as EventListener);
         addEvent(group, 'dragleave', this._handleDragLeave.bind(this) as EventListener);
-        addEvent(group, 'drop', this._handleDrop.bind(this) as EventListener);
     }
 
     /**
@@ -207,7 +210,6 @@ export class ZoneReorderModule extends BaseModule {
         };
 
         addEvent(container, 'dragover', this._handleContainerDragOver.bind(this) as EventListener);
-        addEvent(container, 'drop', this._handleContainerDrop.bind(this) as EventListener);
     }
 
     /**
@@ -239,6 +241,7 @@ export class ZoneReorderModule extends BaseModule {
         });
 
         this._draggedElement = null;
+        this._saveOrder();
     }
 
     /**
@@ -276,54 +279,13 @@ export class ZoneReorderModule extends BaseModule {
     }
 
     /**
-     * Handles the drop event on a group element.
-     * @param e The drag event.
-     */
-    private _handleDrop(e: DragEvent): void {
-        e.stopPropagation();
-        e.preventDefault();
-        const target = e.currentTarget as HTMLElement;
-        target.classList.remove(REORDER_SELECTORS.DRAG_OVER_CLASS);
-
-        // Default drop on an element itself
-        if (this._draggedElement && this._draggedElement !== target) {
-            const listContainer = target.parentNode;
-            if (listContainer) {
-                // Drop in the middle of a card. Use mouse position to decide before/after.
-                const rect = target.getBoundingClientRect();
-                const dropY = e.clientY;
-                const threshold = rect.top + rect.height / 2;
-
-                if (dropY < threshold) {
-                    listContainer.insertBefore(this._draggedElement, target);
-                } else {
-                    listContainer.insertBefore(this._draggedElement, target.nextSibling);
-                }
-
-                this._saveOrder();
-            }
-        }
-        return false as any;
-    }
-
-    /**
      * Handles the dragover event on the list container.
      * @param e The drag event.
      */
     private _handleContainerDragOver(e: DragEvent): void {
+        if (!this._draggedElement) return;
         e.preventDefault();
         e.dataTransfer!.dropEffect = 'move';
-    }
-
-    /**
-     * Handles the drop event on the list container.
-     * @param e The drag event.
-     */
-    private _handleContainerDrop(e: DragEvent): void {
-        // If the event was already handled by a children group, do nothing
-        if (e.defaultPrevented || !this._draggedElement) return;
-
-        e.preventDefault();
 
         const container = e.currentTarget as HTMLElement;
         const dropY = e.clientY;
@@ -345,13 +307,15 @@ export class ZoneReorderModule extends BaseModule {
         }
 
         if (targetBefore) {
-            container.insertBefore(this._draggedElement, targetBefore);
+            if (this._draggedElement.nextSibling !== targetBefore) {
+                container.insertBefore(this._draggedElement, targetBefore);
+            }
         } else {
             // If we didn't find any element below the mouse, append to the end
-            container.appendChild(this._draggedElement);
+            if (container.lastChild !== this._draggedElement) {
+                container.appendChild(this._draggedElement);
+            }
         }
-
-        this._saveOrder();
     }
 
     /**
