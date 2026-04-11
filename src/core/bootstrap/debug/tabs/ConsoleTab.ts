@@ -1,6 +1,6 @@
+import { StorageService } from '../../../../services/StorageService';
 import { ModuleManager } from '../../../managers/ModuleManager';
 import { SettingsManager } from '../../../managers/SettingsManager';
-import { StorageService } from '../../../../services/StorageService';
 import { makeBtn, makeToolbar } from '../helpers';
 
 const MAX_HISTORY = 200;
@@ -10,9 +10,7 @@ const STORAGE_KEY_OUTPUT = 'debug:repl:output';
 type OutputType = 'result' | 'error' | 'log' | 'info';
 
 /** Serializable entry stored in StorageService to replay the displayed output on re-render. */
-type PersistedEntry =
-    | { kind: 'input'; code: string }
-    | { kind: OutputType; text: string };
+type PersistedEntry = { kind: 'input'; code: string } | { kind: OutputType; text: string };
 
 /**
  * Debug tab — in-overlay JavaScript REPL with direct access to Toolbox internals.
@@ -214,8 +212,9 @@ export class ConsoleTab {
             let result: unknown;
 
             if (isAsync) {
-                const AsyncFn = Object.getPrototypeOf(async function () {})
-                    .constructor as new (...a: string[]) => (scope: Record<string, unknown>) => Promise<unknown>;
+                const AsyncFn = Object.getPrototypeOf(async function () {}).constructor as new (
+                    ...a: string[]
+                ) => (scope: Record<string, unknown>) => Promise<unknown>;
                 let fn: (scope: Record<string, unknown>) => Promise<unknown>;
                 try {
                     fn = new AsyncFn('scope', `with(scope){ return (${code}) }`);

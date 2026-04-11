@@ -61,7 +61,10 @@ export class NetworkTab {
     }
 
     private _loadPersistedRequests(): void {
-        const stored = StorageService.getInstance().load<NetworkRequestLog[]>('debug_network_logs', []);
+        const stored = StorageService.getInstance().load<NetworkRequestLog[]>(
+            'debug_network_logs',
+            [],
+        );
         if (stored && stored.length > 0) {
             this._requests = stored;
 
@@ -72,13 +75,13 @@ export class NetworkTab {
                 url: window.location.href,
                 type: 'nav',
                 status: 'NAV',
-                startTime: performance.now()
+                startTime: performance.now(),
             };
             this._requests.unshift(navLog);
             if (this._requests.length > MAX_REQUESTS) this._requests.pop();
 
             // Ensure ID continuity
-            const maxId = Math.max(...stored.map(r => r.id), requestCounter);
+            const maxId = Math.max(...stored.map((r) => r.id), requestCounter);
             requestCounter = 1000 + maxId; // Avoid collisions locally
         }
     }
@@ -149,8 +152,15 @@ export class NetworkTab {
 
         this._originalFetch = window.fetch;
         window.fetch = async (...args) => {
-            const reqUrl = typeof args[0] === 'string' ? args[0] : (args[0] instanceof Request ? args[0].url : String(args[0]));
-            const reqMethod = (args[1]?.method || (args[0] instanceof Request ? args[0].method : 'GET')).toUpperCase();
+            const reqUrl =
+                typeof args[0] === 'string'
+                    ? args[0]
+                    : args[0] instanceof Request
+                      ? args[0].url
+                      : String(args[0]);
+            const reqMethod = (
+                args[1]?.method || (args[0] instanceof Request ? args[0].method : 'GET')
+            ).toUpperCase();
 
             const reqLog: NetworkRequestLog = {
                 id: ++requestCounter,
@@ -196,7 +206,11 @@ export class NetworkTab {
         this._originalXhrSend = XMLHttpRequest.prototype.send;
         const self = this;
 
-        XMLHttpRequest.prototype.open = function (method: string, url: string | URL, ...rest: any[]) {
+        XMLHttpRequest.prototype.open = function (
+            method: string,
+            url: string | URL,
+            ...rest: any[]
+        ) {
             (this as any)._reqLog = {
                 id: ++requestCounter,
                 method: method.toUpperCase(),
@@ -322,7 +336,7 @@ export class NetworkTab {
         table.appendChild(thead);
 
         const tbody = document.createElement('tbody');
-        this._requests.forEach(req => {
+        this._requests.forEach((req) => {
             const tr = document.createElement('tr');
             tr.dataset.reqId = String(req.id);
             tr.style.cursor = 'pointer';
@@ -346,7 +360,7 @@ export class NetworkTab {
                     const urlObj = new URL(req.url, window.location.origin);
                     pathUrl = urlObj.pathname + urlObj.search;
                 }
-            } catch { }
+            } catch {}
 
             tr.innerHTML = `
                 <td class="net-status" style="color: ${this._getStatusColor(req.status)}">${req.status}</td>
@@ -362,7 +376,7 @@ export class NetworkTab {
         if (this._requests.length === 0) {
             const empty = document.createElement('div');
             empty.className = 'tdbg-empty';
-            empty.textContent = "Aucune requête interceptée";
+            empty.textContent = 'Aucune requête interceptée';
             this._listEl.appendChild(empty);
         } else {
             this._listEl.appendChild(table);
@@ -377,7 +391,8 @@ export class NetworkTab {
         this._detailsEl.replaceChildren();
 
         if (!this._selectedRequest) {
-            this._detailsEl.innerHTML = '<div class="tdbg-empty">Sélectionnez une requête pour voir les détails</div>';
+            this._detailsEl.innerHTML =
+                '<div class="tdbg-empty">Sélectionnez une requête pour voir les détails</div>';
             return;
         }
 
@@ -400,7 +415,10 @@ export class NetworkTab {
             this._detailsEl.appendChild(reqTitle);
 
             const reqBody = document.createElement('div');
-            reqBody.textContent = typeof req.reqBody === 'object' ? JSON.stringify(req.reqBody, null, 2) : String(req.reqBody);
+            reqBody.textContent =
+                typeof req.reqBody === 'object'
+                    ? JSON.stringify(req.reqBody, null, 2)
+                    : String(req.reqBody);
             this._detailsEl.appendChild(reqBody);
         }
 
@@ -415,7 +433,10 @@ export class NetworkTab {
             resBody.style.color = '#f9e2af';
             resBody.textContent = 'En attente...';
         } else {
-            resBody.textContent = typeof req.resBody === 'object' ? JSON.stringify(req.resBody, null, 2) : String(req.resBody);
+            resBody.textContent =
+                typeof req.resBody === 'object'
+                    ? JSON.stringify(req.resBody, null, 2)
+                    : String(req.resBody);
         }
         this._detailsEl.appendChild(resBody);
     }

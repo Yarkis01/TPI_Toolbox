@@ -115,7 +115,8 @@ export class DomTab {
 
         // Filter bar
         const filterWrapper = document.createElement('div');
-        filterWrapper.style.cssText = 'margin-bottom:6px; display:flex; gap:6px; align-items:center;';
+        filterWrapper.style.cssText =
+            'margin-bottom:6px; display:flex; gap:6px; align-items:center;';
         const filterLabel = document.createElement('span');
         filterLabel.textContent = 'Filtre :';
         filterLabel.style.color = '#6c7086';
@@ -176,9 +177,9 @@ export class DomTab {
         });
 
         this._observer.observe(document.body, {
-            childList: true,     // Nodes added / removed
-            subtree: true,       // Watch the entire DOM tree
-            attributes: true,    // Attribute changes (class, style, data-*, etc.)
+            childList: true, // Nodes added / removed
+            subtree: true, // Watch the entire DOM tree
+            attributes: true, // Attribute changes (class, style, data-*, etc.)
             characterData: true, // Text node content changes
             attributeOldValue: true,
             characterDataOldValue: true,
@@ -234,14 +235,27 @@ export class DomTab {
             const attr = mutation.attributeName ?? '?';
             const newVal = (mutation.target as Element).getAttribute(attr);
             const summary = `${attr}: "${mutation.oldValue ?? ''}" → "${newVal ?? ''}"`;
-            return { timestamp: ts, type: 'attributes', summary, target, attribute: attr, oldValue: mutation.oldValue };
+            return {
+                timestamp: ts,
+                type: 'attributes',
+                summary,
+                target,
+                attribute: attr,
+                oldValue: mutation.oldValue,
+            };
         }
 
         if (mutation.type === 'characterData') {
             const old = mutation.oldValue?.slice(0, 40) ?? '';
             const newText = mutation.target.textContent?.slice(0, 40) ?? '';
             if (old === newText) return null; // No real change
-            return { timestamp: ts, type: 'characterData', summary: `"${old}" → "${newText}"`, target, oldValue: old };
+            return {
+                timestamp: ts,
+                type: 'characterData',
+                summary: `"${old}" → "${newText}"`,
+                target,
+                oldValue: old,
+            };
         }
 
         return null;

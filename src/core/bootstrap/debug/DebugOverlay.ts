@@ -7,9 +7,9 @@ import { ConsoleTab } from './tabs/ConsoleTab';
 import { DomTab } from './tabs/DomTab';
 import { LogsTab } from './tabs/LogsTab';
 import { ModulesTab } from './tabs/ModulesTab';
+import { NetworkTab } from './tabs/NetworkTab';
 import { PerfTab } from './tabs/PerfTab';
 import { StorageTab } from './tabs/StorageTab';
-import { NetworkTab } from './tabs/NetworkTab';
 
 type TabId = 'modules' | 'logs' | 'perf' | 'storage' | 'network' | 'console' | 'dom';
 
@@ -57,7 +57,11 @@ export class DebugOverlay implements IBootstrap {
         this._perfTab = new PerfTab(performance.now());
         this._storageTab = new StorageTab(StorageService.getInstance());
         this._networkTab = new NetworkTab();
-        this._consoleTab = new ConsoleTab(moduleManager, StorageService.getInstance(), settingsManager);
+        this._consoleTab = new ConsoleTab(
+            moduleManager,
+            StorageService.getInstance(),
+            settingsManager,
+        );
         this._domTab = new DomTab();
     }
 
