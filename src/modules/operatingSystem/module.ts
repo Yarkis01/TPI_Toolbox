@@ -10,6 +10,7 @@ import { WindowComponent } from './components/Window';
 import { WindowManager } from './components/WindowManager';
 import {
     APP_IDS,
+    IFRAME_HIDDEN_SELECTORS,
     OS_CONFIG,
     SELECTORS,
     SETTINGS_KEYS,
@@ -118,17 +119,17 @@ export class OperatingSystemModule extends BaseModule {
             return;
         }
 
-        if (!window.location.href.includes('game')) return;
+        if (window.location.hostname !== 'play.themeparkindustries.com') return;
 
         this._logger.info('Enabling OS Mode...');
 
         window.addEventListener('message', this._messageHandler);
 
-        const leftMenu = document.querySelector(SELECTORS.LEFT_MENU);
-        if (leftMenu) (leftMenu as HTMLElement).style.display = 'none';
+        const appLayout = document.querySelector(SELECTORS.APP_LAYOUT);
+        if (appLayout) (appLayout as HTMLElement).style.display = 'none';
 
-        const gameContainer = document.querySelector(SELECTORS.GAME_CONTAINER);
-        if (gameContainer) (gameContainer as HTMLElement).style.display = 'none';
+        const chatDock = document.querySelector<HTMLElement>('div.chat-dock');
+        if (chatDock) chatDock.style.display = 'none';
 
         this.applyDesktopStyles();
         this.applyReducedEffectsFromConfig();
@@ -206,7 +207,15 @@ export class OperatingSystemModule extends BaseModule {
 
         let win: WindowComponent;
 
+        const appConfig = this.getAppConfig(appId) ?? {
+            title: `Application: ${appId}`,
+            content: createElement('div', { style: { padding: '20px' } }, [
+                `Contenu pour ${appId} (Placeholder)`,
+            ]),
+        };
+
         const onClose = () => {
+            appConfig.onClose?.();
             this.activeWindows.delete(appId);
             this.dock?.setAppOpen(appId, false);
             this.dock?.removeActive(appId);
@@ -221,16 +230,6 @@ export class OperatingSystemModule extends BaseModule {
         const onMoveOrResize = () => {
             this.saveSession();
         };
-
-        let appConfig = this.getAppConfig(appId);
-        if (!appConfig) {
-            appConfig = {
-                title: `Application: ${appId}`,
-                content: createElement('div', { style: { padding: '20px' } }, [
-                    `Contenu pour ${appId} (Placeholder)`,
-                ]),
-            };
-        }
 
         win = this.windowManager.openWindow({
             title: appConfig.title,
@@ -439,6 +438,11 @@ export class OperatingSystemModule extends BaseModule {
         const appConfig = this.getAppConfig(savedState.appId);
         if (!appConfig) return;
 
+        const sessionOnClose = () => {
+            appConfig.onClose?.();
+            onClose();
+        };
+
         const win = this.windowManager.openWindow({
             title: appConfig.title,
             content: appConfig.content,
@@ -446,7 +450,7 @@ export class OperatingSystemModule extends BaseModule {
             height: savedState.height,
             x: savedState.x,
             y: savedState.y,
-            onClose,
+            onClose: sessionOnClose,
             onFocus,
             onMoveOrResize,
         });
@@ -468,87 +472,108 @@ export class OperatingSystemModule extends BaseModule {
      * @param appId - The app ID.
      * @returns The app configuration or null if not found.
      */
-    private getAppConfig(appId: string): { title: string; content: HTMLElement } | null {
+    private getAppConfig(appId: string): { title: string; content: HTMLElement; onClose?: () => void } | null {
         switch (appId) {
             case APP_IDS.TOOLS:
                 return {
                     title: OS_CONFIG.DOCK.LABELS.TOOLS,
                     content: new SettingsApp(this.moduleManager).render(),
                 };
-            case APP_IDS.BROWSER:
-                return {
-                    title: OS_CONFIG.DOCK.LABELS.BROWSER,
-                    content: new IFrameApp(OS_CONFIG.URL_BROWSER).render(),
-                };
-            case APP_IDS.CHAT:
-                return {
-                    title: OS_CONFIG.DOCK.LABELS.CHAT,
-                    content: new IFrameApp(OS_CONFIG.URL_CHAT, {
-                        backgroundColor: OS_CONFIG.STYLES.CHAT_BG,
-                    }).render(),
-                };
             case APP_IDS.PROFILE:
                 return {
                     title: OS_CONFIG.DOCK.LABELS.PROFILE,
-                    content: new IFrameApp(OS_CONFIG.URL_PROFILE, {
-                        removeSelectors: ['#left-menu', 'div.dashboard-welcome'],
-                        forceFullWidth: true,
-                    }).render(),
+                    content: new IFrameApp(OS_CONFIG.URL_PROFILE, { removeSelectors: IFRAME_HIDDEN_SELECTORS, forceFullWidth: true }).render(),
                 };
             case APP_IDS.MAIL:
                 return {
                     title: OS_CONFIG.DOCK.LABELS.MAIL,
-                    content: new IFrameApp(OS_CONFIG.URL_MAIL, {
-                        removeSelectors: ['#left-menu', 'div.dashboard-welcome'],
-                        forceFullWidth: true,
-                    }).render(),
-                };
-            case APP_IDS.INVEST:
-                return {
-                    title: OS_CONFIG.DOCK.LABELS.INVEST,
-                    content: new IFrameApp(OS_CONFIG.URL_INVEST, {
-                        removeSelectors: ['#left-menu', 'div.dashboard-welcome'],
-                        forceFullWidth: true,
-                    }).render(),
+                    content: new IFrameApp(OS_CONFIG.URL_MAIL, { removeSelectors: IFRAME_HIDDEN_SELECTORS, forceFullWidth: true }).render(),
                 };
             case APP_IDS.SHOP:
                 return {
                     title: OS_CONFIG.DOCK.LABELS.SHOP,
-                    content: new IFrameApp(OS_CONFIG.URL_SHOP, {
-                        removeSelectors: ['#left-menu', 'div.dashboard-welcome'],
-                        forceFullWidth: true,
-                    }).render(),
+                    content: new IFrameApp(OS_CONFIG.URL_SHOP, { removeSelectors: IFRAME_HIDDEN_SELECTORS, forceFullWidth: true }).render(),
                 };
             case APP_IDS.MY_PARK:
                 return {
                     title: OS_CONFIG.DOCK.LABELS.MY_PARK,
                     content: new IFrameApp(OS_CONFIG.URL_MY_PARK, {
-                        removeSelectors: [
-                            'a.left-menu__item:nth-child(1)',
-                            'a.left-menu__item:nth-child(2)',
-                            'div.left-menu__separator',
-                            'div.dashboard-welcome',
-                            'div.left-menu__footer',
-                        ],
-                        forceFullWidth: false,
+                        removeSelectors: ['div.chat-dock', 'nav.app-sidebar__nav', 'div.app-sidebar__bottom'],
                     }).render(),
                 };
             case APP_IDS.NEXT_DAY:
                 return {
                     title: OS_CONFIG.DOCK.LABELS.NEXT_DAY,
-                    content: new IFrameApp(OS_CONFIG.URL_NEXT_DAY, {
-                        removeSelectors: ['#left-menu', 'div.dashboard-welcome'],
-                        forceFullWidth: true,
-                    }).render(),
+                    content: new IFrameApp(OS_CONFIG.URL_NEXT_DAY, { removeSelectors: IFRAME_HIDDEN_SELECTORS, forceFullWidth: true }).render(),
                 };
             case APP_IDS.RANKING:
                 return {
                     title: OS_CONFIG.DOCK.LABELS.RANKING,
-                    content: new IFrameApp(OS_CONFIG.URL_RANKING, {
-                        removeSelectors: ['#left-menu', 'div.dashboard-welcome'],
-                        forceFullWidth: true,
-                    }).render(),
+                    content: new IFrameApp(OS_CONFIG.URL_RANKING, { removeSelectors: IFRAME_HIDDEN_SELECTORS, forceFullWidth: true }).render(),
                 };
+            case APP_IDS.SUPPORT:
+                return {
+                    title: OS_CONFIG.DOCK.LABELS.SUPPORT,
+                    content: new IFrameApp(OS_CONFIG.URL_SUPPORT, { removeSelectors: IFRAME_HIDDEN_SELECTORS, forceFullWidth: true }).render(),
+                };
+            case APP_IDS.CHAT: {
+                const chatDock = document.querySelector<HTMLElement>('div.chat-dock');
+                const container = createElement('div', {
+                    style: { width: '100%', height: '100%', display: 'flex', flexDirection: 'column' },
+                });
+                container.classList.add('os-chat-window');
+
+                const styleEl = document.createElement('style');
+                styleEl.id = 'os-chat-overrides';
+                styleEl.textContent = `
+                    .os-chat-window .chat-dock {
+                        position: relative !important; left: auto !important; bottom: auto !important;
+                        transform: none !important; width: 100% !important; height: 100% !important;
+                        display: flex !important; flex-direction: column !important;
+                        pointer-events: auto !important; z-index: auto !important;
+                    }
+                    .os-chat-window .chat-dock__panel {
+                        position: relative !important; left: auto !important; right: auto !important;
+                        bottom: auto !important; opacity: 1 !important; transform: none !important;
+                        pointer-events: auto !important; flex: 1 1 auto !important;
+                        display: flex !important; flex-direction: column !important;
+                        border-radius: 8px 8px 0 0 !important;
+                    }
+                    .os-chat-window .chat-dock__panel-body-wrap {
+                        flex: 1 1 auto !important; display: flex !important; flex-direction: column !important;
+                        border-radius: 0 !important;
+                    }
+                    .os-chat-window .chat-dock__panel-body {
+                        flex: 1 1 auto !important; max-height: none !important;
+                    }
+                    .os-chat-window .chat-dock__shell {
+                        flex: 0 0 auto !important; border-radius: 0 0 8px 8px !important;
+                    }
+                `;
+                document.head.appendChild(styleEl);
+
+                if (chatDock) {
+                    chatDock.removeAttribute('style');
+                    chatDock.classList.add('chat-dock--open');
+                    container.appendChild(chatDock);
+                } else {
+                    container.textContent = 'Chat non disponible.';
+                }
+
+                return {
+                    title: OS_CONFIG.DOCK.LABELS.CHAT,
+                    content: container,
+                    onClose: () => {
+                        document.getElementById('os-chat-overrides')?.remove();
+                        if (chatDock) {
+                            chatDock.classList.remove('chat-dock--open');
+                            chatDock.removeAttribute('style');
+                            chatDock.style.display = 'none';
+                            document.body.appendChild(chatDock);
+                        }
+                    },
+                };
+            }
             default:
                 return null;
         }
