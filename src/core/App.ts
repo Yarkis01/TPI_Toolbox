@@ -37,7 +37,7 @@ export class App implements IApp {
         // Debug Overlay for development
         if (import.meta.env.DEV) {
             const { DebugOverlay } = await import('./bootstrap/debug/DebugOverlay');
-            new DebugOverlay(moduleManager).run();
+            new DebugOverlay(moduleManager, settingsManager).run();
         }
 
         // Run bootstrap processes if OS is disabled

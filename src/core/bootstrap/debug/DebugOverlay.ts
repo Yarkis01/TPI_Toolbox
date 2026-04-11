@@ -2,16 +2,18 @@ import { StorageService } from '../../../services/StorageService';
 import { Logger } from '../../../utils/Logger';
 import IBootstrap from '../../interfaces/IBootstrap';
 import { ModuleManager } from '../../managers/ModuleManager';
+import { SettingsManager } from '../../managers/SettingsManager';
+import { ConsoleTab } from './tabs/ConsoleTab';
 import { LogsTab } from './tabs/LogsTab';
 import { ModulesTab } from './tabs/ModulesTab';
 import { PerfTab } from './tabs/PerfTab';
 import { StorageTab } from './tabs/StorageTab';
 import { NetworkTab } from './tabs/NetworkTab';
 
-type TabId = 'modules' | 'logs' | 'perf' | 'storage' | 'network';
+type TabId = 'modules' | 'logs' | 'perf' | 'storage' | 'network' | 'console';
 
 const TAB_STORAGE_KEY = 'tpitoolbox:debug:activeTab';
-const TAB_IDS: TabId[] = ['modules', 'logs', 'network', 'perf', 'storage'];
+const TAB_IDS: TabId[] = ['modules', 'logs', 'network', 'perf', 'storage', 'console'];
 
 const TAB_DEFS: { id: TabId; label: string }[] = [
     { id: 'modules', label: '📦 Modules' },
@@ -19,6 +21,7 @@ const TAB_DEFS: { id: TabId; label: string }[] = [
     { id: 'network', label: '🌐 Network' },
     { id: 'perf', label: '⚡ Perf' },
     { id: 'storage', label: '💾 Storage' },
+    { id: 'console', label: '💻 Console' },
 ];
 
 /**
@@ -31,6 +34,7 @@ export class DebugOverlay implements IBootstrap {
     private readonly _perfTab: PerfTab;
     private readonly _storageTab: StorageTab;
     private readonly _networkTab: NetworkTab;
+    private readonly _consoleTab: ConsoleTab;
 
     private _panel: HTMLElement | null = null;
     private _body: HTMLElement | null = null;
@@ -44,12 +48,13 @@ export class DebugOverlay implements IBootstrap {
     private _dragDx = 0;
     private _dragDy = 0;
 
-    public constructor(moduleManager: ModuleManager) {
+    public constructor(moduleManager: ModuleManager, settingsManager: SettingsManager) {
         this._modulesTab = new ModulesTab(moduleManager);
         this._logsTab = new LogsTab();
         this._perfTab = new PerfTab(performance.now());
         this._storageTab = new StorageTab(StorageService.getInstance());
         this._networkTab = new NetworkTab();
+        this._consoleTab = new ConsoleTab(moduleManager, StorageService.getInstance(), settingsManager);
     }
 
     /**
@@ -188,6 +193,10 @@ export class DebugOverlay implements IBootstrap {
             case 'storage':
                 this._storageTab.render(this._body);
                 this._currentTabInstance = null;
+                break;
+            case 'console':
+                this._consoleTab.render(this._body);
+                this._currentTabInstance = this._consoleTab;
                 break;
         }
     }
@@ -347,6 +356,33 @@ export class DebugOverlay implements IBootstrap {
             }
             .tdbg-btn--danger { background: #3a1e1e; color: #f38ba8; border-color: #5a2d2d; }
             .tdbg-btn--danger:hover { background: #5a2d2d; }
+            .tdbg-repl-history {
+                height: 320px; overflow-y: auto;
+                display: flex; flex-direction: column; gap: 2px;
+                background: #11111b; border-radius: 4px;
+                padding: 6px; margin-bottom: 6px;
+            }
+            .tdbg-repl-entry {
+                white-space: pre-wrap; word-break: break-all; line-height: 1.5;
+                padding: 1px 0; font-size: 11px;
+            }
+            .tdbg-repl-entry--input  { color: #cba6f7; }
+            .tdbg-repl-entry--result { color: #a6e3a1; }
+            .tdbg-repl-entry--error  { color: #f38ba8; }
+            .tdbg-repl-entry--log    { color: #a6adc8; }
+            .tdbg-repl-entry--info   { color: #89b4fa; }
+            .tdbg-repl-prompt { color: #6c7086; }
+            .tdbg-repl-prefix { color: #6c7086; }
+            .tdbg-repl-input {
+                width: 100%; background: #181825; border: 1px solid #45475a;
+                border-radius: 4px; color: #cdd6f4; font: inherit; font-size: 11px;
+                padding: 6px 8px; box-sizing: border-box; resize: vertical; min-height: 54px;
+            }
+            .tdbg-repl-input:focus { outline: none; border-color: #cba6f7; }
+            .tdbg-repl-footer {
+                display: flex; align-items: center; gap: 8px; margin-top: 6px;
+            }
+            .tdbg-repl-hint { color: #585b70; font-size: 10px; }
         `;
         document.head.appendChild(style);
     }
