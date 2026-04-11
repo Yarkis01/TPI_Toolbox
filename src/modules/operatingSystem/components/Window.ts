@@ -40,6 +40,9 @@ export class WindowComponent {
     private preMaximizeState: { left: string; top: string; width: string; height: string } | null =
         null;
 
+    private isSnapped: boolean = false;
+    private preSnapState: { left: string; top: string; width: string; height: string } | null = null;
+
     private minWidth = 300;
     private minHeight = 200;
 
@@ -282,6 +285,7 @@ export class WindowComponent {
     private dragStartX = 0;
     private dragStartY = 0;
     private wasMaximizedOnDragStart = false;
+    private wasSnappedOnDragStart = false;
     private hasMovedEnough = false;
     private readonly dragThreshold = 5;
 
@@ -295,6 +299,7 @@ export class WindowComponent {
             if ((e.target as HTMLElement).closest('.window-controls')) return;
 
             this.wasMaximizedOnDragStart = this.isMaximized;
+            this.wasSnappedOnDragStart = this.isSnapped;
             this.hasMovedEnough = false;
             this.dragStartX = e.clientX;
             this.dragStartY = e.clientY;
@@ -338,14 +343,18 @@ export class WindowComponent {
 
                         this.dragOffsetX = newWidth * ratio;
                         this.dragOffsetY = 10;
+                    } else if (this.wasSnappedOnDragStart && this.isSnapped) {
+                        this.unsnap(e);
                     }
                 } else {
                     return;
                 }
             }
 
-            this.element.style.left = `${e.clientX - this.dragOffsetX}px`;
-            this.element.style.top = `${e.clientY - this.dragOffsetY}px`;
+            const newLeft = Math.max(0, Math.min(e.clientX - this.dragOffsetX, window.innerWidth - this.element.offsetWidth));
+            const newTop = Math.max(0, Math.min(e.clientY - this.dragOffsetY, window.innerHeight - this.element.offsetHeight));
+            this.element.style.left = `${newLeft}px`;
+            this.element.style.top = `${newTop}px`;
 
             this.checkSnapZone(e);
         }
@@ -484,6 +493,12 @@ export class WindowComponent {
             this.maximize();
             return;
         }
+        this.preSnapState = {
+            left: this.element.style.left,
+            top: this.element.style.top,
+            width: this.element.style.width,
+            height: this.element.style.height,
+        };
         this.element.style.top = '0';
         this.element.style.height = '100%';
         this.element.style.width = '50%';
@@ -493,6 +508,30 @@ export class WindowComponent {
         } else if (type === 'right') {
             this.element.style.left = '50%';
         }
+        this.isSnapped = true;
+    }
+
+    /**
+     * Restores a snapped window to its pre-snap size and repositions it under the cursor.
+     * @param e - The mouse event that triggered the unsnap.
+     */
+    private unsnap(e: MouseEvent): void {
+        const ratio = (e.clientX - this.element.offsetLeft) / this.element.offsetWidth;
+
+        if (this.preSnapState) {
+            this.element.style.width = this.preSnapState.width;
+            this.element.style.height = this.preSnapState.height;
+        }
+        this.element.style.borderRadius = '';
+        this.isSnapped = false;
+        this.preSnapState = null;
+
+        const newWidth = this.element.offsetWidth;
+        this.element.style.left = `${e.clientX - newWidth * ratio}px`;
+        this.element.style.top = `${e.clientY - 10}px`;
+
+        this.dragOffsetX = newWidth * ratio;
+        this.dragOffsetY = 10;
     }
 
     /**
@@ -560,6 +599,24 @@ export class WindowComponent {
             newHeight = this.minHeight;
             if (dir.includes('n'))
                 newTop = this.resizeStartTop + (this.resizeStartHeight - this.minHeight);
+        }
+
+        // Clamp to screen bounds
+        if (dir.includes('e')) {
+            newWidth = Math.min(newWidth, window.innerWidth - newLeft);
+        }
+        if (dir.includes('s')) {
+            newHeight = Math.min(newHeight, window.innerHeight - newTop);
+        }
+        if (dir.includes('w') && newLeft < 0) {
+            newWidth += newLeft;
+            newLeft = 0;
+            newWidth = Math.max(newWidth, this.minWidth);
+        }
+        if (dir.includes('n') && newTop < 0) {
+            newHeight += newTop;
+            newTop = 0;
+            newHeight = Math.max(newHeight, this.minHeight);
         }
 
         if (dir.includes('e') || dir.includes('w')) {
