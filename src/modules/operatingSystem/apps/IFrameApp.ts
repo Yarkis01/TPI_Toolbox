@@ -5,7 +5,7 @@ import { Logger } from '../../../utils/Logger';
  * Options for the IFrameApp.
  */
 export interface IFrameAppOptions {
-    removeSelectors?: string[];
+    removeSelectors?: readonly string[];
     customStyles?: Partial<CSSStyleDeclaration>;
     backgroundColor?: string;
     forceFullWidth?: boolean;
@@ -67,18 +67,7 @@ export class IFrameApp {
             }
 
             if (this.options.forceFullWidth) {
-                styleContent += `
-                    body .play-main, body.dashboard-page .play-main, body.monbureau-page .play-main {
-                        margin-left: 0 !important;
-                        width: 100% !important;
-                        max-width: 100% !important;
-                        padding-left: 0 !important;
-                    }
-
-                    @media (max-width: 1289px) {
-                        body.dashboard-page .play-main { margin-left: 0 !important; width: 100% !important; }
-                    }
-                `;
+                styleContent += `body { --sidebar-w: 0px !important; --app-mobile-header-h: 0px !important; }`;
             }
 
             if (styleContent) {

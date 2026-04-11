@@ -10,6 +10,7 @@ import { WindowComponent } from './components/Window';
 import { WindowManager } from './components/WindowManager';
 import {
     APP_IDS,
+    IFRAME_HIDDEN_SELECTORS,
     OS_CONFIG,
     SELECTORS,
     SETTINGS_KEYS,
@@ -118,17 +119,14 @@ export class OperatingSystemModule extends BaseModule {
             return;
         }
 
-        if (!window.location.href.includes('game')) return;
+        if (window.location.hostname !== 'play.themeparkindustries.com') return;
 
         this._logger.info('Enabling OS Mode...');
 
         window.addEventListener('message', this._messageHandler);
 
-        const leftMenu = document.querySelector(SELECTORS.LEFT_MENU);
-        if (leftMenu) (leftMenu as HTMLElement).style.display = 'none';
-
-        const gameContainer = document.querySelector(SELECTORS.GAME_CONTAINER);
-        if (gameContainer) (gameContainer as HTMLElement).style.display = 'none';
+        const appLayout = document.querySelector(SELECTORS.APP_LAYOUT);
+        if (appLayout) (appLayout as HTMLElement).style.display = 'none';
 
         this.applyDesktopStyles();
         this.applyReducedEffectsFromConfig();
@@ -475,79 +473,37 @@ export class OperatingSystemModule extends BaseModule {
                     title: OS_CONFIG.DOCK.LABELS.TOOLS,
                     content: new SettingsApp(this.moduleManager).render(),
                 };
-            case APP_IDS.BROWSER:
-                return {
-                    title: OS_CONFIG.DOCK.LABELS.BROWSER,
-                    content: new IFrameApp(OS_CONFIG.URL_BROWSER).render(),
-                };
-            case APP_IDS.CHAT:
-                return {
-                    title: OS_CONFIG.DOCK.LABELS.CHAT,
-                    content: new IFrameApp(OS_CONFIG.URL_CHAT, {
-                        backgroundColor: OS_CONFIG.STYLES.CHAT_BG,
-                    }).render(),
-                };
             case APP_IDS.PROFILE:
                 return {
                     title: OS_CONFIG.DOCK.LABELS.PROFILE,
-                    content: new IFrameApp(OS_CONFIG.URL_PROFILE, {
-                        removeSelectors: ['#left-menu', 'div.dashboard-welcome'],
-                        forceFullWidth: true,
-                    }).render(),
+                    content: new IFrameApp(OS_CONFIG.URL_PROFILE, { removeSelectors: IFRAME_HIDDEN_SELECTORS, forceFullWidth: true }).render(),
                 };
             case APP_IDS.MAIL:
                 return {
                     title: OS_CONFIG.DOCK.LABELS.MAIL,
-                    content: new IFrameApp(OS_CONFIG.URL_MAIL, {
-                        removeSelectors: ['#left-menu', 'div.dashboard-welcome'],
-                        forceFullWidth: true,
-                    }).render(),
-                };
-            case APP_IDS.INVEST:
-                return {
-                    title: OS_CONFIG.DOCK.LABELS.INVEST,
-                    content: new IFrameApp(OS_CONFIG.URL_INVEST, {
-                        removeSelectors: ['#left-menu', 'div.dashboard-welcome'],
-                        forceFullWidth: true,
-                    }).render(),
+                    content: new IFrameApp(OS_CONFIG.URL_MAIL, { removeSelectors: IFRAME_HIDDEN_SELECTORS, forceFullWidth: true }).render(),
                 };
             case APP_IDS.SHOP:
                 return {
                     title: OS_CONFIG.DOCK.LABELS.SHOP,
-                    content: new IFrameApp(OS_CONFIG.URL_SHOP, {
-                        removeSelectors: ['#left-menu', 'div.dashboard-welcome'],
-                        forceFullWidth: true,
-                    }).render(),
+                    content: new IFrameApp(OS_CONFIG.URL_SHOP, { removeSelectors: IFRAME_HIDDEN_SELECTORS, forceFullWidth: true }).render(),
                 };
             case APP_IDS.MY_PARK:
                 return {
                     title: OS_CONFIG.DOCK.LABELS.MY_PARK,
                     content: new IFrameApp(OS_CONFIG.URL_MY_PARK, {
-                        removeSelectors: [
-                            'a.left-menu__item:nth-child(1)',
-                            'a.left-menu__item:nth-child(2)',
-                            'div.left-menu__separator',
-                            'div.dashboard-welcome',
-                            'div.left-menu__footer',
-                        ],
-                        forceFullWidth: false,
+                        removeSelectors: ['nav.app-sidebar__nav', 'div.app-sidebar__bottom'],
                     }).render(),
                 };
             case APP_IDS.NEXT_DAY:
                 return {
                     title: OS_CONFIG.DOCK.LABELS.NEXT_DAY,
-                    content: new IFrameApp(OS_CONFIG.URL_NEXT_DAY, {
-                        removeSelectors: ['#left-menu', 'div.dashboard-welcome'],
-                        forceFullWidth: true,
-                    }).render(),
+                    content: new IFrameApp(OS_CONFIG.URL_NEXT_DAY, { removeSelectors: IFRAME_HIDDEN_SELECTORS, forceFullWidth: true }).render(),
                 };
             case APP_IDS.RANKING:
                 return {
                     title: OS_CONFIG.DOCK.LABELS.RANKING,
-                    content: new IFrameApp(OS_CONFIG.URL_RANKING, {
-                        removeSelectors: ['#left-menu', 'div.dashboard-welcome'],
-                        forceFullWidth: true,
-                    }).render(),
+                    content: new IFrameApp(OS_CONFIG.URL_RANKING, { removeSelectors: IFRAME_HIDDEN_SELECTORS, forceFullWidth: true }).render(),
                 };
             default:
                 return null;
