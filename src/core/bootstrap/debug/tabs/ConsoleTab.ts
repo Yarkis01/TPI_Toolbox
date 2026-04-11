@@ -4,8 +4,15 @@ import { StorageService } from '../../../../services/StorageService';
 import { makeBtn, makeToolbar } from '../helpers';
 
 const MAX_HISTORY = 200;
+const STORAGE_KEY_CMD = 'debug:repl:cmdHistory';
+const STORAGE_KEY_OUTPUT = 'debug:repl:output';
 
 type OutputType = 'result' | 'error' | 'log' | 'info';
+
+/** Serializable entry stored in StorageService to replay the displayed output on re-render. */
+type PersistedEntry =
+    | { kind: 'input'; code: string }
+    | { kind: OutputType; text: string };
 
 /**
  * Debug tab — in-overlay JavaScript REPL with direct access to Toolbox internals.
@@ -14,6 +21,9 @@ type OutputType = 'result' | 'error' | 'log' | 'info';
  * and remain available in future runs. let/const/var declarations are local to the
  * current run only.
  *
+ * History persistence: the command history (↑/↓) and the displayed output are saved
+ * in StorageService and restored across tab switches and page reloads.
+ *
  * Security note: the Function constructor is used intentionally. This tab is only
  * active when import.meta.env.DEV is true and is never bundled in production.
  */
@@ -21,13 +31,22 @@ export class ConsoleTab {
     private readonly _moduleManager: ModuleManager;
     private readonly _storage: StorageService;
     private readonly _settingsManager: SettingsManager;
+
     private _scope: Record<string, unknown>;
     private _history: string[] = [];
     private _historyIndex = -1;
+    private _entries: PersistedEntry[] = [];
+
     private _historyEl: HTMLElement | null = null;
     private _inputEl: HTMLTextAreaElement | null = null;
     private _running = false;
 
+    /**
+     * Creates the tab and restores history from storage.
+     * @param moduleManager Main module manager instance.
+     * @param storage StorageService instance used for persistence.
+     * @param settingsManager Settings manager instance.
+     */
     public constructor(
         moduleManager: ModuleManager,
         storage: StorageService,
@@ -36,20 +55,37 @@ export class ConsoleTab {
         this._moduleManager = moduleManager;
         this._storage = storage;
         this._settingsManager = settingsManager;
+        this._history = this._storage.load<string[]>(STORAGE_KEY_CMD, []);
+        this._entries = this._storage.load<PersistedEntry[]>(STORAGE_KEY_OUTPUT, []);
         this._scope = this._buildScope();
     }
 
+    /**
+     * Builds the REPL UI inside the given container.
+     * Replays persisted entries to restore the previous output.
+     * @param container Parent element to inject the REPL into.
+     */
     public render(container: HTMLElement): void {
         const toolbar = makeToolbar([
             makeBtn('🧹 Reset scope', () => {
                 this._scope = this._buildScope();
-                this._appendOutput('Scope r\u00e9initialis\u00e9.', 'info');
+                this._appendOutput('Scope réinitialisé.', 'info');
             }),
         ]);
 
         const historyEl = document.createElement('div');
         historyEl.className = 'tdbg-repl-history';
         this._historyEl = historyEl;
+
+        // Replay persisted entries to restore the previous output
+        for (const entry of this._entries) {
+            if (entry.kind === 'input') {
+                this._renderInputRow(entry.code);
+            } else {
+                this._renderOutputRow(entry.text, entry.kind);
+            }
+        }
+        historyEl.scrollTop = historyEl.scrollHeight;
 
         const inputEl = document.createElement('textarea');
         inputEl.className = 'tdbg-repl-input';
@@ -70,11 +106,10 @@ export class ConsoleTab {
             } else if (e.key === 'ArrowDown') {
                 e.preventDefault();
                 this._historyIndex = Math.max(this._historyIndex - 1, -1);
-                if (this._historyIndex === -1) {
-                    inputEl.value = '';
-                } else {
-                    inputEl.value = this._history[this._history.length - 1 - this._historyIndex];
-                }
+                inputEl.value =
+                    this._historyIndex === -1
+                        ? ''
+                        : this._history[this._history.length - 1 - this._historyIndex];
             }
         });
 
@@ -83,7 +118,7 @@ export class ConsoleTab {
         footer.appendChild(makeBtn('▶ Run', () => void this._execute()));
         const hint = document.createElement('span');
         hint.className = 'tdbg-repl-hint';
-        hint.textContent = 'Shift+Enter pour ex\u00e9cuter';
+        hint.textContent = 'Shift+Enter pour exécuter';
         footer.appendChild(hint);
 
         container.appendChild(toolbar);
@@ -92,11 +127,19 @@ export class ConsoleTab {
         container.appendChild(footer);
     }
 
+    /**
+     * Releases DOM references when the tab is hidden or the overlay is closed.
+     * In-memory and persisted history are intentionally kept.
+     */
     public destroy(): void {
         this._historyEl = null;
         this._inputEl = null;
     }
 
+    /**
+     * Builds the initial scope object injected into every run.
+     * Exposes Toolbox instances and helpers (help, clear, getModule).
+     */
     private _buildScope(): Record<string, unknown> {
         return {
             moduleManager: this._moduleManager,
@@ -106,12 +149,12 @@ export class ConsoleTab {
             help: () => {
                 const helpText = [
                     'Variables disponibles :',
-                    '  moduleManager   \u2014 ModuleManager',
-                    '  storage         \u2014 StorageService',
-                    '  settingsManager \u2014 SettingsManager',
-                    '  getModule(id)   \u2014 IModule | undefined',
-                    "  help()          \u2014 affiche cette aide",
-                    "  clear()         \u2014 vide l'historique affich\u00e9",
+                    '  moduleManager   — ModuleManager',
+                    '  storage         — StorageService',
+                    '  settingsManager — SettingsManager',
+                    '  getModule(id)   — IModule | undefined',
+                    '  help()          — affiche cette aide',
+                    "  clear()         — vide l'historique affiché",
                     '',
                     'Persistance : les assignations directes (x = 5) persistent.',
                     'let / const / var sont locaux au run courant.',
@@ -119,14 +162,22 @@ export class ConsoleTab {
                 this._appendOutput(helpText, 'info');
             },
             clear: () => {
+                this._entries = [];
+                this._storage.save(STORAGE_KEY_OUTPUT, this._entries);
                 this._historyEl?.replaceChildren();
             },
         };
     }
 
+    /**
+     * Reads, compiles and executes the code in the textarea.
+     * Captures console.log output during execution and displays the return value or error.
+     * Persists the command and its output to StorageService.
+     */
     private async _execute(): Promise<void> {
         if (this._running) return;
         this._running = true;
+
         const code = this._inputEl?.value.trim();
         if (!code) {
             this._running = false;
@@ -134,9 +185,11 @@ export class ConsoleTab {
         }
 
         this._appendInput(code);
+
         this._history.push(code);
         if (this._history.length > MAX_HISTORY) this._history.shift();
         this._historyIndex = -1;
+        this._storage.save(STORAGE_KEY_CMD, this._history);
         if (this._inputEl) this._inputEl.value = '';
 
         const logs: string[] = [];
@@ -146,6 +199,7 @@ export class ConsoleTab {
             origLog.apply(console, args);
         };
 
+        // The Proxy captures bare assignments (x = 5) into _scope so they persist across runs.
         const proxy = new Proxy(this._scope, {
             has: () => true,
             get: (target, prop: string) => target[prop],
@@ -170,7 +224,6 @@ export class ConsoleTab {
                 }
                 result = await fn(proxy);
             } else {
-                // Security: intentional — debug REPL, DEV-only, never in production build
                 let fn: (scope: Record<string, unknown>) => unknown;
                 try {
                     fn = new Function('scope', `with(scope){ return (${code}) }`) as typeof fn;
@@ -180,9 +233,7 @@ export class ConsoleTab {
                 result = fn(proxy);
             }
 
-            for (const log of logs) {
-                this._appendOutput(log, 'log');
-            }
+            for (const log of logs) this._appendOutput(log, 'log');
 
             if (result !== undefined) {
                 this._appendOutput(this._format(result), 'result');
@@ -190,19 +241,20 @@ export class ConsoleTab {
                 this._appendOutput('undefined', 'result');
             }
         } catch (err) {
-            for (const log of logs) {
-                this._appendOutput(log, 'log');
-            }
+            for (const log of logs) this._appendOutput(log, 'log');
             this._appendOutput(String(err), 'error');
         } finally {
             console.log = origLog;
             this._running = false;
-            if (this._historyEl) {
-                this._historyEl.scrollTop = this._historyEl.scrollHeight;
-            }
+            if (this._historyEl) this._historyEl.scrollTop = this._historyEl.scrollHeight;
         }
     }
 
+    /**
+     * Serializes a value to a human-readable string for display in the REPL.
+     * Attempts JSON.stringify for objects, falls back to String() on error.
+     * @param value The value to format.
+     */
     private _format(value: unknown): string {
         if (value === null) return 'null';
         if (value === undefined) return 'undefined';
@@ -214,7 +266,36 @@ export class ConsoleTab {
         }
     }
 
+    /**
+     * Persists and renders an input line (code typed by the user).
+     * @param code The executed code string.
+     */
     private _appendInput(code: string): void {
+        this._entries.push({ kind: 'input', code });
+        if (this._entries.length > MAX_HISTORY) this._entries.shift();
+        this._storage.save(STORAGE_KEY_OUTPUT, this._entries);
+        this._renderInputRow(code);
+    }
+
+    /**
+     * Persists and renders an output line (result, error, log or info).
+     * @param text The text to display.
+     * @param type Output type — determines the color and prefix symbol.
+     */
+    private _appendOutput(text: string, type: OutputType): void {
+        this._entries.push({ kind: type, text });
+        if (this._entries.length > MAX_HISTORY) this._entries.shift();
+        this._storage.save(STORAGE_KEY_OUTPUT, this._entries);
+        this._renderOutputRow(text, type);
+    }
+
+    /**
+     * Creates and injects an input row into the DOM without touching storage.
+     * Used by both _appendInput() and the replay loop in render().
+     * @param code The code to display.
+     */
+    private _renderInputRow(code: string): void {
+        if (!this._historyEl) return;
         const entry = document.createElement('div');
         entry.className = 'tdbg-repl-entry tdbg-repl-entry--input';
         const prompt = document.createElement('span');
@@ -222,26 +303,26 @@ export class ConsoleTab {
         prompt.textContent = '> ';
         entry.appendChild(prompt);
         entry.appendChild(document.createTextNode(code));
-        this._historyEl?.appendChild(entry);
+        this._historyEl.appendChild(entry);
     }
 
-    private _appendOutput(text: string, type: OutputType): void {
+    /**
+     * Creates and injects an output row into the DOM without touching storage.
+     * Used by both _appendOutput() and the replay loop in render().
+     * @param text The text to display.
+     * @param type Output type.
+     */
+    private _renderOutputRow(text: string, type: OutputType): void {
+        if (!this._historyEl) return;
         const entry = document.createElement('div');
         entry.className = `tdbg-repl-entry tdbg-repl-entry--${type}`;
         const prefix = document.createElement('span');
         prefix.className = 'tdbg-repl-prefix';
-        if (type === 'error') {
-            prefix.textContent = '✕ ';
-        } else if (type === 'log') {
-            prefix.textContent = '· ';
-        } else if (type === 'info') {
-            prefix.textContent = 'ℹ ';
-        } else {
-            prefix.textContent = '← ';
-        }
+        prefix.textContent =
+            type === 'error' ? '✕ ' : type === 'log' ? '· ' : type === 'info' ? 'ℹ ' : '← ';
         entry.appendChild(prefix);
         entry.appendChild(document.createTextNode(text));
-        this._historyEl?.appendChild(entry);
-        if (this._historyEl) this._historyEl.scrollTop = this._historyEl.scrollHeight;
+        this._historyEl.appendChild(entry);
+        this._historyEl.scrollTop = this._historyEl.scrollHeight;
     }
 }
