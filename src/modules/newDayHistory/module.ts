@@ -207,6 +207,7 @@ export class NewDayHistoryModule extends BaseModule {
     private _pollTimer: ReturnType<typeof setInterval> | null = null;
     private _pollAttempts = 0;
     private _lastReportTimestamp = 0;
+    private _multiWarning: HTMLElement | null = null;
 
     /**
      * @inheritdoc
@@ -297,6 +298,7 @@ export class NewDayHistoryModule extends BaseModule {
         }
 
         this._injectHistoryButton();
+        this._injectMultiDayWarning();
         this._setupAdvanceButtonListener();
     }
 
@@ -313,7 +315,40 @@ export class NewDayHistoryModule extends BaseModule {
         }
 
         this._stopPolling();
+        this._multiWarning?.remove();
+        this._multiWarning = null;
         this._modal?.close();
+    }
+
+    /**
+     * Injects a warning inside the multi-day confirm modal to inform the user
+     * that multi-day simulations are not tracked by the history module.
+     */
+    private _injectMultiDayWarning(): void {
+        const modalBody = document.querySelector<HTMLElement>(
+            NEW_DAY_SELECTORS.MULTI_CONFIRM_MODAL_BODY,
+        );
+        if (!modalBody || document.getElementById(NEW_DAY_SELECTORS.MULTI_CONFIRM_WARNING_ID)) {
+            return;
+        }
+
+        const warning = document.createElement('p');
+        warning.id = NEW_DAY_SELECTORS.MULTI_CONFIRM_WARNING_ID;
+        warning.style.cssText = [
+            'margin-top: 0.75rem',
+            'padding: 0.5rem 0.75rem',
+            'border-left: 3px solid rgb(231, 76, 60)',
+            'background: rgba(231, 76, 60, 0.08)',
+            'color: rgb(231, 76, 60)',
+            'font-size: 0.85rem',
+            'border-radius: 0 4px 4px 0',
+        ].join(';');
+        warning.textContent =
+            '⚠️ Le module Historique des journées ne prend en charge que les avancements simples. Les journées simulées ici ne seront pas enregistrées dans l\'historique.';
+
+        modalBody.appendChild(warning);
+        this._multiWarning = warning;
+        this._logger.info('Multi-day warning injected');
     }
 
     /**
@@ -558,9 +593,9 @@ export class NewDayHistoryModule extends BaseModule {
 
                 spectacles: p.spectacles
                     ? {
-                          open: p.spectacles.open ?? [],
-                          totalCost: p.spectacles.total_cost ?? 0,
-                      }
+                        open: p.spectacles.open ?? [],
+                        totalCost: p.spectacles.total_cost ?? 0,
+                    }
                     : null,
 
                 restaurants: {

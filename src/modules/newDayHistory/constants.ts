@@ -8,6 +8,10 @@ export const NEW_DAY_SELECTORS = {
     // Main elements
     ADVANCE_BUTTON: '#new-day-advance-btn',
 
+    // Multi-day confirm modal
+    MULTI_CONFIRM_MODAL_BODY: '#new-day-multi-confirm-modal .app-modal__body',
+    MULTI_CONFIRM_WARNING_ID: 'tpi-history-multi-warning',
+
     // History UI
     HISTORY_BTN_ID: 'tpi-history-btn',
     HISTORY_MODAL_ID: 'tpi-history-modal',
