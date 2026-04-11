@@ -6,15 +6,17 @@ import { LogsTab } from './tabs/LogsTab';
 import { ModulesTab } from './tabs/ModulesTab';
 import { PerfTab } from './tabs/PerfTab';
 import { StorageTab } from './tabs/StorageTab';
+import { NetworkTab } from './tabs/NetworkTab';
 
-type TabId = 'modules' | 'logs' | 'perf' | 'storage';
+type TabId = 'modules' | 'logs' | 'perf' | 'storage' | 'network';
 
 const TAB_STORAGE_KEY = 'tpitoolbox:debug:activeTab';
-const TAB_IDS: TabId[] = ['modules', 'logs', 'perf', 'storage'];
+const TAB_IDS: TabId[] = ['modules', 'logs', 'network', 'perf', 'storage'];
 
 const TAB_DEFS: { id: TabId; label: string }[] = [
     { id: 'modules', label: '📦 Modules' },
     { id: 'logs', label: '📋 Logs' },
+    { id: 'network', label: '🌐 Network' },
     { id: 'perf', label: '⚡ Perf' },
     { id: 'storage', label: '💾 Storage' },
 ];
@@ -28,6 +30,7 @@ export class DebugOverlay implements IBootstrap {
     private readonly _logsTab: LogsTab;
     private readonly _perfTab: PerfTab;
     private readonly _storageTab: StorageTab;
+    private readonly _networkTab: NetworkTab;
 
     private _panel: HTMLElement | null = null;
     private _body: HTMLElement | null = null;
@@ -46,6 +49,7 @@ export class DebugOverlay implements IBootstrap {
         this._logsTab = new LogsTab();
         this._perfTab = new PerfTab(performance.now());
         this._storageTab = new StorageTab(StorageService.getInstance());
+        this._networkTab = new NetworkTab();
     }
 
     /**
@@ -172,6 +176,10 @@ export class DebugOverlay implements IBootstrap {
             case 'logs':
                 this._logsTab.render(this._body);
                 this._currentTabInstance = this._logsTab;
+                break;
+            case 'network':
+                this._networkTab.render(this._body);
+                this._currentTabInstance = this._networkTab;
                 break;
             case 'perf':
                 this._perfTab.render(this._body);
