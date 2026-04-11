@@ -125,11 +125,18 @@ export class OperatingSystemModule extends BaseModule {
 
         window.addEventListener('message', this._messageHandler);
 
-        const appLayout = document.querySelector(SELECTORS.APP_LAYOUT);
-        if (appLayout) (appLayout as HTMLElement).style.display = 'none';
+        const appLayout = document.querySelector<HTMLElement>(SELECTORS.APP_LAYOUT);
+        const pageRoot =
+            appLayout && appLayout !== document.body
+                ? appLayout
+                : document.querySelector<HTMLElement>(SELECTORS.APP_MAIN);
+        if (pageRoot) pageRoot.style.display = 'none';
 
-        const chatDock = document.querySelector<HTMLElement>('div.chat-dock');
-        if (chatDock) chatDock.style.display = 'none';
+        IFRAME_HIDDEN_SELECTORS.forEach((selector) => {
+            document.querySelectorAll<HTMLElement>(selector).forEach((el) => {
+                el.style.display = 'none';
+            });
+        });
 
         this.applyDesktopStyles();
         this.applyReducedEffectsFromConfig();

@@ -3,6 +3,7 @@
  */
 export const SELECTORS = {
     APP_LAYOUT: '.app-layout',
+    APP_MAIN: 'main.app-main',
     DESKTOP_CONTAINER: 'os-desktop',
 } as const;
 
