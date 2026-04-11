@@ -511,6 +511,11 @@ export class OperatingSystemModule extends BaseModule {
                     title: OS_CONFIG.DOCK.LABELS.RANKING,
                     content: new IFrameApp(OS_CONFIG.URL_RANKING, { removeSelectors: IFRAME_HIDDEN_SELECTORS, forceFullWidth: true }).render(),
                 };
+            case APP_IDS.SUPPORT:
+                return {
+                    title: OS_CONFIG.DOCK.LABELS.SUPPORT,
+                    content: new IFrameApp(OS_CONFIG.URL_SUPPORT, { removeSelectors: IFRAME_HIDDEN_SELECTORS, forceFullWidth: true }).render(),
+                };
             case APP_IDS.CHAT: {
                 const chatDock = document.querySelector<HTMLElement>('div.chat-dock');
                 const container = createElement('div', {

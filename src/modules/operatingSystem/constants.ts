@@ -23,6 +23,7 @@ export const APP_IDS = {
     NEXT_DAY: 'next_day',
     RANKING: 'ranking',
     CHAT: 'chat',
+    SUPPORT: 'support',
     TOOLS: 'tools',
 } as const;
 
@@ -39,6 +40,7 @@ export const OS_CONFIG = {
     URL_MY_PARK: 'https://play.themeparkindustries.com/dashboard/park/overview.php',
     URL_NEXT_DAY: 'https://play.themeparkindustries.com/dashboard/new_day.php',
     URL_RANKING: 'https://play.themeparkindustries.com/dashboard/classement.php',
+    URL_SUPPORT: 'https://play.themeparkindustries.com/dashboard/support.php',
     STYLES: {
         DESKTOP_BG: 'linear-gradient(135deg, #050505 0%, #061f10 100%)',
         DESKTOP_BG_COLOR: '#0f1110',
@@ -52,6 +54,7 @@ export const OS_CONFIG = {
             NEXT_DAY: 'Jour suivant',
             RANKING: 'Classement',
             CHAT: 'Chat',
+            SUPPORT: 'Support',
             TOOLS: 'TPI Toolbox',
         },
     },
