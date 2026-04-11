@@ -128,6 +128,9 @@ export class OperatingSystemModule extends BaseModule {
         const appLayout = document.querySelector(SELECTORS.APP_LAYOUT);
         if (appLayout) (appLayout as HTMLElement).style.display = 'none';
 
+        const chatDock = document.querySelector<HTMLElement>('div.chat-dock');
+        if (chatDock) chatDock.style.display = 'none';
+
         this.applyDesktopStyles();
         this.applyReducedEffectsFromConfig();
 
@@ -204,7 +207,15 @@ export class OperatingSystemModule extends BaseModule {
 
         let win: WindowComponent;
 
+        const appConfig = this.getAppConfig(appId) ?? {
+            title: `Application: ${appId}`,
+            content: createElement('div', { style: { padding: '20px' } }, [
+                `Contenu pour ${appId} (Placeholder)`,
+            ]),
+        };
+
         const onClose = () => {
+            appConfig.onClose?.();
             this.activeWindows.delete(appId);
             this.dock?.setAppOpen(appId, false);
             this.dock?.removeActive(appId);
@@ -219,16 +230,6 @@ export class OperatingSystemModule extends BaseModule {
         const onMoveOrResize = () => {
             this.saveSession();
         };
-
-        let appConfig = this.getAppConfig(appId);
-        if (!appConfig) {
-            appConfig = {
-                title: `Application: ${appId}`,
-                content: createElement('div', { style: { padding: '20px' } }, [
-                    `Contenu pour ${appId} (Placeholder)`,
-                ]),
-            };
-        }
 
         win = this.windowManager.openWindow({
             title: appConfig.title,
@@ -437,6 +438,11 @@ export class OperatingSystemModule extends BaseModule {
         const appConfig = this.getAppConfig(savedState.appId);
         if (!appConfig) return;
 
+        const sessionOnClose = () => {
+            appConfig.onClose?.();
+            onClose();
+        };
+
         const win = this.windowManager.openWindow({
             title: appConfig.title,
             content: appConfig.content,
@@ -444,7 +450,7 @@ export class OperatingSystemModule extends BaseModule {
             height: savedState.height,
             x: savedState.x,
             y: savedState.y,
-            onClose,
+            onClose: sessionOnClose,
             onFocus,
             onMoveOrResize,
         });
@@ -466,7 +472,7 @@ export class OperatingSystemModule extends BaseModule {
      * @param appId - The app ID.
      * @returns The app configuration or null if not found.
      */
-    private getAppConfig(appId: string): { title: string; content: HTMLElement } | null {
+    private getAppConfig(appId: string): { title: string; content: HTMLElement; onClose?: () => void } | null {
         switch (appId) {
             case APP_IDS.TOOLS:
                 return {
@@ -505,6 +511,64 @@ export class OperatingSystemModule extends BaseModule {
                     title: OS_CONFIG.DOCK.LABELS.RANKING,
                     content: new IFrameApp(OS_CONFIG.URL_RANKING, { removeSelectors: IFRAME_HIDDEN_SELECTORS, forceFullWidth: true }).render(),
                 };
+            case APP_IDS.CHAT: {
+                const chatDock = document.querySelector<HTMLElement>('div.chat-dock');
+                const container = createElement('div', {
+                    style: { width: '100%', height: '100%', display: 'flex', flexDirection: 'column' },
+                });
+                container.classList.add('os-chat-window');
+
+                const styleEl = document.createElement('style');
+                styleEl.id = 'os-chat-overrides';
+                styleEl.textContent = `
+                    .os-chat-window .chat-dock {
+                        position: relative !important; left: auto !important; bottom: auto !important;
+                        transform: none !important; width: 100% !important; height: 100% !important;
+                        display: flex !important; flex-direction: column !important;
+                        pointer-events: auto !important; z-index: auto !important;
+                    }
+                    .os-chat-window .chat-dock__panel {
+                        position: relative !important; left: auto !important; right: auto !important;
+                        bottom: auto !important; opacity: 1 !important; transform: none !important;
+                        pointer-events: auto !important; flex: 1 1 auto !important;
+                        display: flex !important; flex-direction: column !important;
+                        border-radius: 8px 8px 0 0 !important;
+                    }
+                    .os-chat-window .chat-dock__panel-body-wrap {
+                        flex: 1 1 auto !important; display: flex !important; flex-direction: column !important;
+                        border-radius: 0 !important;
+                    }
+                    .os-chat-window .chat-dock__panel-body {
+                        flex: 1 1 auto !important; max-height: none !important;
+                    }
+                    .os-chat-window .chat-dock__shell {
+                        flex: 0 0 auto !important; border-radius: 0 0 8px 8px !important;
+                    }
+                `;
+                document.head.appendChild(styleEl);
+
+                if (chatDock) {
+                    chatDock.removeAttribute('style');
+                    chatDock.classList.add('chat-dock--open');
+                    container.appendChild(chatDock);
+                } else {
+                    container.textContent = 'Chat non disponible.';
+                }
+
+                return {
+                    title: OS_CONFIG.DOCK.LABELS.CHAT,
+                    content: container,
+                    onClose: () => {
+                        document.getElementById('os-chat-overrides')?.remove();
+                        if (chatDock) {
+                            chatDock.classList.remove('chat-dock--open');
+                            chatDock.removeAttribute('style');
+                            chatDock.style.display = 'none';
+                            document.body.appendChild(chatDock);
+                        }
+                    },
+                };
+            }
             default:
                 return null;
         }

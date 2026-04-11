@@ -22,6 +22,7 @@ export const APP_IDS = {
     MY_PARK: 'my_park',
     NEXT_DAY: 'next_day',
     RANKING: 'ranking',
+    CHAT: 'chat',
     TOOLS: 'tools',
 } as const;
 
@@ -50,6 +51,7 @@ export const OS_CONFIG = {
             MY_PARK: 'Mes parcs',
             NEXT_DAY: 'Jour suivant',
             RANKING: 'Classement',
+            CHAT: 'Chat',
             TOOLS: 'TPI Toolbox',
         },
     },
