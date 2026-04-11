@@ -492,7 +492,7 @@ export class OperatingSystemModule extends BaseModule {
                 return {
                     title: OS_CONFIG.DOCK.LABELS.MY_PARK,
                     content: new IFrameApp(OS_CONFIG.URL_MY_PARK, {
-                        removeSelectors: ['nav.app-sidebar__nav', 'div.app-sidebar__bottom'],
+                        removeSelectors: ['div.chat-dock', 'nav.app-sidebar__nav', 'div.app-sidebar__bottom'],
                     }).render(),
                 };
             case APP_IDS.NEXT_DAY:

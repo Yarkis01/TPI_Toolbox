@@ -6,8 +6,11 @@ export const SELECTORS = {
     DESKTOP_CONTAINER: 'os-desktop',
 } as const;
 
-/** Elements hidden inside each iframe to clean up the in-game navigation. */
-export const IFRAME_HIDDEN_SELECTORS = ['.app-mobile-header', '#app-sidebar-drawer'] as const;
+/** Elements hidden in every iframe regardless of the page. */
+export const IFRAME_COMMON_SELECTORS = ['.app-mobile-header', 'div.chat-dock'] as const;
+
+/** Elements hidden in iframes where the sidebar should be fully removed. */
+export const IFRAME_HIDDEN_SELECTORS = [...IFRAME_COMMON_SELECTORS, '#app-sidebar-drawer'] as const;
 
 /**
  * Application IDs for the operating system module.
