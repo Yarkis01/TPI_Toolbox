@@ -4,24 +4,26 @@ import IBootstrap from '../../interfaces/IBootstrap';
 import { ModuleManager } from '../../managers/ModuleManager';
 import { SettingsManager } from '../../managers/SettingsManager';
 import { ConsoleTab } from './tabs/ConsoleTab';
+import { DomTab } from './tabs/DomTab';
 import { LogsTab } from './tabs/LogsTab';
 import { ModulesTab } from './tabs/ModulesTab';
 import { PerfTab } from './tabs/PerfTab';
 import { StorageTab } from './tabs/StorageTab';
 import { NetworkTab } from './tabs/NetworkTab';
 
-type TabId = 'modules' | 'logs' | 'perf' | 'storage' | 'network' | 'console';
+type TabId = 'modules' | 'logs' | 'perf' | 'storage' | 'network' | 'console' | 'dom';
 
 const TAB_STORAGE_KEY = 'tpitoolbox:debug:activeTab';
-const TAB_IDS: TabId[] = ['modules', 'logs', 'network', 'perf', 'storage', 'console'];
+const TAB_IDS: TabId[] = ['modules', 'logs', 'network', 'perf', 'storage', 'console', 'dom'];
 
 const TAB_DEFS: { id: TabId; label: string }[] = [
     { id: 'modules', label: '📦 Modules' },
     { id: 'logs', label: '📋 Logs' },
+    { id: 'console', label: '💻 Console' },
+    { id: 'dom', label: '👁️ DOM' },
     { id: 'network', label: '🌐 Network' },
     { id: 'perf', label: '⚡ Perf' },
     { id: 'storage', label: '💾 Storage' },
-    { id: 'console', label: '💻 Console' },
 ];
 
 /**
@@ -35,6 +37,7 @@ export class DebugOverlay implements IBootstrap {
     private readonly _storageTab: StorageTab;
     private readonly _networkTab: NetworkTab;
     private readonly _consoleTab: ConsoleTab;
+    private readonly _domTab: DomTab;
 
     private _panel: HTMLElement | null = null;
     private _body: HTMLElement | null = null;
@@ -55,6 +58,7 @@ export class DebugOverlay implements IBootstrap {
         this._storageTab = new StorageTab(StorageService.getInstance());
         this._networkTab = new NetworkTab();
         this._consoleTab = new ConsoleTab(moduleManager, StorageService.getInstance(), settingsManager);
+        this._domTab = new DomTab();
     }
 
     /**
@@ -120,6 +124,8 @@ export class DebugOverlay implements IBootstrap {
         this._panel.appendChild(this._body);
 
         document.body.appendChild(this._panel);
+        // Exclude the overlay's own node from DOM mutation observation
+        this._domTab.setExcludeNode(this._panel);
         this._renderTab(this._activeTab);
     }
 
@@ -197,6 +203,10 @@ export class DebugOverlay implements IBootstrap {
             case 'console':
                 this._consoleTab.render(this._body);
                 this._currentTabInstance = this._consoleTab;
+                break;
+            case 'dom':
+                this._domTab.render(this._body);
+                this._currentTabInstance = this._domTab;
                 break;
         }
     }
