@@ -51,6 +51,11 @@ export class ModuleManager {
             const isForced = this._forceEnabledIds.has(module.id);
             if (!isForced && !this._canEnableModule(module.id, 'register')) return;
 
+            if (!module.canRunOnPage(window.location.href)) {
+                this._logger.debug(`Module '${module.id}' skipped on this page.`);
+                return;
+            }
+
             module.init();
             try {
                 module.enable();
@@ -71,8 +76,14 @@ export class ModuleManager {
             if (enable && !this._canEnableModule(moduleId, 'toggle')) return;
 
             if (enable) {
-                module.init();
-                module.enable();
+                if (!module.canRunOnPage(window.location.href)) {
+                    this._logger.debug(
+                        `Module '${moduleId}' enabled in settings but inactive on this page.`,
+                    );
+                } else {
+                    module.init();
+                    module.enable();
+                }
             } else {
                 module.disable();
             }

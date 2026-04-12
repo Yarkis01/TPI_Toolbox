@@ -111,6 +111,13 @@ export class OperatingSystemModule extends BaseModule {
     /**
      * @inheritdoc
      */
+    public override canRunOnPage(url: string): boolean {
+        return url.includes('play.themeparkindustries.com');
+    }
+
+    /**
+     * @inheritdoc
+     */
     protected onEnable(): void {
         const isIframe = window.self !== window.top;
 
@@ -118,8 +125,6 @@ export class OperatingSystemModule extends BaseModule {
             this._setupIframeTriggers();
             return;
         }
-
-        if (window.location.hostname !== 'play.themeparkindustries.com') return;
 
         this._logger.info('Enabling OS Mode...');
 
@@ -479,7 +484,9 @@ export class OperatingSystemModule extends BaseModule {
      * @param appId - The app ID.
      * @returns The app configuration or null if not found.
      */
-    private getAppConfig(appId: string): { title: string; content: HTMLElement; onClose?: () => void } | null {
+    private getAppConfig(
+        appId: string,
+    ): { title: string; content: HTMLElement; onClose?: () => void } | null {
         switch (appId) {
             case APP_IDS.TOOLS:
                 return {
@@ -489,44 +496,71 @@ export class OperatingSystemModule extends BaseModule {
             case APP_IDS.PROFILE:
                 return {
                     title: OS_CONFIG.DOCK.LABELS.PROFILE,
-                    content: new IFrameApp(OS_CONFIG.URL_PROFILE, { removeSelectors: IFRAME_HIDDEN_SELECTORS, forceFullWidth: true }).render(),
+                    content: new IFrameApp(OS_CONFIG.URL_PROFILE, {
+                        removeSelectors: IFRAME_HIDDEN_SELECTORS,
+                        forceFullWidth: true,
+                    }).render(),
                 };
             case APP_IDS.MAIL:
                 return {
                     title: OS_CONFIG.DOCK.LABELS.MAIL,
-                    content: new IFrameApp(OS_CONFIG.URL_MAIL, { removeSelectors: IFRAME_HIDDEN_SELECTORS, forceFullWidth: true }).render(),
+                    content: new IFrameApp(OS_CONFIG.URL_MAIL, {
+                        removeSelectors: IFRAME_HIDDEN_SELECTORS,
+                        forceFullWidth: true,
+                    }).render(),
                 };
             case APP_IDS.SHOP:
                 return {
                     title: OS_CONFIG.DOCK.LABELS.SHOP,
-                    content: new IFrameApp(OS_CONFIG.URL_SHOP, { removeSelectors: IFRAME_HIDDEN_SELECTORS, forceFullWidth: true }).render(),
+                    content: new IFrameApp(OS_CONFIG.URL_SHOP, {
+                        removeSelectors: IFRAME_HIDDEN_SELECTORS,
+                        forceFullWidth: true,
+                    }).render(),
                 };
             case APP_IDS.MY_PARK:
                 return {
                     title: OS_CONFIG.DOCK.LABELS.MY_PARK,
                     content: new IFrameApp(OS_CONFIG.URL_MY_PARK, {
-                        removeSelectors: ['div.chat-dock', 'nav.app-sidebar__nav', 'div.app-sidebar__bottom'],
+                        removeSelectors: [
+                            'div.chat-dock',
+                            'nav.app-sidebar__nav',
+                            'div.app-sidebar__bottom',
+                        ],
                     }).render(),
                 };
             case APP_IDS.NEXT_DAY:
                 return {
                     title: OS_CONFIG.DOCK.LABELS.NEXT_DAY,
-                    content: new IFrameApp(OS_CONFIG.URL_NEXT_DAY, { removeSelectors: IFRAME_HIDDEN_SELECTORS, forceFullWidth: true }).render(),
+                    content: new IFrameApp(OS_CONFIG.URL_NEXT_DAY, {
+                        removeSelectors: IFRAME_HIDDEN_SELECTORS,
+                        forceFullWidth: true,
+                    }).render(),
                 };
             case APP_IDS.RANKING:
                 return {
                     title: OS_CONFIG.DOCK.LABELS.RANKING,
-                    content: new IFrameApp(OS_CONFIG.URL_RANKING, { removeSelectors: IFRAME_HIDDEN_SELECTORS, forceFullWidth: true }).render(),
+                    content: new IFrameApp(OS_CONFIG.URL_RANKING, {
+                        removeSelectors: IFRAME_HIDDEN_SELECTORS,
+                        forceFullWidth: true,
+                    }).render(),
                 };
             case APP_IDS.SUPPORT:
                 return {
                     title: OS_CONFIG.DOCK.LABELS.SUPPORT,
-                    content: new IFrameApp(OS_CONFIG.URL_SUPPORT, { removeSelectors: IFRAME_HIDDEN_SELECTORS, forceFullWidth: true }).render(),
+                    content: new IFrameApp(OS_CONFIG.URL_SUPPORT, {
+                        removeSelectors: IFRAME_HIDDEN_SELECTORS,
+                        forceFullWidth: true,
+                    }).render(),
                 };
             case APP_IDS.CHAT: {
                 const chatDock = document.querySelector<HTMLElement>('div.chat-dock');
                 const container = createElement('div', {
-                    style: { width: '100%', height: '100%', display: 'flex', flexDirection: 'column' },
+                    style: {
+                        width: '100%',
+                        height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                    },
                 });
                 container.classList.add('os-chat-window');
 

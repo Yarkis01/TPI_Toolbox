@@ -48,6 +48,13 @@ export class EntityStatusColorizerModule extends BaseModule {
     /**
      * @inheritdoc
      */
+    public override canRunOnPage(url: string): boolean {
+        return PAGE_CONFIGS.some((c) => url.includes(c.urlFragment));
+    }
+
+    /**
+     * @inheritdoc
+     */
     public override getConfigSchema(): IModuleConfigSchema {
         return {
             options: [

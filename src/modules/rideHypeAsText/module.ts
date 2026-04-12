@@ -31,12 +31,14 @@ export class RideHypeAsTextModule extends BaseModule {
     /**
      * @inheritdoc
      */
-    protected onEnable(): void {
-        if (!window.location.href.includes(HYPE_SELECTORS.PAGE_MATCH)) {
-            this._logger.debug('Module ignored on this page.');
-            return;
-        }
+    public override canRunOnPage(url: string): boolean {
+        return url.includes(HYPE_SELECTORS.PAGE_MATCH);
+    }
 
+    /**
+     * @inheritdoc
+     */
+    protected onEnable(): void {
         this._processExistingNodes();
         this._startObserving();
     }

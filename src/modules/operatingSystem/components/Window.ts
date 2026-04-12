@@ -41,7 +41,8 @@ export class WindowComponent {
         null;
 
     private isSnapped: boolean = false;
-    private preSnapState: { left: string; top: string; width: string; height: string } | null = null;
+    private preSnapState: { left: string; top: string; width: string; height: string } | null =
+        null;
 
     private minWidth = 300;
     private minHeight = 200;
@@ -351,8 +352,20 @@ export class WindowComponent {
                 }
             }
 
-            const newLeft = Math.max(0, Math.min(e.clientX - this.dragOffsetX, window.innerWidth - this.element.offsetWidth));
-            const newTop = Math.max(0, Math.min(e.clientY - this.dragOffsetY, window.innerHeight - this.element.offsetHeight));
+            const newLeft = Math.max(
+                0,
+                Math.min(
+                    e.clientX - this.dragOffsetX,
+                    window.innerWidth - this.element.offsetWidth,
+                ),
+            );
+            const newTop = Math.max(
+                0,
+                Math.min(
+                    e.clientY - this.dragOffsetY,
+                    window.innerHeight - this.element.offsetHeight,
+                ),
+            );
             this.element.style.left = `${newLeft}px`;
             this.element.style.top = `${newTop}px`;
 

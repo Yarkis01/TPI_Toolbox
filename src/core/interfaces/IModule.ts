@@ -68,4 +68,12 @@ export default interface IModule {
      * Resets configuration to default values.
      */
     resetConfig(): void;
+
+    /**
+     * Returns whether the module should be activated on the given URL.
+     * Called by ModuleManager before init() and enable().
+     * @param currentUrl - The current page URL (window.location.href).
+     * @returns True if the module should run on this page (default: always).
+     */
+    canRunOnPage(currentUrl: string): boolean;
 }

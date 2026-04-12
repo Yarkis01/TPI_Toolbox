@@ -80,10 +80,15 @@ export class EnhancedPlanningModule extends BaseModule {
     /**
      * @inheritdoc
      */
+    public override canRunOnPage(url: string): boolean {
+        return url.includes(PLANNING_SELECTORS.PAGE_MATCH);
+    }
+
+    /**
+     * @inheritdoc
+     */
     protected onConfigChanged(key: string, value: string | number | boolean): void {
         super.onConfigChanged(key, value);
-
-        if (!this._isTargetPage()) return;
 
         if (key === CONFIG_KEYS.QUICK_NAVIGATION) {
             this._featureRegistry.toggleFeature('quick_navigation', value as boolean);
@@ -98,11 +103,6 @@ export class EnhancedPlanningModule extends BaseModule {
      * @inheritdoc
      */
     protected onEnable(): void {
-        if (!this._isTargetPage()) {
-            this._logger.info('Not on planning page, skipping.');
-            return;
-        }
-
         this._registerFeatures();
         this._enableFeaturesFromConfig();
 
@@ -115,13 +115,6 @@ export class EnhancedPlanningModule extends BaseModule {
     protected onDisable(): void {
         this._featureRegistry.disableAll();
         this._logger.info('Enhanced Planning module disabled.');
-    }
-
-    /**
-     * Checks if the current page is the planning page.
-     */
-    private _isTargetPage(): boolean {
-        return document.location.href.includes(PLANNING_SELECTORS.PAGE_MATCH);
     }
 
     /**
