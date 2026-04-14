@@ -1,0 +1,22 @@
+body.tpi-dashboard-cleaner {
+    .dashboard-intro {
+        display: none !important;
+    }
+
+    .dash-block.dash-block--ad.dash-block--blue {
+        display: none !important;
+    }
+
+    .dashboard-social-shortcuts {
+        display: none !important;
+    }
+
+    .dash-block--actions .dash-block__body {
+        min-height: 0;
+        height: 490px;
+    }
+
+    .actions-feed {
+        max-height: 490px;
+    }
+}
