@@ -31,7 +31,7 @@ TPI Toolbox est entièrement modulable et regorge d'outils pensés pour les gér
 ## 🚀 Installation
 
 1. Installez une extension de gestion de scripts comme **[Tampermonkey](https://www.tampermonkey.net/)** ou **[Violentmonkey](https://violentmonkey.github.io/)** sur votre navigateur.
-3. Rendez-vous sur la page des **[Releases GitHub](https://github.com/Yarkis01/TPI_Toolbox/releases/latest)** du projet.
+2. Rendez-vous sur la page des **[Releases GitHub](https://github.com/Yarkis01/TPI_Toolbox/releases/latest)** du projet.
 4. Téléchargez et installez la dernière version du script (fichier `.user.js`).
 5. Rafraîchissez la page de **Theme Park Industries** et ouvrez le menu en cliquant sur le bouton TPI Toolbox !
 
@@ -39,13 +39,13 @@ TPI Toolbox est entièrement modulable et regorge d'outils pensés pour les gér
 
 ## ⚙️ Configuration
 
-Si vous ne voyez pas le bouton "TPI Toolbox" c'est normal, il faut authoriser votre extention à ajouter notre projet sur TPI.
+Si vous ne voyez pas le bouton "TPI Toolbox" c'est normal, il faut autoriser votre extension à ajouter notre projet sur TPI.
 
 Pour cela veuillez suivre les étapes suivantes :
 
 ### 🐵 TamperMonkey :
 
-Rendez-vous sur la page de configuration de Tampermonkey une fois ici veillé à retrouver les options suivantes et utilisez les mêmes valeurs :
+Rendez-vous sur la page de configuration de Tampermonkey, une fois ici veillez à retrouver les options suivantes et utilisez les mêmes valeurs :
 
 <img width="717" height="198" alt="image" src="https://github.com/user-attachments/assets/10b58392-a4dd-4ee3-b3da-e21ed87b8920" />
 
@@ -81,4 +81,4 @@ npm run format
 
 ## 📜 Licence
 
-Ce projet est open source et distribué sous licence **[GPL-3.0]([https://www.google.com/search?q=LICENSE](https://github.com/Yarkis01/TPI_Toolbox/blob/main/LICENSE))**.
+Ce projet est open source et distribué sous licence **[GPL-3.0](https://github.com/Yarkis01/TPI_Toolbox/blob/main/LICENSE)**.
