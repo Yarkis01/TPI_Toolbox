@@ -1,4 +1,5 @@
 import { AttractionSurfaceFilterModule } from '../modules/attractionSurfaceFilter/module';
+import { DashboardCleanerModule } from '../modules/dashboardCleaner/module';
 import { StaffBuildingColorizerModule } from '../modules/backstage/StaffBuildingColorizer/module';
 import { WarehouseColorizerModule } from '../modules/backstage/warehouseColorizer/module';
 import { CollapsibleZonesModule } from '../modules/collapsibleZones/module';
@@ -34,4 +35,5 @@ export function registerCommonModules(moduleManager: ModuleManager): void {
     moduleManager.register(new UpdateNotificationModule());
     moduleManager.register(new EnhancedPlanningModule());
     moduleManager.register(new ZoneReorderModule());
+    moduleManager.register(new DashboardCleanerModule());
 }

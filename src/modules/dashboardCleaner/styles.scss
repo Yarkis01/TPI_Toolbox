@@ -1,0 +1,22 @@
+body.tpi-dashboard-cleaner {
+    &.tpi-dashboard-cleaner--hide-intro {
+        .dashboard-intro {
+            display: none !important;
+        }
+    }
+
+    &.tpi-dashboard-cleaner--hide-shortcuts {
+        .dashboard-social-shortcuts {
+            display: none !important;
+        }
+    }
+
+    .dash-block--actions .dash-block__body {
+        min-height: 0;
+        height: var(--tpi-actions-feed-height, 490px);
+    }
+
+    .actions-feed {
+        max-height: var(--tpi-actions-feed-height, 490px);
+    }
+}
