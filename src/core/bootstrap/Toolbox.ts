@@ -289,8 +289,10 @@ export class Toolbox implements IBootstrap {
     private _createBody(): HTMLElement {
         const modules = this._moduleManager.getModules();
         const rows = modules.map((module) =>
-            this._configRenderer.createModuleRow(module, (isChecked) =>
-                this._moduleManager.toggleModule(module.id, isChecked),
+            this._configRenderer.createModuleRow(
+                module,
+                (isChecked) => this._moduleManager.toggleModule(module.id, isChecked),
+                this._moduleManager.isModuleEnabled(module.id),
             ),
         );
 

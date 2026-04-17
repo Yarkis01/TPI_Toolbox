@@ -124,6 +124,17 @@ export class ModuleManager {
     }
 
     /**
+     * Returns whether a module is enabled in settings (user intent),
+     * regardless of whether it is currently active on the page.
+     * @param moduleId The module identifier.
+     */
+    public isModuleEnabled(moduleId: string): boolean {
+        const module = this._modules.get(moduleId);
+        if (!module) return false;
+        return this._settingsManager.getModuleState(moduleId, module.enabledByDefault);
+    }
+
+    /**
      * Gets all registered modules.
      * @returns An array of registered modules.
      */
