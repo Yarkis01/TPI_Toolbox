@@ -16,7 +16,11 @@ export class ModuleConfigRenderer {
      * @param onToggle - Callback when module is toggled.
      * @returns The row element.
      */
-    public createModuleRow(module: IModule, onToggle: (isChecked: boolean) => void): HTMLElement {
+    public createModuleRow(
+        module: IModule,
+        onToggle: (isChecked: boolean) => void,
+        isEnabledInSettings?: boolean,
+    ): HTMLElement {
         const moduleStatus = ModuleStatusService.getInstance().getStatus(module.id);
 
         const badges: HTMLElement[] = [];
@@ -170,7 +174,11 @@ export class ModuleConfigRenderer {
         ]);
 
         // Use the shared config renderer
-        const { controls, configPanel } = this.createModuleControls(module, onToggle);
+        const { controls, configPanel } = this.createModuleControls(
+            module,
+            onToggle,
+            isEnabledInSettings,
+        );
 
         const row = createElement(
             'div',
@@ -199,6 +207,7 @@ export class ModuleConfigRenderer {
     public createModuleControls(
         module: IModule,
         onToggle: (isChecked: boolean) => void,
+        isEnabledInSettings?: boolean,
     ): { controls: HTMLElement; configPanel: HTMLElement | null } {
         const configSchema = module.getConfigSchema();
         const hasConfig = configSchema && configSchema.options.length > 0;
@@ -219,7 +228,8 @@ export class ModuleConfigRenderer {
             },
         }) as HTMLInputElement;
 
-        checkbox.checked = isUnavailable ? false : module.isEnabled();
+        const checkedState = isEnabledInSettings !== undefined ? isEnabledInSettings : module.isEnabled();
+        checkbox.checked = isUnavailable ? false : checkedState;
         if (isUnavailable) {
             checkbox.disabled = true;
         }
