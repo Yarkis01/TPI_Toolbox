@@ -65,9 +65,14 @@ export class DashboardCleanerModule extends BaseModule {
     /**
      * @inheritdoc
      */
-    protected onEnable(): void {
-        if (!this._isTargetPage()) return;
+    public override canRunOnPage(url: string): boolean {
+        return url.includes(DASHBOARD_PAGE_MATCH);
+    }
 
+    /**
+     * @inheritdoc
+     */
+    protected onEnable(): void {
         document.body.classList.add(DASHBOARD_CLEANER_SELECTORS.ENABLED_CLASS);
         this._applyConfig();
     }
@@ -88,7 +93,8 @@ export class DashboardCleanerModule extends BaseModule {
     protected onConfigChanged(key: string, value: string | number | boolean): void {
         super.onConfigChanged(key, value);
 
-        if (!this._isTargetPage()) return;
+        if (!this.canRunOnPage(document.location.href))
+            return;
 
         if (key === CONFIG_KEYS.HIDE_INTRO) {
             document.body.classList.toggle(
@@ -105,12 +111,6 @@ export class DashboardCleanerModule extends BaseModule {
         }
     }
 
-    /**
-     * Checks if the current page is the dashboard.
-     */
-    private _isTargetPage(): boolean {
-        return document.location.href.includes(DASHBOARD_PAGE_MATCH);
-    }
 
     /**
      * Applies all configuration values to the DOM.
