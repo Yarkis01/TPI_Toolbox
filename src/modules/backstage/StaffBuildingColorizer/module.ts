@@ -31,11 +31,14 @@ export class StaffBuildingColorizerModule extends BaseModule {
     /**
      * @inheritdoc
      */
-    protected onEnable(): void {
-        if (!this._isValidPage()) {
-            return;
-        }
+    public override canRunOnPage(url: string): boolean {
+        return PAGE_CONFIGS.some((config) => url.includes(config.urlFragment));
+    }
 
+    /**
+     * @inheritdoc
+     */
+    protected onEnable(): void {
         const staffCard = this._findStaffCard();
         if (!staffCard) {
             this._logger.debug('Staff building card not found (#backstage-expand-building-btn).');
@@ -53,16 +56,6 @@ export class StaffBuildingColorizerModule extends BaseModule {
         this._removeCapacityBorders();
         this._removeMoodBars();
         this._modifiedElements = [];
-    }
-
-    /**
-     * Checks if the current page is valid for this module.
-     *
-     * @returns Whether the current page matches one of the configured URL fragments.
-     */
-    private _isValidPage(): boolean {
-        const currentUrl = window.location.href;
-        return PAGE_CONFIGS.some((config) => currentUrl.includes(config.urlFragment));
     }
 
     /**

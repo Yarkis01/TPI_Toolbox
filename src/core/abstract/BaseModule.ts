@@ -154,6 +154,14 @@ export abstract class BaseModule implements IModule {
     }
 
     /**
+     * @inheritdoc
+     * Override to restrict the module to specific pages.
+     */
+    canRunOnPage(_currentUrl: string): boolean {
+        return true;
+    }
+
+    /**
      * Gets a typed configuration value.
      * @param key - The configuration key.
      * @param defaultValue - The default value if not found.

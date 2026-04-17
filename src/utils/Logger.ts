@@ -36,9 +36,22 @@ const CONSOLE_STYLES = {
 } as const;
 
 /**
+ * Optional hook called on every log entry — used by the dev debug overlay.
+ * No-op in production (the overlay is never loaded).
+ */
+export type DebugLogEntry = {
+    level: LogLevel;
+    context: string;
+    message: string;
+    timestamp: string;
+};
+
+/**
  * Logger class for logging messages with different severity levels.
  */
 export class Logger {
+    public static _debugHook: ((entry: DebugLogEntry) => void) | undefined;
+
     private readonly _context: string;
 
     /**
@@ -89,6 +102,8 @@ export class Logger {
      */
     private print(level: LogLevel, message: string, consoleMethod: Function): void {
         const timestamp = new Date().toLocaleTimeString('fr-FR', { hour12: false });
+
+        Logger._debugHook?.({ level, context: this._context, message, timestamp });
 
         consoleMethod(
             `%c[${timestamp}] %c[${this._context}] %c${message}`,

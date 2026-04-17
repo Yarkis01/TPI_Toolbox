@@ -31,11 +31,14 @@ export class WarehouseColorizerModule extends BaseModule {
     /**
      * @inheritdoc
      */
-    protected onEnable(): void {
-        if (!this._isValidPage()) {
-            return;
-        }
+    public override canRunOnPage(url: string): boolean {
+        return PAGE_CONFIGS.some((config) => url.includes(config.urlFragment));
+    }
 
+    /**
+     * @inheritdoc
+     */
+    protected onEnable(): void {
         const warehouseCard = this._findWarehouseCard();
         if (!warehouseCard) {
             this._logger.debug('Warehouse card not found (#expand-entrepot-open).');
@@ -51,14 +54,6 @@ export class WarehouseColorizerModule extends BaseModule {
     protected onDisable(): void {
         this._removeCapacityBorders();
         this._modifiedElements = [];
-    }
-
-    /**
-     * Checks if the current page is valid for this module.
-     */
-    private _isValidPage(): boolean {
-        const currentUrl = window.location.href;
-        return PAGE_CONFIGS.some((config) => currentUrl.includes(config.urlFragment));
     }
 
     /**

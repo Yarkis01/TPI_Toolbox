@@ -104,11 +104,14 @@ export class NewDayHistoryModule extends BaseModule {
     /**
      * @inheritdoc
      */
-    protected onEnable(): void {
-        if (!window.location.href.includes(NEW_DAY_SELECTORS.PAGE_MATCH)) {
-            return;
-        }
+    public override canRunOnPage(url: string): boolean {
+        return url.includes(NEW_DAY_SELECTORS.PAGE_MATCH);
+    }
 
+    /**
+     * @inheritdoc
+     */
+    protected onEnable(): void {
         // Ensure storage is initialized
         if (!this._storage) {
             const maxRecords = this.getConfigValue(

@@ -1,4 +1,5 @@
 import { ModuleStatusService } from '../../services/ModuleStatusService';
+import { StorageService } from '../../services/StorageService';
 import { Logger } from '../../utils/Logger';
 import IModule from '../interfaces/IModule';
 import { SettingsManager } from './SettingsManager';
@@ -6,11 +7,14 @@ import { SettingsManager } from './SettingsManager';
 /**
  * Manager for application modules.
  */
+const FORCE_ENABLED_KEY = 'debug:forceEnabled';
+
 export class ModuleManager {
     private readonly _modules: Map<string, IModule>;
     private readonly _settingsManager: SettingsManager;
     private readonly _logger: Logger;
     private _sortedModulesCache: IModule[] | null = null;
+    private _forceEnabledIds: Set<string>;
 
     /**
      * Creates an instance of the ModuleManager class.
@@ -20,6 +24,9 @@ export class ModuleManager {
         this._modules = new Map<string, IModule>();
         this._settingsManager = settingsManager;
         this._logger = new Logger('ModuleManager');
+        this._forceEnabledIds = new Set(
+            StorageService.getInstance().load<string[]>(FORCE_ENABLED_KEY, []),
+        );
     }
 
     /**
@@ -41,7 +48,13 @@ export class ModuleManager {
         );
 
         if (shouldBeEnabled) {
-            if (!this._canEnableModule(module.id, 'register')) return;
+            const isForced = this._forceEnabledIds.has(module.id);
+            if (!isForced && !this._canEnableModule(module.id, 'register')) return;
+
+            if (!module.canRunOnPage(window.location.href)) {
+                this._logger.debug(`Module '${module.id}' skipped on this page.`);
+                return;
+            }
 
             module.init();
             try {
@@ -63,13 +76,50 @@ export class ModuleManager {
             if (enable && !this._canEnableModule(moduleId, 'toggle')) return;
 
             if (enable) {
-                module.init();
-                module.enable();
+                if (!module.canRunOnPage(window.location.href)) {
+                    this._logger.debug(
+                        `Module '${moduleId}' enabled in settings but inactive on this page.`,
+                    );
+                } else {
+                    module.init();
+                    module.enable();
+                }
             } else {
                 module.disable();
             }
 
             this._settingsManager.setModuleState(moduleId, enable);
+        }
+    }
+
+    /**
+     * Toggles a module's enabled state, bypassing broken/update-required checks.
+     * For dev/debug use only. Persists both the module state and the force-override flag so
+     * the module stays enabled across page reloads even if its status is broken/update_required.
+     * @param moduleId The module identifier.
+     * @param enable Whether to enable or disable the module.
+     */
+    public forceToggleModule(moduleId: string, enable: boolean): void {
+        const module = this._modules.get(moduleId);
+        if (!module) return;
+
+        if (enable) {
+            this._forceEnabledIds.add(moduleId);
+        } else {
+            this._forceEnabledIds.delete(moduleId);
+        }
+        StorageService.getInstance().save(FORCE_ENABLED_KEY, Array.from(this._forceEnabledIds));
+        this._settingsManager.setModuleState(moduleId, enable);
+
+        try {
+            if (enable) {
+                module.init();
+                module.enable();
+            } else {
+                module.disable();
+            }
+        } catch (error) {
+            this._logger.warn(`forceToggle '${moduleId}' threw: ${(error as Error).message}`);
         }
     }
 
