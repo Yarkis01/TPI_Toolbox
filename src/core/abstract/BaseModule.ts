@@ -156,9 +156,10 @@ export abstract class BaseModule implements IModule {
     /**
      * @inheritdoc
      * Override to restrict the module to specific pages.
+     * By default, modules are restricted to no pages.
      */
     canRunOnPage(_currentUrl: string): boolean {
-        return true;
+        return false;
     }
 
     /**
