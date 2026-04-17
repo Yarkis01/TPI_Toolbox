@@ -1,6 +1,6 @@
 import { BaseModule } from '../../core/abstract/BaseModule';
 import { SurfaceFilterInstance } from './SurfaceFilterInstance';
-import { SURFACE_SELECTORS, ATTRACTIONS_PAGE_MATCHES } from './constants';
+import { ATTRACTIONS_PAGE_MATCHES, SURFACE_SELECTORS } from './constants';
 
 /**
  * Module to filter attractions by surface area in the marketplace.

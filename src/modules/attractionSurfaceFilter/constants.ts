@@ -40,7 +40,4 @@ export const SURFACE_DEFAULTS = {
 /**
  * Pages where the surface filter should be active.
  */
-export const ATTRACTIONS_PAGE_MATCHES = [
-    'attractions_buy_new.php',
-    'attractions_buy_used.php',
-];
+export const ATTRACTIONS_PAGE_MATCHES = ['attractions_buy_new.php', 'attractions_buy_used.php'];

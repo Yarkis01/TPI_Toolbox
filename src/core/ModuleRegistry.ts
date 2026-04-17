@@ -1,8 +1,8 @@
 import { AttractionSurfaceFilterModule } from '../modules/attractionSurfaceFilter/module';
-import { DashboardCleanerModule } from '../modules/dashboardCleaner/module';
 import { StaffBuildingColorizerModule } from '../modules/backstage/StaffBuildingColorizer/module';
 import { WarehouseColorizerModule } from '../modules/backstage/warehouseColorizer/module';
 import { CollapsibleZonesModule } from '../modules/collapsibleZones/module';
+import { DashboardCleanerModule } from '../modules/dashboardCleaner/module';
 import { EnhancedPlanningModule } from '../modules/enhancedPlanning/module';
 import { EntityStatusColorizerModule } from '../modules/entityStatusColorizer/module';
 import { NewDayHistoryModule } from '../modules/newDayHistory/module';

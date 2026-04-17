@@ -228,7 +228,8 @@ export class ModuleConfigRenderer {
             },
         }) as HTMLInputElement;
 
-        const checkedState = isEnabledInSettings !== undefined ? isEnabledInSettings : module.isEnabled();
+        const checkedState =
+            isEnabledInSettings !== undefined ? isEnabledInSettings : module.isEnabled();
         checkbox.checked = isUnavailable ? false : checkedState;
         if (isUnavailable) {
             checkbox.disabled = true;

@@ -93,8 +93,7 @@ export class DashboardCleanerModule extends BaseModule {
     protected onConfigChanged(key: string, value: string | number | boolean): void {
         super.onConfigChanged(key, value);
 
-        if (!this.canRunOnPage(document.location.href))
-            return;
+        if (!this.canRunOnPage(document.location.href)) return;
 
         if (key === CONFIG_KEYS.HIDE_INTRO) {
             document.body.classList.toggle(
@@ -110,7 +109,6 @@ export class DashboardCleanerModule extends BaseModule {
             this._setFeedHeight(value as number);
         }
     }
-
 
     /**
      * Applies all configuration values to the DOM.
