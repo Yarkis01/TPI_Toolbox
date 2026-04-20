@@ -142,6 +142,23 @@ export abstract class BaseModule implements IModule {
         if (configManager) {
             configManager.set(key, value);
             this.onConfigChanged(key, value);
+            this._propagateDependencies(key, value);
+        }
+    }
+
+    /**
+     * Forces dependent options to true when their dependency becomes true.
+     * @param key - The key that changed.
+     * @param value - The new value.
+     */
+    private _propagateDependencies(key: string, value: string | number | boolean): void {
+        if (value !== true) return;
+        const schema = this.getConfigSchema();
+        if (!schema) return;
+        for (const option of schema.options) {
+            if (option.dependsOn === key) {
+                this.setConfigValue(option.key, true);
+            }
         }
     }
 

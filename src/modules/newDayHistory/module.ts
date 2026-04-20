@@ -4,7 +4,18 @@ import { createElement } from '../../utils/DomUtils';
 import { HistoryModal } from './HistoryModal';
 import { HistoryStorage } from './HistoryStorage';
 import { NEW_DAY_SELECTORS, NEW_DAY_STRINGS, STORAGE_CONFIG } from './constants';
-import { DayRecord, ParkDayRecord, RawAttractionRecord, RawBoutiqueRecord, RawRestaurantRecord, RawSpectacleRecord, TaxRecord, PayrollData, TransportLine, ParkEvent } from './interfaces';
+import {
+    DayRecord,
+    ParkDayRecord,
+    ParkEvent,
+    PayrollData,
+    RawAttractionRecord,
+    RawBoutiqueRecord,
+    RawRestaurantRecord,
+    RawSpectacleRecord,
+    TaxRecord,
+    TransportLine,
+} from './interfaces';
 import './styles.scss';
 
 /** Configuration keys for this module */
@@ -108,12 +119,18 @@ interface RawNewDayReport {
                 electricity_total?: number;
                 bonus?: number;
                 revenues?: Record<string, { name?: string; revenue?: number }>;
-                sales?: Record<string, { name?: string; visitors_served?: number; sales?: Record<string, number> }>;
+                sales?: Record<
+                    string,
+                    { name?: string; visitors_served?: number; sales?: Record<string, number> }
+                >;
             };
             boutiques?: {
                 open?: RawBoutiqueRecord[];
                 revenues?: Record<string, { revenue?: number; cost?: number }>;
-                sales?: Record<string, { visitors_served?: number; sales?: Record<string, number> }>;
+                sales?: Record<
+                    string,
+                    { visitors_served?: number; sales?: Record<string, number> }
+                >;
             };
             employees?: {
                 wentOff?: Array<{ name: string; poste: string }>;
@@ -344,7 +361,7 @@ export class NewDayHistoryModule extends BaseModule {
             'border-radius: 0 4px 4px 0',
         ].join(';');
         warning.textContent =
-            '⚠️ Le module Historique des journées ne prend en charge que les avancements simples. Les journées simulées ici ne seront pas enregistrées dans l\'historique.';
+            "⚠️ Le module Historique des journées ne prend en charge que les avancements simples. Les journées simulées ici ne seront pas enregistrées dans l'historique.";
 
         modalBody.appendChild(warning);
         this._multiWarning = warning;
@@ -488,7 +505,8 @@ export class NewDayHistoryModule extends BaseModule {
 
         const existing = this._storage.getAll();
         const duplicate = existing.find(
-            (r) => r.daysRemaining === record.daysRemaining && report.timestamp - r.timestamp < 60_000,
+            (r) =>
+                r.daysRemaining === record.daysRemaining && report.timestamp - r.timestamp < 60_000,
         );
         if (duplicate) {
             this._logger.info('Duplicate record detected, skipping save');
@@ -533,12 +551,14 @@ export class NewDayHistoryModule extends BaseModule {
             const boutiqueRevenues = p.boutiques?.revenues ?? {};
             const boutiqueSales = p.boutiques?.sales ?? {};
 
-            const transportLines: TransportLine[] = (p.transport_expenses?.lines ?? []).map((l) => ({
-                label: l.label ?? '',
-                units: l.units ?? 0,
-                grossCost: l.gross_cost ?? 0,
-                reimbursement: l.reimbursement ?? 0,
-            }));
+            const transportLines: TransportLine[] = (p.transport_expenses?.lines ?? []).map(
+                (l) => ({
+                    label: l.label ?? '',
+                    units: l.units ?? 0,
+                    grossCost: l.gross_cost ?? 0,
+                    reimbursement: l.reimbursement ?? 0,
+                }),
+            );
 
             const events: ParkEvent[] = (p.events ?? []).map((e) => ({
                 subtitle: e.subtitle ?? '',
@@ -547,7 +567,8 @@ export class NewDayHistoryModule extends BaseModule {
 
             return {
                 name: p.name,
-                status: p.status === 'ouvert' ? 'open' : p.status === 'fermé' ? 'closed' : 'unknown',
+                status:
+                    p.status === 'ouvert' ? 'open' : p.status === 'fermé' ? 'closed' : 'unknown',
                 cityName: p.city_name,
                 countryName: p.country_name,
                 hasWarning: p.meta?.has_warning ?? false,
@@ -581,7 +602,9 @@ export class NewDayHistoryModule extends BaseModule {
                     waitTimeBonus: p.attractions?.wait_time_bonus ?? 0,
                     fastPassTotal: p.attractions?.fast_pass_total ?? 0,
                     duplicatePenalty: p.attractions?.duplicate_penalty ?? 0,
-                    maintenanceBonus: (p.attractions?.maintenance_bonus ?? []).map((m) => ({ name: m.name })),
+                    maintenanceBonus: (p.attractions?.maintenance_bonus ?? []).map((m) => ({
+                        name: m.name,
+                    })),
                     technicians: {
                         count: p.attractions?.technicians?.count ?? 0,
                         capacity: p.attractions?.technicians?.capacity ?? 0,
@@ -593,9 +616,9 @@ export class NewDayHistoryModule extends BaseModule {
 
                 spectacles: p.spectacles
                     ? {
-                        open: p.spectacles.open ?? [],
-                        totalCost: p.spectacles.total_cost ?? 0,
-                    }
+                          open: p.spectacles.open ?? [],
+                          totalCost: p.spectacles.total_cost ?? 0,
+                      }
                     : null,
 
                 restaurants: {

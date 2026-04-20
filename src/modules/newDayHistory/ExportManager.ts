@@ -222,7 +222,14 @@ export class ExportManager {
      * 01 — Summary per day.
      */
     private _generateSummaryCsv(records: DayRecord[]): string {
-        const headers = ['Date', 'Timestamp', 'Jours restants', 'Jour', 'Nb parcs', 'Résultat total'];
+        const headers = [
+            'Date',
+            'Timestamp',
+            'Jours restants',
+            'Jour',
+            'Nb parcs',
+            'Résultat total',
+        ];
 
         const rows = records.map((r) =>
             [
