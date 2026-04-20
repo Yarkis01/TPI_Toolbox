@@ -345,6 +345,8 @@ export class ModuleConfigRenderer {
 
         panel.appendChild(optionsContainer);
 
+        this._wireDependencies(schema, optionsContainer);
+
         return panel;
     }
 
@@ -376,6 +378,39 @@ export class ModuleConfigRenderer {
                     input.value = String(value);
                 }
             }
+        }
+
+        this._wireDependencies(schema, optionsContainer as HTMLElement);
+    }
+
+    /**
+     * Wires up dependency relationships between config options.
+     * When a boolean option that others depend on changes, dependent inputs are forced and locked.
+     * @param schema - The configuration schema.
+     * @param container - The options container element.
+     */
+    private _wireDependencies(schema: IModuleConfigSchema, container: HTMLElement): void {
+        for (const option of schema.options) {
+            if (!option.dependsOn) continue;
+
+            const depInput = container.querySelector<HTMLInputElement>(
+                `[data-config-key="${option.dependsOn}"]`,
+            );
+            const thisInput = container.querySelector<HTMLInputElement>(
+                `[data-config-key="${option.key}"]`,
+            );
+
+            if (!depInput || !thisInput) continue;
+
+            const applyState = () => {
+                const forced = depInput.checked;
+                thisInput.disabled = forced;
+                if (forced) thisInput.checked = true;
+                thisInput.closest('.tpi-switch')?.classList.toggle('tpi-switch--disabled', forced);
+            };
+
+            applyState();
+            depInput.addEventListener('change', applyState);
         }
     }
 

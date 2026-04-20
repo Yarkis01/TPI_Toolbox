@@ -15,6 +15,11 @@ export interface IConfigOptionBase {
     description?: string;
     /** The type of option */
     type: ConfigOptionType;
+    /**
+     * Key of another boolean option this option depends on.
+     * When the referenced option is true, this option is forced to true and locked in the UI.
+     */
+    dependsOn?: string;
 }
 
 /**
