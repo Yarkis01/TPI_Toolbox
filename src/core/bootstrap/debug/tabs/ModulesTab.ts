@@ -18,7 +18,18 @@ export class ModulesTab {
             this.render(container);
         };
 
+        const isOsMode = this._moduleManager.isModuleEnabled('operating_system');
+
         const toolbar = makeToolbar([makeBtn('🔄 Rafraîchir', refresh)]);
+
+        if (isOsMode) {
+            const notice = document.createElement('div');
+            notice.style.cssText =
+                'padding:6px 10px;margin-bottom:8px;background:#3a2e1e;color:#f9c74f;border-radius:6px;font-size:11px;';
+            notice.textContent =
+                "⚠️ Mode OS actif : les modules s'exécutent dans des iframes. L'état runtime n'est pas disponible ici, seul l'état des paramètres est affiché.";
+            container.appendChild(notice);
+        }
 
         const { table, tbody } = makeTable(['Nom', 'ID', 'État', '']);
 
@@ -32,7 +43,10 @@ export class ModulesTab {
 
             const statusCell = tr.insertCell();
             const badge = document.createElement('span');
-            if (isActive) {
+            if (isOsMode) {
+                badge.className = `tdbg-badge tdbg-badge--${isEnabledInSettings ? 'ok' : 'off'}`;
+                badge.textContent = isEnabledInSettings ? 'Activé' : 'Inactif';
+            } else if (isActive) {
                 badge.className = 'tdbg-badge tdbg-badge--ok';
                 badge.textContent = 'Actif';
             } else if (isEnabledInSettings) {
