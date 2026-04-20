@@ -1,6 +1,6 @@
 .os-window {
     position: absolute;
-    background: rgba(30, 30, 30, 0.85);
+    background: linear-gradient(180deg, rgba(26, 39, 58, 0.98) 0%, rgba(18, 28, 42, 0.99) 100%);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-radius: 12px;
@@ -364,7 +364,7 @@ body.os-reduce-effects {
     .os-window {
         backdrop-filter: none !important;
         -webkit-backdrop-filter: none !important;
-        background: rgb(30, 30, 30) !important;
+        background: #172334 !important;
         animation: none !important;
         transition: none !important;
     }
