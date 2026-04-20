@@ -38,12 +38,17 @@ export class CollapsibleZonesModule extends BaseModule {
     /**
      * @inheritdoc
      */
+    public override canRunOnPage(url: string): boolean {
+        return COLLAPSE_SELECTORS.PAGE_MATCHES.some((match) => url.includes(match));
+    }
+
+    /**
+     * @inheritdoc
+     */
     protected onEnable(): void {
-        if (this._isTargetPage()) {
-            document.body.classList.add(COLLAPSE_SELECTORS.ENABLED_CLASS);
-            this._loadState();
-            this._setupCollapsibles();
-        }
+        document.body.classList.add(COLLAPSE_SELECTORS.ENABLED_CLASS);
+        this._loadState();
+        this._setupCollapsibles();
     }
 
     /**
@@ -59,15 +64,6 @@ export class CollapsibleZonesModule extends BaseModule {
         document.querySelectorAll(COLLAPSE_SELECTORS.ZONE_GROUP).forEach((group) => {
             group.classList.remove(COLLAPSE_SELECTORS.COLLAPSED_CLASS);
         });
-    }
-
-    /**
-     * Checks if the current page is the target page.
-     */
-    private _isTargetPage(): boolean {
-        return COLLAPSE_SELECTORS.PAGE_MATCHES.some((match) =>
-            document.location.href.includes(match),
-        );
     }
 
     /**

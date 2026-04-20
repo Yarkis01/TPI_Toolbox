@@ -1,4 +1,4 @@
-import { DayRecord, ParkDayRecord } from './interfaces';
+import { DayRecord } from './interfaces';
 
 /**
  * Manages detailed exports of history data.
@@ -13,7 +13,7 @@ export class ExportManager {
     public exportDetailedJson(records: DayRecord[]): string {
         const exportData = {
             exportDate: new Date().toISOString(),
-            version: '1.0',
+            version: '2.0',
             totalRecords: records.length,
             records: records.map((record) => ({
                 ...record,
@@ -39,35 +39,16 @@ export class ExportManager {
     private _generateAllCsvFiles(records: DayRecord[]): Map<string, string> {
         const files = new Map<string, string>();
 
-        // 1. Summary CSV - Overview of each day
         files.set('01_resume_journees.csv', this._generateSummaryCsv(records));
-
-        // 2. Parks summary CSV
         files.set('02_resume_parcs.csv', this._generateParksSummaryCsv(records));
-
-        // 3. Visitors CSV
         files.set('03_visiteurs.csv', this._generateVisitorsCsv(records));
-
-        // 4. Attractions CSV
-        files.set('04_attractions.csv', this._generateAttractionsCsv(records));
-
-        // 5. Spectacles CSV
-        files.set('05_spectacles.csv', this._generateSpectaclesCsv(records));
-
-        // 6. Restaurants CSV
-        files.set('06_restaurants.csv', this._generateRestaurantsCsv(records));
-
-        // 7. Boutiques CSV
-        files.set('07_boutiques.csv', this._generateBoutiquesCsv(records));
-
-        // 8. HR CSV
-        files.set('08_ressources_humaines.csv', this._generateHrCsv(records));
-
-        // 9. Finances CSV
-        files.set('09_finances.csv', this._generateFinancesCsv(records));
-
-        // 10. Park notes details CSV
-        files.set('10_details_notes.csv', this._generateNoteDetailsCsv(records));
+        files.set('04_finances.csv', this._generateFinancesCsv(records));
+        files.set('05_attractions.csv', this._generateAttractionsCsv(records));
+        files.set('06_spectacles.csv', this._generateSpectaclesCsv(records));
+        files.set('07_restaurants.csv', this._generateRestaurantsCsv(records));
+        files.set('08_boutiques.csv', this._generateBoutiquesCsv(records));
+        files.set('09_taxes.csv', this._generateTaxesCsv(records));
+        files.set('10_notes.csv', this._generateNotesCsv(records));
 
         return files;
     }
@@ -77,7 +58,6 @@ export class ExportManager {
      * Uses a simple ZIP implementation without external dependencies.
      */
     private async _createZipBlob(files: Map<string, string>): Promise<Blob> {
-        // Simple ZIP file structure
         const encoder = new TextEncoder();
         const zipParts: Uint8Array[] = [];
         const centralDirectory: Uint8Array[] = [];
@@ -89,13 +69,11 @@ export class ExportManager {
             const filenameBytes = encoder.encode(filename);
             const contentBytes = encoder.encode(content);
 
-            // Local file header
             const localHeader = this._createLocalFileHeader(filenameBytes, contentBytes);
             zipParts.push(localHeader);
             zipParts.push(filenameBytes);
             zipParts.push(contentBytes);
 
-            // Central directory entry
             const centralEntry = this._createCentralDirectoryEntry(
                 filenameBytes,
                 contentBytes,
@@ -106,14 +84,12 @@ export class ExportManager {
             offset += localHeader.length + filenameBytes.length + contentBytes.length;
         }
 
-        // Add central directory
         const centralDirStart = offset;
         for (const entry of centralDirectory) {
             zipParts.push(entry);
             offset += entry.length;
         }
 
-        // End of central directory
         const endRecord = this._createEndOfCentralDirectory(
             fileEntries.length,
             offset - centralDirStart,
@@ -121,7 +97,6 @@ export class ExportManager {
         );
         zipParts.push(endRecord);
 
-        // Concatenate all parts into a single ArrayBuffer
         const totalLength = zipParts.reduce((sum, arr) => sum + arr.length, 0);
         const result = new Uint8Array(totalLength);
         let position = 0;
@@ -140,27 +115,16 @@ export class ExportManager {
         const header = new Uint8Array(30);
         const view = new DataView(header.buffer);
 
-        // Local file header signature
         view.setUint32(0, 0x04034b50, true);
-        // Version needed
         view.setUint16(4, 20, true);
-        // General purpose bit flag
         view.setUint16(6, 0, true);
-        // Compression method (0 = stored)
         view.setUint16(8, 0, true);
-        // File time
         view.setUint16(10, 0, true);
-        // File date
         view.setUint16(12, 0, true);
-        // CRC-32 (simplified - would need actual calculation for real ZIP)
         view.setUint32(14, this._crc32(content), true);
-        // Compressed size
         view.setUint32(18, content.length, true);
-        // Uncompressed size
         view.setUint32(22, content.length, true);
-        // File name length
         view.setUint16(26, filename.length, true);
-        // Extra field length
         view.setUint16(28, 0, true);
 
         return header;
@@ -177,42 +141,24 @@ export class ExportManager {
         const entry = new Uint8Array(46 + filename.length);
         const view = new DataView(entry.buffer);
 
-        // Central directory file header signature
         view.setUint32(0, 0x02014b50, true);
-        // Version made by
         view.setUint16(4, 20, true);
-        // Version needed to extract
         view.setUint16(6, 20, true);
-        // General purpose bit flag
         view.setUint16(8, 0, true);
-        // Compression method
         view.setUint16(10, 0, true);
-        // File time
         view.setUint16(12, 0, true);
-        // File date
         view.setUint16(14, 0, true);
-        // CRC-32
         view.setUint32(16, this._crc32(content), true);
-        // Compressed size
         view.setUint32(20, content.length, true);
-        // Uncompressed size
         view.setUint32(24, content.length, true);
-        // File name length
         view.setUint16(28, filename.length, true);
-        // Extra field length
         view.setUint16(30, 0, true);
-        // File comment length
         view.setUint16(32, 0, true);
-        // Disk number start
         view.setUint16(34, 0, true);
-        // Internal file attributes
         view.setUint16(36, 0, true);
-        // External file attributes
         view.setUint32(38, 0, true);
-        // Relative offset of local header
         view.setUint32(42, localHeaderOffset, true);
 
-        // Copy filename
         entry.set(filename, 46);
 
         return entry;
@@ -229,21 +175,13 @@ export class ExportManager {
         const record = new Uint8Array(22);
         const view = new DataView(record.buffer);
 
-        // End of central directory signature
         view.setUint32(0, 0x06054b50, true);
-        // Number of this disk
         view.setUint16(4, 0, true);
-        // Disk where central directory starts
         view.setUint16(6, 0, true);
-        // Number of central directory records on this disk
         view.setUint16(8, fileCount, true);
-        // Total number of central directory records
         view.setUint16(10, fileCount, true);
-        // Size of central directory
         view.setUint32(12, centralDirSize, true);
-        // Offset of start of central directory
         view.setUint32(16, centralDirOffset, true);
-        // Comment length
         view.setUint16(20, 0, true);
 
         return record;
@@ -281,22 +219,17 @@ export class ExportManager {
     // ==================== CSV GENERATORS ====================
 
     /**
-     * Generates summary CSV.
+     * 01 — Summary per day.
      */
     private _generateSummaryCsv(records: DayRecord[]): string {
-        const headers = [
-            'Date',
-            'Timestamp',
-            'Jours restants',
-            'Nombre de parcs',
-            'Résultat total',
-        ];
+        const headers = ['Date', 'Timestamp', 'Jours restants', 'Jour', 'Nb parcs', 'Résultat total'];
 
         const rows = records.map((r) =>
             [
                 `"${new Date(r.timestamp).toLocaleString('fr-FR')}"`,
                 r.timestamp,
                 r.daysRemaining,
+                r.day,
                 r.parks.length,
                 r.totalResult,
             ].join(','),
@@ -306,19 +239,21 @@ export class ExportManager {
     }
 
     /**
-     * Generates parks summary CSV.
+     * 02 — Parks summary.
      */
     private _generateParksSummaryCsv(records: DayRecord[]): string {
         const headers = [
             'Date',
             'Jours restants',
-            'Nom du parc',
+            'Parc',
             'Statut',
-            'Avertissement',
-            'Visiteurs totaux',
-            'Note du parc',
-            'XP gagnée',
-            'Résultat journalier',
+            'Ville',
+            'Pays',
+            'Visiteurs',
+            'Note',
+            'XP',
+            'Résultat brut',
+            'Résultat net',
         ];
 
         const rows: string[] = [];
@@ -331,10 +266,12 @@ export class ExportManager {
                         r.daysRemaining,
                         `"${p.name}"`,
                         p.status,
-                        p.hasWarning ? 'Oui' : 'Non',
-                        p.visitors.totalVisitors,
-                        p.summary.parkNote,
-                        p.summary.experienceGained,
+                        `"${p.cityName}"`,
+                        `"${p.countryName}"`,
+                        p.visitors.total,
+                        p.parkNote,
+                        p.experienceGain,
+                        p.benefitBeforeTaxes,
                         p.finalResult,
                     ].join(','),
                 );
@@ -345,27 +282,23 @@ export class ExportManager {
     }
 
     /**
-     * Generates visitors CSV.
+     * 03 — Visitors detail.
      */
     private _generateVisitorsCsv(records: DayRecord[]): string {
         const headers = [
             'Date',
             'Parc',
-            'Visiteurs totaux',
+            'Total',
             'Adultes',
             'Enfants',
-            'Visiteurs voiture',
-            'Visiteurs transport',
-            'Parking occupé',
-            'Parking disponible',
-            'Parking libre',
-            'Capacité totale',
-            'Bonus sécurité',
-            'Propreté (%)',
-            'Bonus propreté',
+            'Voiture',
+            'Transport',
             'Revenu adultes',
             'Revenu enfants',
-            'Revenu entrées total',
+            'Revenu total',
+            'Parking total',
+            'Parking occupé',
+            'Propreté (%)',
         ];
 
         const rows: string[] = [];
@@ -377,21 +310,17 @@ export class ExportManager {
                     [
                         date,
                         `"${p.name}"`,
-                        v.totalVisitors,
+                        v.total,
                         v.adults,
                         v.children,
-                        v.visitorsByCar,
-                        v.visitorsByTransport,
+                        v.byCar,
+                        v.byTransport,
+                        v.revenueAdults,
+                        v.revenueChildren,
+                        v.revenueTotal,
+                        v.parkingTotal,
                         v.parkingOccupied,
-                        v.parkingAvailable,
-                        v.parkingFree,
-                        v.totalCapacity,
-                        v.securityCapacityBonus,
-                        v.cleanliness,
-                        v.cleanlinessBonus,
-                        v.adultRevenue,
-                        v.childRevenue,
-                        v.totalEntryRevenue,
+                        p.cleanliness,
                     ].join(','),
                 );
             });
@@ -401,7 +330,51 @@ export class ExportManager {
     }
 
     /**
-     * Generates attractions CSV.
+     * 04 — Finances.
+     */
+    private _generateFinancesCsv(records: DayRecord[]): string {
+        const headers = [
+            'Date',
+            'Parc',
+            'Revenus entrées',
+            'Masse salariale',
+            'Élec attractions',
+            'Coût spectacles',
+            'Transports (net)',
+            'Amélioration zones',
+            'Résultat avant taxes',
+            'Taxes totales',
+            'Résultat final',
+        ];
+
+        const rows: string[] = [];
+        records.forEach((r) => {
+            const date = `"${new Date(r.timestamp).toLocaleString('fr-FR')}"`;
+            r.parks.forEach((p) => {
+                const taxTotal = p.taxes.reduce((s, t) => s + t.amount, 0);
+                rows.push(
+                    [
+                        date,
+                        `"${p.name}"`,
+                        p.visitors.revenueTotal,
+                        p.salary,
+                        p.attractions.electricityTotal,
+                        p.spectacles?.totalCost ?? 0,
+                        p.transportCost,
+                        p.zoneImprovementsCost,
+                        p.benefitBeforeTaxes,
+                        taxTotal,
+                        p.finalResult,
+                    ].join(','),
+                );
+            });
+        });
+
+        return [headers.join(','), ...rows].join('\n');
+    }
+
+    /**
+     * 05 — Attractions detail.
      */
     private _generateAttractionsCsv(records: DayRecord[]): string {
         const headers = [
@@ -409,27 +382,31 @@ export class ExportManager {
             'Parc',
             'Zone',
             'Attraction',
+            'Type',
             'Capacité',
-            'Coût/jour',
             'Temps attente (min)',
-            'Statut attente',
+            'Pénalité attente',
+            'Visiteurs/h',
+            'Coût élec',
         ];
 
         const rows: string[] = [];
         records.forEach((r) => {
             const date = `"${new Date(r.timestamp).toLocaleString('fr-FR')}"`;
             r.parks.forEach((p) => {
-                p.attractions.attractions.forEach((a) => {
+                p.attractions.open.forEach((a) => {
                     rows.push(
                         [
                             date,
                             `"${p.name}"`,
-                            `"${a.zone || 'Sans zone'}"`,
+                            `"${a.zone_name || 'Sans zone'}"`,
                             `"${a.name}"`,
-                            a.capacity,
-                            a.costPerDay,
-                            a.waitTime,
-                            a.waitTimeStatus,
+                            `"${a.type}"`,
+                            a.capacite_reelle,
+                            a.wait_time,
+                            a.wait_time_penalty,
+                            a.visitors_per_hour,
+                            a.electricity_cost,
                         ].join(','),
                     );
                 });
@@ -440,7 +417,7 @@ export class ExportManager {
     }
 
     /**
-     * Generates spectacles CSV.
+     * 06 — Spectacles detail.
      */
     private _generateSpectaclesCsv(records: DayRecord[]): string {
         const headers = [
@@ -450,7 +427,8 @@ export class ExportManager {
             'Spectacle',
             'Type',
             'Capacité',
-            'Visiteurs par show',
+            'Visiteurs/show',
+            'Coût/jour',
         ];
 
         const rows: string[] = [];
@@ -458,16 +436,17 @@ export class ExportManager {
             const date = `"${new Date(r.timestamp).toLocaleString('fr-FR')}"`;
             r.parks.forEach((p) => {
                 if (p.spectacles) {
-                    p.spectacles.spectacles.forEach((s) => {
+                    p.spectacles.open.forEach((s) => {
                         rows.push(
                             [
                                 date,
                                 `"${p.name}"`,
-                                `"${s.zone || 'Sans zone'}"`,
+                                `"${s.zone_name || 'Sans zone'}"`,
                                 `"${s.name}"`,
-                                `"${s.type}"`,
-                                s.capacity,
-                                s.visitorsPerShow,
+                                `"${s.spectacle}"`,
+                                s.capacite_reelle,
+                                s.visitors_per_show,
+                                s.prix_jour,
                             ].join(','),
                         );
                     });
@@ -479,33 +458,24 @@ export class ExportManager {
     }
 
     /**
-     * Generates restaurants CSV.
+     * 07 — Restaurants detail.
      */
     private _generateRestaurantsCsv(records: DayRecord[]): string {
-        const headers = [
-            'Date',
-            'Parc',
-            'Zone',
-            'Restaurant',
-            'Capacité',
-            'Visiteurs servis',
-            'Revenus',
-        ];
+        const headers = ['Date', 'Parc', 'Zone', 'Restaurant', 'Type', 'Capacité/jour'];
 
         const rows: string[] = [];
         records.forEach((r) => {
             const date = `"${new Date(r.timestamp).toLocaleString('fr-FR')}"`;
             r.parks.forEach((p) => {
-                p.restaurants.restaurants.forEach((rest) => {
+                p.restaurants.open.forEach((rest) => {
                     rows.push(
                         [
                             date,
                             `"${p.name}"`,
-                            `"${rest.zone || 'Sans zone'}"`,
+                            `"${rest.zone_name || 'Sans zone'}"`,
                             `"${rest.name}"`,
-                            rest.capacity,
-                            rest.visitorsServed,
-                            rest.revenue,
+                            `"${rest.type}"`,
+                            rest.capacite_day,
                         ].join(','),
                     );
                 });
@@ -516,35 +486,24 @@ export class ExportManager {
     }
 
     /**
-     * Generates boutiques CSV.
+     * 08 — Boutiques detail.
      */
     private _generateBoutiquesCsv(records: DayRecord[]): string {
-        const headers = [
-            'Date',
-            'Parc',
-            'Zone',
-            'Boutique',
-            'Capacité',
-            'Visiteurs servis',
-            'Détail ventes',
-            'Revenus',
-        ];
+        const headers = ['Date', 'Parc', 'Zone', 'Boutique', 'Type', 'Capacité/jour'];
 
         const rows: string[] = [];
         records.forEach((r) => {
             const date = `"${new Date(r.timestamp).toLocaleString('fr-FR')}"`;
             r.parks.forEach((p) => {
-                p.boutiques.boutiques.forEach((b) => {
+                p.boutiques.open.forEach((b) => {
                     rows.push(
                         [
                             date,
                             `"${p.name}"`,
-                            `"${b.zone || 'Sans zone'}"`,
+                            `"${b.zone_name || 'Sans zone'}"`,
                             `"${b.name}"`,
-                            b.capacity,
-                            b.visitorsServed,
-                            `"${b.salesDetail.replace(/"/g, '""')}"`,
-                            b.revenue,
+                            `"${b.type}"`,
+                            b.capacite_day,
                         ].join(','),
                     );
                 });
@@ -555,131 +514,77 @@ export class ExportManager {
     }
 
     /**
-     * Generates HR CSV.
+     * 09 — Taxes detail.
      */
-    private _generateHrCsv(records: DayRecord[]): string {
-        const headers = [
-            'Date',
-            'Parc',
-            'Employés disponibles',
-            'Masse salariale',
-            'Total RH',
-            'Résultat journalier RH',
-            'Mouvements employés',
-            'Changements équipes',
-        ];
+    private _generateTaxesCsv(records: DayRecord[]): string {
+        const headers = ['Date', 'Parc', 'Type taxe', 'Libellé', 'Montant', 'Détails'];
 
         const rows: string[] = [];
         records.forEach((r) => {
             const date = `"${new Date(r.timestamp).toLocaleString('fr-FR')}"`;
             r.parks.forEach((p) => {
-                const hr = p.hr;
-                const movements = hr.employeeMovements
-                    .map((m) => `${m.name} (${m.role}) ${m.action}`)
-                    .join('; ');
-                const changes = hr.teamStateChanges.join('; ');
-
-                rows.push(
-                    [
-                        date,
-                        `"${p.name}"`,
-                        hr.availableEmployees,
-                        hr.salary,
-                        hr.totalHR,
-                        hr.dailyResult,
-                        `"${movements}"`,
-                        `"${changes}"`,
-                    ].join(','),
-                );
-            });
-        });
-
-        return [headers.join(','), ...rows].join('\n');
-    }
-
-    /**
-     * Generates finances CSV.
-     */
-    private _generateFinancesCsv(records: DayRecord[]): string {
-        const headers = [
-            'Date',
-            'Parc',
-            'Revenu entrées',
-            'Revenu restaurants (brut)',
-            'Revenu restaurants (net)',
-            'Coût matières premières',
-            'Coût électricité restaurants',
-            'Revenu boutiques (brut)',
-            'Revenu boutiques (net)',
-            'Coût produits boutiques',
-            'Coût attractions',
-            'Coût électricité attractions',
-            'Coût spectacles',
-            'Masse salariale',
-            'Ville',
-            'Taux taxe (%)',
-            'Montant taxes',
-            'Taux holding (%)',
-            'Montant holding',
-            'Résultat journalier',
-        ];
-
-        const rows: string[] = [];
-        records.forEach((r) => {
-            const date = `"${new Date(r.timestamp).toLocaleString('fr-FR')}"`;
-            r.parks.forEach((p) => {
-                rows.push(
-                    [
-                        date,
-                        `"${p.name}"`,
-                        p.visitors.totalEntryRevenue,
-                        p.restaurants.totalRevenue,
-                        p.restaurants.netRevenue,
-                        p.restaurants.rawMaterialsCost,
-                        p.restaurants.electricityCost,
-                        p.boutiques.totalRevenue,
-                        p.boutiques.netRevenue,
-                        p.boutiques.productsCost,
-                        p.attractions.totalCost,
-                        p.attractions.electricityCost,
-                        p.spectacles?.totalCost || 0,
-                        p.hr.salary,
-                        `"${p.taxes.cityName}"`,
-                        p.taxes.taxRate,
-                        p.taxes.taxAmount,
-                        p.otherExpenses.holdingFeeRate,
-                        p.otherExpenses.holdingFeeAmount,
-                        p.finalResult,
-                    ].join(','),
-                );
-            });
-        });
-
-        return [headers.join(','), ...rows].join('\n');
-    }
-
-    /**
-     * Generates note details CSV.
-     */
-    private _generateNoteDetailsCsv(records: DayRecord[]): string {
-        const headers = ['Date', 'Parc', 'Type', 'Calcul', 'Points', 'Maximum atteint'];
-
-        const rows: string[] = [];
-        records.forEach((r) => {
-            const date = `"${new Date(r.timestamp).toLocaleString('fr-FR')}"`;
-            r.parks.forEach((p) => {
-                p.summary.noteDetails.forEach((n) => {
+                p.taxes.forEach((t) => {
                     rows.push(
                         [
                             date,
                             `"${p.name}"`,
-                            `"${n.type}"`,
-                            `"${n.calculation.replace(/"/g, '""')}"`,
-                            n.points,
-                            n.isMaxed ? 'Oui' : 'Non',
+                            `"${t.type}"`,
+                            `"${t.label.replace(/"/g, '""')}"`,
+                            t.amount,
+                            `"${t.details.replace(/"/g, '""')}"`,
                         ].join(','),
                     );
                 });
+            });
+        });
+
+        return [headers.join(','), ...rows].join('\n');
+    }
+
+    /**
+     * 10 — Notes detail.
+     */
+    private _generateNotesCsv(records: DayRecord[]): string {
+        const headers = [
+            'Date',
+            'Parc',
+            'Note finale',
+            'Note brute',
+            'Bonus thème',
+            'Bonus saison',
+            '% propreté',
+            'Delta propreté',
+            'Delta sécurité',
+            'Bonus attente',
+            'Nb coasters',
+            'Nb flatrides',
+            'Bonus balance',
+            'Score thématisation',
+        ];
+
+        const rows: string[] = [];
+        records.forEach((r) => {
+            const date = `"${new Date(r.timestamp).toLocaleString('fr-FR')}"`;
+            r.parks.forEach((p) => {
+                const nd = p.noteDetail;
+                rows.push(
+                    [
+                        date,
+                        `"${p.name}"`,
+                        nd.final,
+                        nd.subtotalBeforeThemeSeason,
+                        nd.themeBonus,
+                        nd.seasonBonus,
+                        nd.cleanlinessPercent,
+                        nd.cleanlinessNoteDelta,
+                        nd.entranceSecurityDelta,
+                        nd.attractionsWaitBonus,
+                        nd.coasterCount,
+                        nd.flatrideCount,
+                        nd.balanceBonus,
+                        p.thematisationScore,
+                    ].join(','),
+                );
             });
         });
 

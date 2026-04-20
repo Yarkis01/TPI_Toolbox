@@ -1,18 +1,18 @@
-import { DayRecord, ParkDayRecord } from './interfaces';
+import { DayRecord, ParkDayRecord, RawAttractionRecord } from './interfaces';
 
 /**
- * Generates detailed HTML view for a day record, replicating the original recap display.
+ * Generates detailed HTML view for a day record.
  */
 export class DetailedView {
     /**
-     * Formats a number with French locale.
+     * Formats a number with French locale (absolute value).
      */
     private _formatNumber(value: number): string {
         return Math.abs(value).toLocaleString('fr-FR');
     }
 
     /**
-     * Formats a currency value with color.
+     * Formats a currency value with color and optional sign.
      */
     private _formatCurrency(value: number, showSign = true): string {
         const color = value >= 0 ? 'rgb(46, 204, 113)' : 'rgb(231, 76, 60)';
@@ -21,17 +21,12 @@ export class DetailedView {
     }
 
     /**
-     * Get wait time color based on status.
+     * Returns color based on wait time in minutes.
      */
-    private _getWaitTimeColor(status: 'good' | 'warning' | 'bad'): string {
-        switch (status) {
-            case 'good':
-                return 'rgb(46, 204, 113)';
-            case 'warning':
-                return 'rgb(255, 165, 0)';
-            case 'bad':
-                return 'rgb(231, 76, 60)';
-        }
+    private _waitTimeColor(minutes: number): string {
+        if (minutes <= 15) return 'rgb(46, 204, 113)';
+        if (minutes <= 30) return 'rgb(255, 165, 0)';
+        return 'rgb(231, 76, 60)';
     }
 
     /**
@@ -51,8 +46,6 @@ export class DetailedView {
 
     /**
      * Generates detailed view for a single park.
-     * @param park - The park record to display.
-     * @param recordInfo - Optional record info (timestamp, daysRemaining).
      */
     public generateParkDetailedView(
         park: ParkDayRecord,
@@ -81,12 +74,19 @@ export class DetailedView {
         const statusClass = park.status === 'open' ? 'open' : 'closed';
         const statusText = park.status === 'open' ? 'Ouvert' : 'Fermé';
 
+        const eventsSection = park.events.length > 0 ? this._generateEventsSection(park) : '';
+        const seasonSection =
+            park.seasonDecoration.bonus > 0 || park.seasonDecoration.hasPlan
+                ? this._generateSeasonSection(park)
+                : '';
+
         return `
             <article class="tpi-detailed-park">
                 <div class="tpi-detailed-park__header">
                     <div>
                         <span class="tpi-detailed-park__name">${park.name}</span>
                         <span class="tpi-detailed-park__status tpi-detailed-park__status--${statusClass}">${statusText}</span>
+                        <span style="color: var(--text-secondary); font-size: 0.85rem;">${park.cityName}, ${park.countryName}</span>
                         ${park.hasWarning ? '<span class="tpi-detailed-park__warning">⚠️</span>' : ''}
                     </div>
                     <div class="tpi-detailed-park__result">
@@ -95,64 +95,46 @@ export class DetailedView {
                 </div>
 
                 <div class="tpi-detailed-park__sections">
-                    ${this._generateHRSection(park)}
+                    ${eventsSection}
                     ${this._generateVisitorsSection(park)}
                     ${this._generateAttractionsSection(park)}
                     ${park.spectacles ? this._generateSpectaclesSection(park) : ''}
                     ${this._generateRestaurantsSection(park)}
                     ${this._generateBoutiquesSection(park)}
-                    ${this._generateTaxesSection(park)}
-                    ${this._generateOtherExpensesSection(park)}
-                    ${this._generateSummarySection(park)}
+                    ${this._generateFinancesSection(park)}
+                    ${seasonSection}
+                    ${this._generateNoteSection(park)}
+                    ${this._generateEmployeesSection(park)}
                 </div>
             </article>
         `;
     }
 
     /**
-     * Generates the HR section.
+     * Generates the events section (daily alerts, inspections, anomalies).
      */
-    private _generateHRSection(park: ParkDayRecord): string {
-        const hr = park.hr;
-        const hasMovements = hr.employeeMovements.length > 0;
-        const hasChanges = hr.teamStateChanges.length > 0;
+    private _generateEventsSection(park: ParkDayRecord): string {
+        if (park.events.length === 0) return '';
+
+        const eventBlocks = park.events
+            .map(
+                (evt) => `
+                <div class="tpi-detailed-section__subsection">
+                    <p class="tpi-detailed-section__subtitle">${evt.subtitle}</p>
+                    <ul>${evt.items.map((item) => `<li>${item}</li>`).join('')}</ul>
+                </div>
+            `,
+            )
+            .join('');
 
         return `
             <div class="tpi-detailed-section">
                 <header class="tpi-detailed-section__header">
-                    <span class="tpi-detailed-section__icon">👥</span>
-                    <h4>Gestion des ressources humaines</h4>
+                    <span class="tpi-detailed-section__icon">📋</span>
+                    <h4>Événements du jour</h4>
                 </header>
                 <div class="tpi-detailed-section__content">
-                    <div class="tpi-detailed-section__grid">
-                        <div class="tpi-detailed-section__col">
-                            <p class="tpi-detailed-section__subtitle">Mouvements employé</p>
-                            ${
-                                hasMovements
-                                    ? `<ul>${hr.employeeMovements.map((m) => `<li>${m.name} (${m.role}) ${m.action}</li>`).join('')}</ul>`
-                                    : '<p class="tpi-detailed-section__empty">Aucun mouvement</p>'
-                            }
-                        </div>
-                        <div class="tpi-detailed-section__col">
-                            <p class="tpi-detailed-section__subtitle">Etat des équipes</p>
-                            ${
-                                hasChanges
-                                    ? `<ul>${hr.teamStateChanges.map((c) => `<li>${c}</li>`).join('')}</ul>`
-                                    : '<p class="tpi-detailed-section__empty">Aucun changement</p>'
-                            }
-                        </div>
-                    </div>
-                    <p class="tpi-detailed-section__info">Nombre d'employé disponible : ${hr.availableEmployees}</p>
-                    <div class="tpi-detailed-section__finance">
-                        <p class="tpi-detailed-section__subtitle">Recette / dépenses :</p>
-                        <ul>
-                            <li>Masse salariale : ${this._formatCurrency(-hr.salary)}</li>
-                        </ul>
-                    </div>
-                    <footer class="tpi-detailed-section__footer">
-                        <div>Total ressources humaines : ${this._formatCurrency(hr.totalHR)}</div>
-                        <div>Résultat journalier : ${this._formatCurrency(hr.dailyResult)}</div>
-                    </footer>
+                    ${eventBlocks}
                 </div>
             </div>
         `;
@@ -163,55 +145,54 @@ export class DetailedView {
      */
     private _generateVisitorsSection(park: ParkDayRecord): string {
         const v = park.visitors;
+        const e = park.entrance;
+
+        const entranceInfo =
+            e.throughputHour > 0
+                ? `<li>Débit entrée : <strong>${this._formatNumber(e.throughputHour)} pers./h</strong> (${this._formatNumber(e.activeBooths)} caisses)</li>`
+                : '';
+
+        const cleanlinessNote =
+            park.cleanliness.noteExplanation
+                ? `<li>Propreté : <strong>${park.cleanliness.percent}%</strong> — ${park.cleanliness.noteExplanation}</li>`
+                : `<li>Propreté : <strong>${park.cleanliness.percent}%</strong></li>`;
 
         return `
             <div class="tpi-detailed-section">
                 <header class="tpi-detailed-section__header">
                     <span class="tpi-detailed-section__icon">🚪</span>
-                    <h4>Visiteurs, entrées et parking</h4>
+                    <h4>Visiteurs</h4>
                 </header>
                 <div class="tpi-detailed-section__content">
                     <div class="tpi-detailed-section__subsection">
-                        <p class="tpi-detailed-section__subtitle">Parking :</p>
-                        <p>${this._formatNumber(v.parkingOccupied)} place(s) occupée(s) / ${this._formatNumber(v.parkingAvailable)} place(s) disponible(s) (${this._formatNumber(v.parkingFree)} libre(s))</p>
-                    </div>
-                    <div class="tpi-detailed-section__subsection">
-                        <p class="tpi-detailed-section__subtitle">Entrées :</p>
+                        <p class="tpi-detailed-section__subtitle">Fréquentation :</p>
                         <ul>
-                            <li>Capacité totale : ${this._formatNumber(v.totalCapacity)} pers./jour</li>
-                            ${
-                                v.securityCapacityBonus > 0
-                                    ? `<li>Capacité des points de sécurité : <span style="color: rgb(46, 204, 113);">+${v.securityCapacityBonus} points</span></li>`
-                                    : ''
-                            }
-                        </ul>
-                    </div>
-                    <div class="tpi-detailed-section__subsection">
-                        <p class="tpi-detailed-section__subtitle">Visiteurs :</p>
-                        <ul>
-                            <li>Visiteurs potentiels en voiture : ${this._formatNumber(v.visitorsByCar)} pers.</li>
-                            <li>Visiteurs potentiels arrivés par transport : ${this._formatNumber(v.visitorsByTransport)} pers.</li>
-                            <li>Visiteurs entrés aujourd'hui : <strong>${this._formatNumber(v.totalVisitors)} pers.</strong></li>
+                            <li>Visiteurs totaux : <strong>${this._formatNumber(v.total)}</strong></li>
                             <li>Adultes : ${this._formatNumber(v.adults)} · Enfants : ${this._formatNumber(v.children)}</li>
+                            <li>En voiture : ${this._formatNumber(v.byCar)} · En transport : ${this._formatNumber(v.byTransport)}</li>
+                            ${entranceInfo}
                         </ul>
                     </div>
                     <div class="tpi-detailed-section__subsection">
-                        <p class="tpi-detailed-section__subtitle">Avis des visiteurs :</p>
+                        <p class="tpi-detailed-section__subtitle">Revenus entrées :</p>
                         <ul>
-                            <li>Propreté du parc : ${v.cleanliness} %${v.cleanlinessBonus > 0 ? ` <span style="color: rgb(46, 204, 113);">(+${v.cleanlinessBonus} points)</span>` : ''}</li>
+                            <li>Adultes : ${this._formatCurrency(v.revenueAdults, false)}</li>
+                            <li>Enfants : ${this._formatCurrency(v.revenueChildren, false)}</li>
+                            <li><strong>Total entrées : ${this._formatCurrency(v.revenueTotal, false)}</strong></li>
                         </ul>
                     </div>
-                    <div class="tpi-detailed-section__finance">
-                        <p class="tpi-detailed-section__subtitle">Recette / dépenses :</p>
+                    <div class="tpi-detailed-section__subsection">
+                        <p class="tpi-detailed-section__subtitle">Parking :</p>
                         <ul>
-                            <li>Revenu des entrées adultes : ${this._formatCurrency(v.adultRevenue)}</li>
-                            <li>Revenu des entrées enfant : ${this._formatCurrency(v.childRevenue)}</li>
+                            <li>Places totales : ${this._formatNumber(v.parkingTotal)} · Places occupées : ${this._formatNumber(v.parkingOccupied)}</li>
                         </ul>
                     </div>
-                    <footer class="tpi-detailed-section__footer">
-                        <div>Total des entrées : ${this._formatCurrency(v.totalEntryRevenue)}</div>
-                        <div>Résultat journalier : ${this._formatCurrency(v.dailyResult)}</div>
-                    </footer>
+                    <div class="tpi-detailed-section__subsection">
+                        <p class="tpi-detailed-section__subtitle">Propreté :</p>
+                        <ul>
+                            ${cleanlinessNote}
+                        </ul>
+                    </div>
                 </div>
             </div>
         `;
@@ -222,31 +203,38 @@ export class DetailedView {
      */
     private _generateAttractionsSection(park: ParkDayRecord): string {
         const a = park.attractions;
+        const showFastPass = a.fastPassTotal > 0;
 
-        // Group attractions by zone
-        const attractionsByZone = new Map<string, typeof a.attractions>();
-        a.attractions.forEach((attr) => {
-            const zone = attr.zone || 'Sans zone';
-            if (!attractionsByZone.has(zone)) {
-                attractionsByZone.set(zone, []);
-            }
-            attractionsByZone.get(zone)!.push(attr);
-        });
+        const byZone = new Map<string, RawAttractionRecord[]>();
+        for (const attr of a.open) {
+            const zone = attr.zone_name || 'Sans zone';
+            if (!byZone.has(zone)) byZone.set(zone, []);
+            byZone.get(zone)!.push(attr);
+        }
 
-        const attractionsTable = Array.from(attractionsByZone.entries())
+        const colCount = showFastPass ? 8 : 6;
+
+        const coasterCount = park.noteDetail.coasterCount;
+        const flatrideCount = park.noteDetail.flatrideCount;
+
+        const tableRows = Array.from(byZone.entries())
             .map(
                 ([zone, attrs]) => `
                 <tr class="tpi-detailed-table__zone-row">
-                    <td colspan="4">${zone}</td>
+                    <td colspan="${colCount}">${zone}</td>
                 </tr>
                 ${attrs
                     .map(
                         (attr) => `
                     <tr>
                         <td>${attr.name}</td>
-                        <td>${this._formatNumber(attr.capacity)}</td>
-                        <td>${this._formatNumber(attr.costPerDay)}&nbsp;€</td>
-                        <td style="color: ${this._getWaitTimeColor(attr.waitTimeStatus)};">${attr.waitTime} min</td>
+                        <td>${attr.type}</td>
+                        <td>${this._formatNumber(attr.capacite_reelle)}</td>
+                        <td style="color: ${this._waitTimeColor(attr.wait_time)};">${attr.wait_time} min</td>
+                        <td>${this._formatNumber(attr.visitors_per_hour)}</td>
+                        <td>${this._formatNumber(attr.electricity_cost)}&nbsp;€</td>
+                        ${showFastPass ? `<td>${this._formatNumber(attr.hype ?? 0)}</td>` : ''}
+                        ${showFastPass ? `<td>${this._formatCurrency(attr.fast_pass_revenue ?? 0, false)}</td>` : ''}
                     </tr>
                 `,
                     )
@@ -255,6 +243,41 @@ export class DetailedView {
             )
             .join('');
 
+        const inWorks =
+            a.inWorks.length > 0
+                ? `<div class="tpi-detailed-section__subsection">
+                    <p class="tpi-detailed-section__subtitle">En travaux :</p>
+                    <ul>${a.inWorks.map((w) => `<li>${w.name}</li>`).join('')}</ul>
+                   </div>`
+                : '';
+
+        const maintenanceBonusList =
+            a.maintenanceBonus.length > 0
+                ? `<div class="tpi-detailed-section__subsection">
+                    <p class="tpi-detailed-section__subtitle">Attractions en bon état (bonus maintenance) :</p>
+                    <ul>${a.maintenanceBonus.map((m) => `<li>${m.name}</li>`).join('')}</ul>
+                   </div>`
+                : '';
+
+        const duplicatePenaltyInfo =
+            a.duplicatePenalty > 0
+                ? `· Pénalité doublons : ${this._formatCurrency(-a.duplicatePenalty)}`
+                : '';
+
+        const fastPassInfo =
+            showFastPass
+                ? `· Fast-pass total : ${this._formatCurrency(a.fastPassTotal, false)}`
+                : '';
+
+        const technicianInfo =
+            a.technicians.hasShortage
+                ? `<p class="tpi-detailed-section__info" style="color: rgb(231, 76, 60);">
+                    ⚠️ Techniciens insuffisants : ${a.technicians.count}/${a.technicians.capacity} (manque ${a.technicians.missing})
+                   </p>`
+                : a.technicians.count > 0
+                  ? `<p class="tpi-detailed-section__info">Techniciens : ${a.technicians.count} (capacité ${a.technicians.capacity})</p>`
+                  : '';
+
         return `
             <div class="tpi-detailed-section">
                 <header class="tpi-detailed-section__header">
@@ -262,54 +285,35 @@ export class DetailedView {
                     <h4>Attractions</h4>
                 </header>
                 <div class="tpi-detailed-section__content">
-                    <p class="tpi-detailed-section__subtitle">${a.openCount} attractions ouvertes :</p>
+                    <p class="tpi-detailed-section__subtitle">${a.open.length} attraction(s) ouverte(s) :</p>
                     <div class="tpi-detailed-table-wrapper">
                         <table class="tpi-detailed-table">
                             <thead>
                                 <tr>
                                     <th>Attraction</th>
-                                    <th>Capacité réelle (pers./h)</th>
-                                    <th>Coût / jour</th>
-                                    <th>Temps d'attente</th>
+                                    <th>Type</th>
+                                    <th>Capacité réelle</th>
+                                    <th>Temps attente</th>
+                                    <th>Visiteurs/h</th>
+                                    <th>Coût élec.</th>
+                                    ${showFastPass ? '<th>Hype</th>' : ''}
+                                    ${showFastPass ? '<th>Fast-pass (€)</th>' : ''}
                                 </tr>
                             </thead>
-                            <tbody>
-                                ${attractionsTable}
-                            </tbody>
+                            <tbody>${tableRows}</tbody>
                         </table>
                     </div>
-                    ${
-                        a.waitTimePenalty > 0
-                            ? `<p class="tpi-detailed-section__alert" style="color: rgb(231, 76, 60);">-${a.waitTimePenalty} points sur la note du parc à cause de temps d'attente trop long.</p>`
-                            : ''
-                    }
                     <p class="tpi-detailed-section__info">
-                        Ratio coaster/flat : ${a.coasterCount} coasters / ${a.flatrideCount} flatrides 
-                        ${a.ratioBonus > 0 ? `<span style="color: rgb(46, 204, 113);">+${a.ratioBonus} points</span>` : ''}
-                        ${a.themingBonus > 0 ? ` · Bonus score de thématisation : <span style="color: rgb(46, 204, 113);">+${a.themingBonus} points</span>` : ''}
+                        Ratio : ${coasterCount} coasters / ${flatrideCount} flatrides
+                        ${park.noteDetail.balanceBonus > 0 ? `· <span style="color: rgb(46, 204, 113);">+${this._formatNumber(park.noteDetail.balanceBonus)} pts bonus</span>` : ''}
+                        · Bonus temps d'attente : <span style="color: rgb(46, 204, 113);">+${this._formatNumber(a.waitTimeBonus)} pts</span>
+                        · Électricité totale : ${this._formatCurrency(-a.electricityTotal)}
+                        ${duplicatePenaltyInfo}
+                        ${fastPassInfo}
                     </p>
-                    ${
-                        a.works.length > 0
-                            ? `
-                        <div class="tpi-detailed-section__subsection">
-                            <p class="tpi-detailed-section__subtitle">Attractions en travaux :</p>
-                            <ul>
-                                ${a.works.map((w) => `<li>${w.name} - ${w.daysRemaining} jours restants</li>`).join('')}
-                            </ul>
-                        </div>
-                    `
-                            : ''
-                    }
-                    <div class="tpi-detailed-section__finance">
-                        <p class="tpi-detailed-section__subtitle">Recette / dépenses :</p>
-                        <ul>
-                            <li>Coût en électricité : ${this._formatCurrency(-a.electricityCost)}</li>
-                        </ul>
-                    </div>
-                    <footer class="tpi-detailed-section__footer">
-                        <div>Total coût des attractions : ${this._formatCurrency(-a.totalCost)}</div>
-                        <div>Résultat journalier : ${this._formatCurrency(a.dailyResult)}</div>
-                    </footer>
+                    ${technicianInfo}
+                    ${maintenanceBonusList}
+                    ${inWorks}
                 </div>
             </div>
         `;
@@ -322,30 +326,28 @@ export class DetailedView {
         const s = park.spectacles;
         if (!s) return '';
 
-        // Group spectacles by zone
-        const spectaclesByZone = new Map<string, typeof s.spectacles>();
-        s.spectacles.forEach((spec) => {
-            const zone = spec.zone || 'Sans zone';
-            if (!spectaclesByZone.has(zone)) {
-                spectaclesByZone.set(zone, []);
-            }
-            spectaclesByZone.get(zone)!.push(spec);
-        });
+        const byZone = new Map<string, typeof s.open>();
+        for (const spec of s.open) {
+            const zone = spec.zone_name || 'Sans zone';
+            if (!byZone.has(zone)) byZone.set(zone, []);
+            byZone.get(zone)!.push(spec);
+        }
 
-        const spectaclesTable = Array.from(spectaclesByZone.entries())
+        const tableRows = Array.from(byZone.entries())
             .map(
                 ([zone, specs]) => `
                 <tr class="tpi-detailed-table__zone-row">
-                    <td colspan="4">${zone}</td>
+                    <td colspan="5">${zone}</td>
                 </tr>
                 ${specs
                     .map(
                         (spec) => `
                     <tr>
                         <td>${spec.name}</td>
-                        <td>${spec.type}</td>
-                        <td>${this._formatNumber(spec.capacity)}</td>
-                        <td>${this._formatNumber(spec.visitorsPerShow)}</td>
+                        <td>${spec.spectacle}</td>
+                        <td>${this._formatNumber(spec.capacite_reelle)}</td>
+                        <td>${this._formatNumber(spec.visitors_per_show)}</td>
+                        <td>${this._formatNumber(spec.prix_jour)}&nbsp;€</td>
                     </tr>
                 `,
                     )
@@ -361,32 +363,22 @@ export class DetailedView {
                     <h4>Spectacles</h4>
                 </header>
                 <div class="tpi-detailed-section__content">
-                    <p class="tpi-detailed-section__subtitle">${s.openCount} spectacles ouverts :</p>
+                    <p class="tpi-detailed-section__subtitle">${s.open.length} spectacle(s) ouvert(s) :</p>
                     <div class="tpi-detailed-table-wrapper">
                         <table class="tpi-detailed-table">
                             <thead>
                                 <tr>
                                     <th>Spectacle</th>
-                                    <th>Type de spectacle</th>
+                                    <th>Type</th>
                                     <th>Capacité réelle</th>
-                                    <th>Visiteurs par show</th>
+                                    <th>Visiteurs/show</th>
+                                    <th>Coût/jour</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                ${spectaclesTable}
-                            </tbody>
+                            <tbody>${tableRows}</tbody>
                         </table>
                     </div>
-                    <div class="tpi-detailed-section__finance">
-                        <p class="tpi-detailed-section__subtitle">Recette / dépenses :</p>
-                        <ul>
-                            <li>Coût des spectacles : ${this._formatCurrency(-s.totalCost)}</li>
-                        </ul>
-                    </div>
-                    <footer class="tpi-detailed-section__footer">
-                        <div>Total coût des spectacles : ${this._formatCurrency(-s.totalCost)}</div>
-                        <div>Résultat journalier : ${this._formatCurrency(s.dailyResult)}</div>
-                    </footer>
+                    <p class="tpi-detailed-section__info">Coût total spectacles : ${this._formatCurrency(-s.totalCost)}</p>
                 </div>
             </div>
         `;
@@ -397,31 +389,33 @@ export class DetailedView {
      */
     private _generateRestaurantsSection(park: ParkDayRecord): string {
         const r = park.restaurants;
+        const hasRevenue = r.open.some((rest) => rest.revenue !== undefined);
+        const hasVisitors = r.open.some((rest) => rest.visitorsServed !== undefined);
 
-        // Group restaurants by zone
-        const restaurantsByZone = new Map<string, typeof r.restaurants>();
-        r.restaurants.forEach((rest) => {
-            const zone = rest.zone || 'Sans zone';
-            if (!restaurantsByZone.has(zone)) {
-                restaurantsByZone.set(zone, []);
-            }
-            restaurantsByZone.get(zone)!.push(rest);
-        });
+        const colCount = 3 + (hasRevenue ? 1 : 0) + (hasVisitors ? 1 : 0);
 
-        const restaurantsTable = Array.from(restaurantsByZone.entries())
+        const byZone = new Map<string, typeof r.open>();
+        for (const rest of r.open) {
+            const zone = rest.zone_name || 'Sans zone';
+            if (!byZone.has(zone)) byZone.set(zone, []);
+            byZone.get(zone)!.push(rest);
+        }
+
+        const tableRows = Array.from(byZone.entries())
             .map(
                 ([zone, rests]) => `
                 <tr class="tpi-detailed-table__zone-row">
-                    <td colspan="4">${zone}</td>
+                    <td colspan="${colCount}">${zone}</td>
                 </tr>
                 ${rests
                     .map(
                         (rest) => `
                     <tr>
                         <td>${rest.name}</td>
-                        <td>${this._formatNumber(rest.capacity)}</td>
-                        <td>${this._formatNumber(rest.visitorsServed)}</td>
-                        <td>${this._formatCurrency(rest.revenue)}</td>
+                        <td>${rest.type}</td>
+                        <td>${this._formatNumber(rest.capacite_day)}</td>
+                        ${hasRevenue ? `<td>${rest.revenue !== undefined ? this._formatCurrency(rest.revenue, false) : '—'}</td>` : ''}
+                        ${hasVisitors ? `<td>${rest.visitorsServed !== undefined ? this._formatNumber(rest.visitorsServed) : '—'}</td>` : ''}
                     </tr>
                 `,
                     )
@@ -437,55 +431,25 @@ export class DetailedView {
                     <h4>Restaurants</h4>
                 </header>
                 <div class="tpi-detailed-section__content">
-                    <p class="tpi-detailed-section__subtitle">${r.openCount} restaurants ouverts :</p>
+                    <p class="tpi-detailed-section__subtitle">${r.open.length} restaurant(s) ouvert(s) :</p>
                     <div class="tpi-detailed-table-wrapper">
                         <table class="tpi-detailed-table">
                             <thead>
                                 <tr>
                                     <th>Restaurant</th>
-                                    <th>Capacité réelle</th>
-                                    <th>Visiteurs servis</th>
-                                    <th>Revenus</th>
+                                    <th>Type</th>
+                                    <th>Capacité/jour</th>
+                                    ${hasRevenue ? '<th>Revenus</th>' : ''}
+                                    ${hasVisitors ? '<th>Visiteurs servis</th>' : ''}
                                 </tr>
                             </thead>
-                            <tbody>
-                                ${restaurantsTable}
-                            </tbody>
+                            <tbody>${tableRows}</tbody>
                         </table>
                     </div>
-                    ${
-                        r.capacityWarnings.length > 0
-                            ? `
-                        <div class="tpi-detailed-section__alert" style="color: rgb(255, 165, 0);">
-                            ${r.capacityWarnings.join('<br>')}
-                        </div>
-                    `
-                            : ''
-                    }
-                    ${
-                        r.works.length > 0
-                            ? `
-                        <div class="tpi-detailed-section__subsection">
-                            <p class="tpi-detailed-section__subtitle">Restaurants en travaux :</p>
-                            <ul>
-                                ${r.works.map((w) => `<li>${w.name} - ${w.daysRemaining} jours restants</li>`).join('')}
-                            </ul>
-                        </div>
-                    `
-                            : ''
-                    }
-                    <div class="tpi-detailed-section__finance">
-                        <p class="tpi-detailed-section__subtitle">Recette / dépenses :</p>
-                        <ul>
-                            <li>Coût en électricité : ${this._formatCurrency(-r.electricityCost)}</li>
-                            <li>Coût des matières premières total : ${this._formatCurrency(-r.rawMaterialsCost)}</li>
-                            <li>Revenus des restaurants : ${this._formatCurrency(r.totalRevenue)}</li>
-                        </ul>
-                    </div>
-                    <footer class="tpi-detailed-section__footer">
-                        <div>Revenus des restaurants : ${this._formatCurrency(r.netRevenue)}</div>
-                        <div>Résultat journalier : ${this._formatCurrency(r.dailyResult)}</div>
-                    </footer>
+                    <p class="tpi-detailed-section__info">
+                        Électricité totale : ${this._formatCurrency(-r.electricityTotal)}
+                        · Bonus : <span style="color: rgb(46, 204, 113);">+${this._formatNumber(r.bonus)}&nbsp;€</span>
+                    </p>
                 </div>
             </div>
         `;
@@ -496,34 +460,45 @@ export class DetailedView {
      */
     private _generateBoutiquesSection(park: ParkDayRecord): string {
         const b = park.boutiques;
+        const hasRevenue = b.open.some((bout) => bout.revenue !== undefined);
+        const hasCost = b.open.some((bout) => bout.cost !== undefined);
+        const hasVisitors = b.open.some((bout) => bout.visitorsServed !== undefined);
+        const hasMargin = hasRevenue && hasCost;
 
-        // Group boutiques by zone
-        const boutiquesByZone = new Map<string, typeof b.boutiques>();
-        b.boutiques.forEach((bout) => {
-            const zone = bout.zone || 'Sans zone';
-            if (!boutiquesByZone.has(zone)) {
-                boutiquesByZone.set(zone, []);
-            }
-            boutiquesByZone.get(zone)!.push(bout);
-        });
+        const colCount = 3 + (hasRevenue ? 1 : 0) + (hasCost ? 1 : 0) + (hasMargin ? 1 : 0) + (hasVisitors ? 1 : 0);
 
-        const boutiquesTable = Array.from(boutiquesByZone.entries())
+        const byZone = new Map<string, typeof b.open>();
+        for (const bout of b.open) {
+            const zone = bout.zone_name || 'Sans zone';
+            if (!byZone.has(zone)) byZone.set(zone, []);
+            byZone.get(zone)!.push(bout);
+        }
+
+        const tableRows = Array.from(byZone.entries())
             .map(
                 ([zone, bouts]) => `
                 <tr class="tpi-detailed-table__zone-row">
-                    <td colspan="5">${zone}</td>
+                    <td colspan="${colCount}">${zone}</td>
                 </tr>
                 ${bouts
                     .map(
-                        (bout) => `
+                        (bout) => {
+                            const margin =
+                                bout.revenue !== undefined && bout.cost !== undefined
+                                    ? bout.revenue - bout.cost
+                                    : undefined;
+                            return `
                     <tr>
                         <td>${bout.name}</td>
-                        <td>${this._formatNumber(bout.capacity)}</td>
-                        <td>${this._formatNumber(bout.visitorsServed)}</td>
-                        <td style="font-size: 0.85rem;">${bout.salesDetail}</td>
-                        <td>${this._formatCurrency(bout.revenue)}</td>
+                        <td>${bout.type}</td>
+                        <td>${this._formatNumber(bout.capacite_day)}</td>
+                        ${hasRevenue ? `<td>${bout.revenue !== undefined ? this._formatCurrency(bout.revenue, false) : '—'}</td>` : ''}
+                        ${hasCost ? `<td>${bout.cost !== undefined ? this._formatCurrency(-bout.cost) : '—'}</td>` : ''}
+                        ${hasMargin ? `<td>${margin !== undefined ? this._formatCurrency(margin) : '—'}</td>` : ''}
+                        ${hasVisitors ? `<td>${bout.visitorsServed !== undefined ? this._formatNumber(bout.visitorsServed) : '—'}</td>` : ''}
                     </tr>
-                `,
+                `;
+                        },
                     )
                     .join('')}
             `,
@@ -537,59 +512,93 @@ export class DetailedView {
                     <h4>Boutiques</h4>
                 </header>
                 <div class="tpi-detailed-section__content">
-                    <p class="tpi-detailed-section__subtitle">${b.openCount} boutique(s) ouverte(s) :</p>
+                    <p class="tpi-detailed-section__subtitle">${b.open.length} boutique(s) ouverte(s) :</p>
                     <div class="tpi-detailed-table-wrapper">
                         <table class="tpi-detailed-table">
                             <thead>
                                 <tr>
                                     <th>Boutique</th>
-                                    <th>Capacité réelle</th>
-                                    <th>Visiteurs servis</th>
-                                    <th>Détail des ventes</th>
-                                    <th>Chiffre d'affaires</th>
+                                    <th>Type</th>
+                                    <th>Capacité/jour</th>
+                                    ${hasRevenue ? '<th>Revenus</th>' : ''}
+                                    ${hasCost ? '<th>Coût produits</th>' : ''}
+                                    ${hasMargin ? '<th>Marge</th>' : ''}
+                                    ${hasVisitors ? '<th>Visiteurs servis</th>' : ''}
                                 </tr>
                             </thead>
-                            <tbody>
-                                ${boutiquesTable}
-                            </tbody>
+                            <tbody>${tableRows}</tbody>
                         </table>
                     </div>
-                    <div class="tpi-detailed-section__finance">
-                        <p class="tpi-detailed-section__subtitle">Recette / dépenses :</p>
-                        <ul>
-                            <li>Coût d'achat des produits total : ${this._formatCurrency(-b.productsCost)}</li>
-                            <li>Revenus des boutiques : ${this._formatCurrency(b.totalRevenue)}</li>
-                        </ul>
-                    </div>
-                    <footer class="tpi-detailed-section__footer">
-                        <div>Revenus des boutiques : ${this._formatCurrency(b.netRevenue)}</div>
-                        <div>Résultat journalier : ${this._formatCurrency(b.dailyResult)}</div>
-                    </footer>
                 </div>
             </div>
         `;
     }
 
     /**
-     * Generates the taxes section.
+     * Generates the finances section with all revenue / cost lines.
      */
-    private _generateTaxesSection(park: ParkDayRecord): string {
-        const t = park.taxes;
+    private _generateFinancesSection(park: ParkDayRecord): string {
+        const taxTotal = park.taxes.reduce((s, t) => s + t.amount, 0);
+        const taxLines = park.taxes
+            .map((t) => `<li>${t.label} : ${this._formatCurrency(-t.amount)}</li>`)
+            .join('');
+
+        const payroll = park.payroll;
+        const payrollBreakdown = `
+            <ul style="margin-top: 0.25rem; padding-left: 1.5rem; font-size: 0.9em;">
+                ${payroll.costGuichet > 0 ? `<li>Guichet : ${this._formatCurrency(-payroll.costGuichet)}</li>` : ''}
+                ${payroll.costSecurite > 0 ? `<li>Sécurité : ${this._formatCurrency(-payroll.costSecurite)}</li>` : ''}
+                ${payroll.costEntretien > 0 ? `<li>Entretien : ${this._formatCurrency(-payroll.costEntretien)}</li>` : ''}
+                ${payroll.costOperateursAttraction > 0 ? `<li>Opérateurs attractions : ${this._formatCurrency(-payroll.costOperateursAttraction)}</li>` : ''}
+                ${payroll.costOperateursSpectacle > 0 ? `<li>Opérateurs spectacles : ${this._formatCurrency(-payroll.costOperateursSpectacle)}</li>` : ''}
+                ${payroll.entranceStaffCost > 0 ? `<li>Personnel entrée : ${this._formatCurrency(-payroll.entranceStaffCost)}</li>` : ''}
+                ${payroll.hrShortage > 0 ? `<li style="color: rgb(231, 76, 60);">Pénalité manque RH : ${this._formatCurrency(-payroll.hrShortage)}</li>` : ''}
+            </ul>
+        `;
+
+        const transport = park.transport;
+        const transportLines =
+            transport.lines.length > 0
+                ? `<ul style="margin-top: 0.25rem; padding-left: 1.5rem; font-size: 0.9em;">
+                    ${transport.lines.map((l) => `<li>${l.label} (${l.units}) : brut ${this._formatCurrency(-l.grossCost)} / remb. ${this._formatCurrency(l.reimbursement, false)}</li>`).join('')}
+                   </ul>`
+                : '';
+
+        const fastPassLine =
+            park.attractions.fastPassTotal > 0
+                ? `<li>Revenus fast-pass : ${this._formatCurrency(park.attractions.fastPassTotal, false)}</li>`
+                : '';
 
         return `
             <div class="tpi-detailed-section">
                 <header class="tpi-detailed-section__header">
-                    <span class="tpi-detailed-section__icon">🏛️</span>
-                    <h4>Taxes</h4>
+                    <span class="tpi-detailed-section__icon">💰</span>
+                    <h4>Finances</h4>
                 </header>
                 <div class="tpi-detailed-section__content">
-                    <p class="tpi-detailed-section__subtitle">Taxes de la ville de ${t.cityName}</p>
                     <ul>
-                        <li>Taxe sur les bénéfices (${t.taxRate}%) : ${this._formatCurrency(-t.taxAmount)}</li>
+                        <li>Revenus entrées : ${this._formatCurrency(park.visitors.revenueTotal, false)}</li>
+                        ${fastPassLine}
+                        <li>
+                            Masse salariale : ${this._formatCurrency(-payroll.salaryTotal)}
+                            ${payrollBreakdown}
+                        </li>
+                        <li>Électricité attractions : ${this._formatCurrency(-park.attractions.electricityTotal)}</li>
+                        ${park.spectacles ? `<li>Coût spectacles : ${this._formatCurrency(-park.spectacles.totalCost)}</li>` : ''}
+                        <li>
+                            Transports (net) : ${this._formatCurrency(-transport.netCost)}
+                            ${transportLines}
+                        </li>
+                        <li>Amélioration zones : ${this._formatCurrency(-park.zoneImprovements.totalCost)}</li>
+                        <li><strong>Résultat brut (avant taxes) : ${this._formatCurrency(park.benefitBeforeTaxes)}</strong></li>
+                    </ul>
+                    <p class="tpi-detailed-section__subtitle">Taxes :</p>
+                    <ul>
+                        ${taxLines}
+                        <li><strong>Total taxes : ${this._formatCurrency(-taxTotal)}</strong></li>
                     </ul>
                     <footer class="tpi-detailed-section__footer">
-                        <div>Coût des taxes : ${this._formatCurrency(-t.taxAmount)}</div>
-                        <div>Résultat journalier : ${this._formatCurrency(t.dailyResult)}</div>
+                        <div><strong>Résultat net final : ${this._formatCurrency(park.finalResult)}</strong></div>
                     </footer>
                 </div>
             </div>
@@ -597,106 +606,140 @@ export class DetailedView {
     }
 
     /**
-     * Generates the other expenses section.
+     * Generates the season decoration section.
      */
-    private _generateOtherExpensesSection(park: ParkDayRecord): string {
-        const o = park.otherExpenses;
+    private _generateSeasonSection(park: ParkDayRecord): string {
+        const sd = park.seasonDecoration;
 
         return `
             <div class="tpi-detailed-section">
                 <header class="tpi-detailed-section__header">
-                    <span class="tpi-detailed-section__icon">💸</span>
-                    <h4>Autres dépenses</h4>
+                    <span class="tpi-detailed-section__icon">🎄</span>
+                    <h4>Décoration saisonnière</h4>
                 </header>
                 <div class="tpi-detailed-section__content">
-                    <p class="tpi-detailed-section__subtitle">Dépenses :</p>
                     <ul>
-                        <li>Redevance holding (${o.holdingFeeRate}%) : ${this._formatCurrency(-o.holdingFeeAmount)}</li>
+                        <li>Bonus saison : <span style="color: rgb(46, 204, 113);">+${this._formatNumber(sd.bonus)}</span> / max ${this._formatNumber(sd.max)}</li>
+                        <li>Plan de décoration : ${sd.hasPlan ? '<span style="color: rgb(46, 204, 113);">Oui</span>' : 'Non'}</li>
+                        ${sd.recapFr ? `<li>${sd.recapFr}</li>` : ''}
                     </ul>
-                    <footer class="tpi-detailed-section__footer">
-                        <div>Autres dépenses : ${this._formatCurrency(-o.holdingFeeAmount)}</div>
-                        <div>Résultat journalier : ${this._formatCurrency(o.dailyResult)}</div>
-                    </footer>
                 </div>
             </div>
         `;
     }
 
     /**
-     * Generates the summary section with note details.
+     * Generates the note section.
      */
-    private _generateSummarySection(park: ParkDayRecord): string {
-        const s = park.summary;
+    private _generateNoteSection(park: ParkDayRecord): string {
+        const nd = park.noteDetail;
 
-        const noteDetailsTable =
-            s.noteDetails.length > 0
+        const zonesTable =
+            park.thematisationZones.length > 0
                 ? `
-            <div class="tpi-detailed-section__note-details">
-                <p class="tpi-detailed-section__subtitle" style="cursor: pointer;" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">
-                    ▼ Détail de la note de parc
-                </p>
-                <div style="display: none;">
-                    <table class="tpi-detailed-table tpi-detailed-table--note">
+                <p class="tpi-detailed-section__subtitle">Thématisation par zone :</p>
+                <div class="tpi-detailed-table-wrapper">
+                    <table class="tpi-detailed-table">
                         <thead>
                             <tr>
-                                <th>Type</th>
-                                <th>Calcul</th>
-                                <th>Note</th>
-                                <th>Maximum atteint</th>
+                                <th>Zone</th>
+                                <th>Score</th>
+                                <th>Attractions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            ${s.noteDetails
+                            ${park.thematisationZones
                                 .map(
-                                    (n) => `
+                                    (z) => `
                                 <tr>
-                                    <td>${n.type}</td>
-                                    <td style="color: var(--text-secondary);">${n.calculation}</td>
-                                    <td style="font-weight: 600; color: ${n.points >= 0 ? 'rgb(46, 204, 113)' : 'rgb(231, 76, 60)'};">
-                                        ${n.points >= 0 ? '+' : ''}${this._formatNumber(n.points)}
-                                    </td>
-                                    <td style="text-align: center; color: ${n.isMaxed ? 'rgb(46, 204, 113)' : 'var(--text-secondary)'}; font-weight: ${n.isMaxed ? '700' : '400'};">
-                                        ${n.isMaxed ? '✓' : '-'}
-                                    </td>
+                                    <td>${z.zoneName}</td>
+                                    <td>${this._formatNumber(z.score)}</td>
+                                    <td>${z.attractionCount}</td>
                                 </tr>
                             `,
                                 )
                                 .join('')}
-                            <tr class="tpi-detailed-table__total-row">
-                                <td>TOTAL</td>
-                                <td>Nouvelle note du parc</td>
-                                <td style="color: rgb(46, 204, 113);">${this._formatNumber(s.parkNote)}</td>
-                                <td>-</td>
-                            </tr>
                         </tbody>
                     </table>
                 </div>
-            </div>
-        `
+            `
+                : '';
+
+        const cleanlinessExplanation =
+            park.cleanliness.noteExplanation
+                ? `<li style="font-style: italic; color: var(--text-secondary);">${park.cleanliness.noteExplanation}</li>`
                 : '';
 
         return `
-            <div class="tpi-detailed-section tpi-detailed-section--summary">
+            <div class="tpi-detailed-section">
                 <header class="tpi-detailed-section__header">
                     <span class="tpi-detailed-section__icon">⭐</span>
-                    <h4>Récapitulatif de la journée</h4>
+                    <h4>Note du parc</h4>
                 </header>
                 <div class="tpi-detailed-section__content">
                     <div class="tpi-detailed-summary-grid">
                         <div class="tpi-detailed-summary-item">
-                            <p class="tpi-detailed-summary-item__label">Note de parc :</p>
-                            <p class="tpi-detailed-summary-item__value">${this._formatNumber(s.parkNote)}</p>
+                            <p class="tpi-detailed-summary-item__label">Note finale :</p>
+                            <p class="tpi-detailed-summary-item__value">${this._formatNumber(nd.final)}</p>
                         </div>
                         <div class="tpi-detailed-summary-item">
-                            <p class="tpi-detailed-summary-item__label">Expérience gagnée :</p>
-                            <p class="tpi-detailed-summary-item__value">${this._formatNumber(s.experienceGained)} pts</p>
+                            <p class="tpi-detailed-summary-item__label">Note brute :</p>
+                            <p class="tpi-detailed-summary-item__value">${this._formatNumber(nd.subtotalBeforeThemeSeason)}</p>
                         </div>
                         <div class="tpi-detailed-summary-item">
-                            <p class="tpi-detailed-summary-item__label">Résultat de la journée :</p>
-                            <p class="tpi-detailed-summary-item__value">${this._formatCurrency(s.dailyResult)}</p>
+                            <p class="tpi-detailed-summary-item__label">XP gagnée :</p>
+                            <p class="tpi-detailed-summary-item__value">${this._formatNumber(park.experienceGain)} pts</p>
                         </div>
                     </div>
-                    ${noteDetailsTable}
+                    <ul>
+                        <li>Propreté ${nd.cleanlinessPercent}% : <span style="color: rgb(46, 204, 113);">+${this._formatNumber(nd.cleanlinessNoteDelta)} pts</span></li>
+                        ${cleanlinessExplanation}
+                        <li>Sécurité entrée : <span style="color: rgb(46, 204, 113);">+${this._formatNumber(nd.entranceSecurityDelta)} pts</span></li>
+                        <li>Bonus temps d'attente : <span style="color: rgb(46, 204, 113);">+${this._formatNumber(nd.attractionsWaitBonus)} pts</span></li>
+                        <li>Balance coasters/flatrides (${nd.coasterCount}/${nd.flatrideCount}) : <span style="color: rgb(46, 204, 113);">+${this._formatNumber(nd.balanceBonus)} pts</span></li>
+                        <li>Bonus thématisation : <span style="color: rgb(46, 204, 113);">+${this._formatNumber(nd.themeBonus)} pts</span></li>
+                        <li>Bonus saison : <span style="color: rgb(46, 204, 113);">+${this._formatNumber(nd.seasonBonus)} pts</span></li>
+                    </ul>
+                    ${zonesTable}
+                </div>
+            </div>
+        `;
+    }
+
+    /**
+     * Generates the employees (RH) section if there are movements.
+     */
+    private _generateEmployeesSection(park: ParkDayRecord): string {
+        const { wentOff, backToWork } = park.employees;
+        if (wentOff.length === 0 && backToWork.length === 0) return '';
+
+        const wentOffList =
+            wentOff.length > 0
+                ? `<div class="tpi-detailed-section__col">
+                    <p class="tpi-detailed-section__subtitle">Partis :</p>
+                    <ul>${wentOff.map((e) => `<li>${e.name} (${e.poste})</li>`).join('')}</ul>
+                   </div>`
+                : '';
+
+        const backToWorkList =
+            backToWork.length > 0
+                ? `<div class="tpi-detailed-section__col">
+                    <p class="tpi-detailed-section__subtitle">Revenus :</p>
+                    <ul>${backToWork.map((e) => `<li>${e.name} (${e.poste})</li>`).join('')}</ul>
+                   </div>`
+                : '';
+
+        return `
+            <div class="tpi-detailed-section">
+                <header class="tpi-detailed-section__header">
+                    <span class="tpi-detailed-section__icon">👥</span>
+                    <h4>Ressources humaines</h4>
+                </header>
+                <div class="tpi-detailed-section__content">
+                    <div class="tpi-detailed-section__grid">
+                        ${wentOffList}
+                        ${backToWorkList}
+                    </div>
                 </div>
             </div>
         `;

@@ -92,6 +92,9 @@ export class HistoryModal {
                 <button class="tpi-history-modal__action-btn" data-action="export-csv">
                     <span>📊</span> ${NEW_DAY_STRINGS.EXPORT_CSV}
                 </button>
+                <button class="tpi-history-modal__action-btn tpi-history-modal__action-btn--analytics" data-action="open-analytics">
+                    <span>📈</span> ${NEW_DAY_STRINGS.OPEN_ANALYTICS}
+                </button>
                 <button class="tpi-history-modal__action-btn tpi-history-modal__action-btn--danger" data-action="clear">
                     <span>🗑️</span> ${NEW_DAY_STRINGS.CLEAR_HISTORY}
                 </button>
@@ -139,6 +142,9 @@ export class HistoryModal {
             case 'export-csv':
                 this._exportCsv();
                 break;
+            case 'open-analytics':
+                this._openAnalytics();
+                break;
             case 'clear':
                 this._clearHistory(modal);
                 break;
@@ -152,6 +158,44 @@ export class HistoryModal {
         const records = this._storage.getAll();
         const json = this._exportManager.exportDetailedJson(records);
         this._downloadFile(`tpi_history_${this._getDateString()}.json`, json, 'application/json');
+    }
+
+    /**
+     * Opens the analytics page in a new tab and sends the history JSON via
+     * postMessage once the page signals it is ready.
+     *
+     * Flow:
+     *   1. Open analytics as a normal GET (no CORS, all assets load correctly).
+     *   2. Analytics page fires  postMessage({ type: 'tpi_analytics_ready' }).
+     *   3. We reply with         postMessage({ type: 'tpi_history_data', payload: json }).
+     */
+    private _openAnalytics(): void {
+        const records = this._storage.getAll();
+        const json = this._exportManager.exportDetailedJson(records);
+        const analyticsOrigin = new URL(NEW_DAY_STRINGS.ANALYTICS_URL).origin;
+
+        const newTab = window.open(NEW_DAY_STRINGS.ANALYTICS_URL, '_blank');
+
+        if (!newTab) {
+            alert('Le nouvel onglet a été bloqué par le navigateur. Veuillez autoriser les popups pour ce site.');
+            return;
+        }
+
+        const handleMessage = (event: MessageEvent) => {
+            if (event.origin !== analyticsOrigin) return;
+            if ((event.data as { type?: string })?.type === 'tpi_analytics_ready') {
+                newTab.postMessage({ type: 'tpi_history_data', payload: json }, analyticsOrigin);
+                window.removeEventListener('message', handleMessage);
+                clearTimeout(timeout);
+            }
+        };
+
+        window.addEventListener('message', handleMessage);
+
+        // Safety cleanup after 30 s if the analytics page never responds
+        const timeout = setTimeout(() => {
+            window.removeEventListener('message', handleMessage);
+        }, 30_000);
     }
 
     /**
@@ -428,10 +472,18 @@ export class HistoryModal {
         const statusText = park.status === 'open' ? 'Ouvert' : 'Fermé';
         const resultClass = park.finalResult >= 0 ? 'positive' : 'negative';
         const resultSign = park.finalResult >= 0 ? '+' : '';
+        const taxTotal = park.taxes.reduce((s, t) => s + t.amount, 0);
+        const restaurantRevenue = park.restaurants.open.reduce((s, r) => s + (r.revenue ?? 0), 0);
+        const boutiqueRevenue = park.boutiques.open.reduce((s, b) => s + (b.revenue ?? 0), 0);
 
         const warningBadge = park.hasWarning
             ? '<span class="tpi-history-park__warning">⚠️ Attention</span>'
             : '';
+
+        const eventsBadge =
+            park.events.length > 0
+                ? `<span class="tpi-history-park__warning">📋 ${park.events.length} événement(s)</span>`
+                : '';
 
         return `
             <div class="tpi-history-park">
@@ -439,7 +491,9 @@ export class HistoryModal {
                     <div>
                         <span class="tpi-history-park__name">${park.name}</span>
                         <span class="tpi-history-park__status tpi-history-park__status--${statusClass}">${statusText}</span>
+                        <span style="color: var(--text-secondary); font-size: 0.8rem;">${park.cityName}</span>
                         ${warningBadge}
+                        ${eventsBadge}
                     </div>
                     <span class="tpi-history-park__result tpi-history-park__stat-value--${resultClass}">
                         ${resultSign}${this._formatNumber(park.finalResult)} €
@@ -448,7 +502,7 @@ export class HistoryModal {
                 <div class="tpi-history-park__grid">
                     <div class="tpi-history-park__stat">
                         <div class="tpi-history-park__stat-label">Visiteurs</div>
-                        <div class="tpi-history-park__stat-value">${this._formatNumber(park.visitors.totalVisitors)}</div>
+                        <div class="tpi-history-park__stat-value">${this._formatNumber(park.visitors.total)}</div>
                     </div>
                     <div class="tpi-history-park__stat">
                         <div class="tpi-history-park__stat-label">Adultes / Enfants</div>
@@ -456,43 +510,43 @@ export class HistoryModal {
                     </div>
                     <div class="tpi-history-park__stat">
                         <div class="tpi-history-park__stat-label">Revenu entrées</div>
-                        <div class="tpi-history-park__stat-value tpi-history-park__stat-value--positive">+${this._formatNumber(park.visitors.totalEntryRevenue)} €</div>
+                        <div class="tpi-history-park__stat-value tpi-history-park__stat-value--positive">+${this._formatNumber(park.visitors.revenueTotal)} €</div>
                     </div>
                     <div class="tpi-history-park__stat">
-                        <div class="tpi-history-park__stat-label">Restaurants (net)</div>
-                        <div class="tpi-history-park__stat-value ${this._getValueClass(park.restaurants.netRevenue)}">${this._formatSignedNumber(park.restaurants.netRevenue)} €</div>
+                        <div class="tpi-history-park__stat-label">Restaurants (CA)</div>
+                        <div class="tpi-history-park__stat-value ${this._getValueClass(restaurantRevenue)}">${this._formatSignedNumber(restaurantRevenue)} €</div>
                     </div>
                     <div class="tpi-history-park__stat">
-                        <div class="tpi-history-park__stat-label">Boutiques (net)</div>
-                        <div class="tpi-history-park__stat-value ${this._getValueClass(park.boutiques.netRevenue)}">${this._formatSignedNumber(park.boutiques.netRevenue)} €</div>
-                    </div>
-                    <div class="tpi-history-park__stat">
-                        <div class="tpi-history-park__stat-label">Coût attractions</div>
-                        <div class="tpi-history-park__stat-value tpi-history-park__stat-value--negative">-${this._formatNumber(park.attractions.totalCost)} €</div>
+                        <div class="tpi-history-park__stat-label">Boutiques (CA)</div>
+                        <div class="tpi-history-park__stat-value ${this._getValueClass(boutiqueRevenue)}">${this._formatSignedNumber(boutiqueRevenue)} €</div>
                     </div>
                     <div class="tpi-history-park__stat">
                         <div class="tpi-history-park__stat-label">Masse salariale</div>
-                        <div class="tpi-history-park__stat-value tpi-history-park__stat-value--negative">-${this._formatNumber(park.hr.salary)} €</div>
+                        <div class="tpi-history-park__stat-value tpi-history-park__stat-value--negative">-${this._formatNumber(park.payroll.salaryTotal)} €</div>
                     </div>
                     <div class="tpi-history-park__stat">
                         <div class="tpi-history-park__stat-label">Taxes</div>
-                        <div class="tpi-history-park__stat-value tpi-history-park__stat-value--negative">-${this._formatNumber(park.taxes.taxAmount)} €</div>
+                        <div class="tpi-history-park__stat-value tpi-history-park__stat-value--negative">-${this._formatNumber(taxTotal)} €</div>
+                    </div>
+                    <div class="tpi-history-park__stat">
+                        <div class="tpi-history-park__stat-label">Résultat brut</div>
+                        <div class="tpi-history-park__stat-value ${this._getValueClass(park.benefitBeforeTaxes)}">${this._formatSignedNumber(park.benefitBeforeTaxes)} €</div>
                     </div>
                     <div class="tpi-history-park__stat">
                         <div class="tpi-history-park__stat-label">Note du parc</div>
-                        <div class="tpi-history-park__stat-value">${this._formatNumber(park.summary.parkNote)}</div>
+                        <div class="tpi-history-park__stat-value">${this._formatNumber(park.parkNote)}</div>
                     </div>
                     <div class="tpi-history-park__stat">
                         <div class="tpi-history-park__stat-label">XP gagnée</div>
-                        <div class="tpi-history-park__stat-value">${this._formatNumber(park.summary.experienceGained)} pts</div>
+                        <div class="tpi-history-park__stat-value">${this._formatNumber(park.experienceGain)} pts</div>
                     </div>
                     <div class="tpi-history-park__stat">
-                        <div class="tpi-history-park__stat-label">Attractions ouvertes</div>
-                        <div class="tpi-history-park__stat-value">${park.attractions.openCount}</div>
+                        <div class="tpi-history-park__stat-label">Attractions</div>
+                        <div class="tpi-history-park__stat-value">${park.attractions.open.length}</div>
                     </div>
                     <div class="tpi-history-park__stat">
                         <div class="tpi-history-park__stat-label">Propreté</div>
-                        <div class="tpi-history-park__stat-value">${park.visitors.cleanliness}%</div>
+                        <div class="tpi-history-park__stat-value">${park.cleanliness.percent}%</div>
                     </div>
                 </div>
                 <button class="tpi-history-park__detail-btn" data-park-index="${parkIndex}">
