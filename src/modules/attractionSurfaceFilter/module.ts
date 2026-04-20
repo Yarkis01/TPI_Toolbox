@@ -1,6 +1,6 @@
 import { BaseModule } from '../../core/abstract/BaseModule';
 import { SurfaceFilterInstance } from './SurfaceFilterInstance';
-import { SURFACE_SELECTORS } from './constants';
+import { ATTRACTIONS_PAGE_MATCHES, SURFACE_SELECTORS } from './constants';
 
 /**
  * Module to filter attractions by surface area in the marketplace.
@@ -29,6 +29,13 @@ export class AttractionSurfaceFilterModule extends BaseModule {
      */
     public get description(): string {
         return 'Ajoute un slider pour filtrer les attractions par superficie maximum.';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public override canRunOnPage(url: string): boolean {
+        return ATTRACTIONS_PAGE_MATCHES.some((match) => url.includes(match));
     }
 
     /**

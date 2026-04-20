@@ -35,16 +35,23 @@ export class ZoneFilterModule extends BaseModule {
     /**
      * @inheritdoc
      */
+    public override canRunOnPage(url: string): boolean {
+        return url.includes(ZONE_SELECTORS.PAGE_MATCH);
+    }
+
+    /**
+     * @inheritdoc
+     */
     protected onEnable(): void {
         const container = document.querySelector(ZONE_SELECTORS.FILTER_CONTAINER);
-        if (window.location.href.includes(ZONE_SELECTORS.PAGE_MATCH) && container) {
-            this._injectStyles();
-            this._scanZones();
+        if (!container) return;
 
-            if (this._zones.size > 0) {
-                this._injectUI(container as HTMLElement);
-                this._setupInteractions();
-            }
+        this._injectStyles();
+        this._scanZones();
+
+        if (this._zones.size > 0) {
+            this._injectUI(container as HTMLElement);
+            this._setupInteractions();
         }
     }
 

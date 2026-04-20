@@ -38,11 +38,16 @@ export class ZoneReorderModule extends BaseModule {
     /**
      * @inheritdoc
      */
+    public override canRunOnPage(url: string): boolean {
+        return REORDER_SELECTORS.PAGE_MATCHES.some((match) => url.includes(match));
+    }
+
+    /**
+     * @inheritdoc
+     */
     protected onEnable(): void {
-        if (this._isTargetPage()) {
-            document.body.classList.add(REORDER_SELECTORS.ENABLED_CLASS);
-            this._setupZoneReorder();
-        }
+        document.body.classList.add(REORDER_SELECTORS.ENABLED_CLASS);
+        this._setupZoneReorder();
     }
 
     /**
@@ -73,15 +78,6 @@ export class ZoneReorderModule extends BaseModule {
             group.classList.remove(REORDER_SELECTORS.DRAGGING_CLASS);
             group.classList.remove(REORDER_SELECTORS.DRAG_OVER_CLASS);
         });
-    }
-
-    /**
-     * Checks if the current page is the target page.
-     */
-    private _isTargetPage(): boolean {
-        return REORDER_SELECTORS.PAGE_MATCHES.some((match) =>
-            document.location.href.includes(match),
-        );
     }
 
     /**

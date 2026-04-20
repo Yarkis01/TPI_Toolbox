@@ -2,25 +2,30 @@
  * Selectors for the operating system module.
  */
 export const SELECTORS = {
-    LEFT_MENU: '#left-menu',
-    GAME_CONTAINER: 'main.play-main',
+    APP_LAYOUT: '.app-layout',
+    APP_MAIN: 'main.app-main',
     DESKTOP_CONTAINER: 'os-desktop',
 } as const;
+
+/** Elements hidden in every iframe regardless of the page. */
+export const IFRAME_COMMON_SELECTORS = ['.app-mobile-header', 'div.chat-dock'] as const;
+
+/** Elements hidden in iframes where the sidebar should be fully removed. */
+export const IFRAME_HIDDEN_SELECTORS = [...IFRAME_COMMON_SELECTORS, '#app-sidebar-drawer'] as const;
 
 /**
  * Application IDs for the operating system module.
  */
 export const APP_IDS = {
     PROFILE: 'profile',
-    BROWSER: 'web',
     MAIL: 'mail',
-    INVEST: 'invest',
+    SHOP: 'shop',
     MY_PARK: 'my_park',
     NEXT_DAY: 'next_day',
     RANKING: 'ranking',
     CHAT: 'chat',
+    SUPPORT: 'support',
     TOOLS: 'tools',
-    SHOP: 'shop',
 } as const;
 
 /**
@@ -30,31 +35,27 @@ export const OS_CONFIG = {
     ID: 'operating_system',
     NAME: "Système d'exploitation",
     DESCRIPTION: "Transforme l'interface graphique en un système d'exploitation.",
-    URL_CHAT: 'https://www.themeparkindustries.com/tpiv4/game/chat.php',
-    URL_PROFILE: 'https://www.themeparkindustries.com/tpiv4/game/monbureau.php',
-    URL_BROWSER: 'https://www.themeparkindustries.com/tpiv4/game/park/fake/gogole.php',
-    URL_MAIL: 'https://www.themeparkindustries.com/tpiv4/game/mail.php',
-    URL_INVEST: 'https://www.themeparkindustries.com/tpiv4/game/invest.php',
-    URL_SHOP: 'https://www.themeparkindustries.com/tpiv4/game/boutique.php',
-    URL_MY_PARK: 'https://www.themeparkindustries.com/tpiv4/game/park/overview.php',
-    URL_NEXT_DAY: 'https://www.themeparkindustries.com/tpiv4/game/new_day.php',
-    URL_RANKING: 'https://www.themeparkindustries.com/tpiv4/game/classement.php',
+    URL_PROFILE: 'https://play.themeparkindustries.com/dashboard/bureau.php',
+    URL_MAIL: 'https://play.themeparkindustries.com/dashboard/mail.php',
+    URL_SHOP: 'https://play.themeparkindustries.com/dashboard/boutique.php',
+    URL_MY_PARK: 'https://play.themeparkindustries.com/dashboard/park/overview.php',
+    URL_NEXT_DAY: 'https://play.themeparkindustries.com/dashboard/new_day.php',
+    URL_RANKING: 'https://play.themeparkindustries.com/dashboard/classement.php',
+    URL_SUPPORT: 'https://play.themeparkindustries.com/dashboard/support.php',
     STYLES: {
         DESKTOP_BG: 'linear-gradient(135deg, #050505 0%, #061f10 100%)',
         DESKTOP_BG_COLOR: '#0f1110',
-        CHAT_BG: '#202020',
     },
     DOCK: {
         LABELS: {
             PROFILE: 'Bureau',
-            BROWSER: 'Gogole',
             MAIL: 'Mail',
-            INVEST: 'Investissements',
             SHOP: 'Boutique',
             MY_PARK: 'Mes parcs',
             NEXT_DAY: 'Jour suivant',
             RANKING: 'Classement',
             CHAT: 'Chat',
+            SUPPORT: 'Support',
             TOOLS: 'TPI Toolbox',
         },
     },

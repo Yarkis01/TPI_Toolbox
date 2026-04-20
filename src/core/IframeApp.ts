@@ -1,5 +1,6 @@
 import { Logger } from '../utils/Logger';
 import { registerCommonModules } from './ModuleRegistry';
+import { SupportWarning } from './bootstrap/SupportWarning';
 import IApp from './interfaces/IApp';
 import { ModuleManager } from './managers/ModuleManager';
 import { SettingsManager } from './managers/SettingsManager';
@@ -31,6 +32,8 @@ export class IframeApp implements IApp {
             const moduleManager = new ModuleManager(settingsManager);
             this._initializeModules(moduleManager);
         }
+
+        new SupportWarning().run();
     }
 
     /**

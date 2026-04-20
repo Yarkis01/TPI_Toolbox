@@ -36,3 +36,8 @@ export const SURFACE_DEFAULTS = {
     MAX: 5000,
     STEP: 50,
 };
+
+/**
+ * Pages where the surface filter should be active.
+ */
+export const ATTRACTIONS_PAGE_MATCHES = ['attractions_buy_new.php', 'attractions_buy_used.php'];

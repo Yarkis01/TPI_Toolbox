@@ -31,7 +31,9 @@ export class HistoryStorage {
      */
     public getAll(): DayRecord[] {
         const records = this._storage.load<DayRecord[]>(this._storageKey, []);
-        return records.sort((a, b) => b.timestamp - a.timestamp);
+        return records
+            .filter((r) => r.parks.every((p) => Array.isArray(p.taxes)))
+            .sort((a, b) => b.timestamp - a.timestamp);
     }
 
     /**
