@@ -1,6 +1,6 @@
 # 🔧 TPI Toolbox
 
-![Version](https://img.shields.io/badge/version-2.0.1-purple.svg)
+![Version](https://img.shields.io/badge/version-2.1.0-purple.svg)
 ![License](https://img.shields.io/badge/license-GPL--3.0-green.svg)
 ![Downloads](https://img.shields.io/github/downloads/Yarkis01/TPI_Toolbox/total.svg?v=2)
 
@@ -32,8 +32,8 @@ TPI Toolbox est entièrement modulable et regorge d'outils pensés pour les gér
 
 1. Installez une extension de gestion de scripts comme **[Tampermonkey](https://www.tampermonkey.net/)** ou **[Violentmonkey](https://violentmonkey.github.io/)** sur votre navigateur.
 2. Rendez-vous sur la page des **[Releases GitHub](https://github.com/Yarkis01/TPI_Toolbox/releases/latest)** du projet.
-4. Téléchargez et installez la dernière version du script (fichier `.user.js`).
-5. Rafraîchissez la page de **Theme Park Industries** et ouvrez le menu en cliquant sur le bouton TPI Toolbox !
+3. Téléchargez et installez la dernière version du script (fichier `.user.js`).
+4. Rafraîchissez la page de **Theme Park Industries** et ouvrez le menu en cliquant sur le bouton TPI Toolbox !
 
 ---
 
