@@ -29,6 +29,8 @@ export const NEW_DAY_STRINGS = {
     NO_HISTORY: 'Aucun historique disponible.',
     EXPORT_JSON: 'Exporter JSON',
     EXPORT_CSV: 'Exporter CSV',
+    OPEN_ANALYTICS: 'Analytics TPI Toolbox',
+    ANALYTICS_URL: 'https://tpitoolbox.yarkis.top/analytics',
     CLEAR_HISTORY: "Vider l'historique",
     CONFIRM_CLEAR: "Êtes-vous sûr de vouloir supprimer tout l'historique ?",
     DAY_LABEL: 'Jour',

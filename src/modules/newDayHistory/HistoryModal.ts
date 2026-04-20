@@ -92,6 +92,9 @@ export class HistoryModal {
                 <button class="tpi-history-modal__action-btn" data-action="export-csv">
                     <span>📊</span> ${NEW_DAY_STRINGS.EXPORT_CSV}
                 </button>
+                <button class="tpi-history-modal__action-btn tpi-history-modal__action-btn--analytics" data-action="open-analytics">
+                    <span>📈</span> ${NEW_DAY_STRINGS.OPEN_ANALYTICS}
+                </button>
                 <button class="tpi-history-modal__action-btn tpi-history-modal__action-btn--danger" data-action="clear">
                     <span>🗑️</span> ${NEW_DAY_STRINGS.CLEAR_HISTORY}
                 </button>
@@ -139,6 +142,9 @@ export class HistoryModal {
             case 'export-csv':
                 this._exportCsv();
                 break;
+            case 'open-analytics':
+                this._openAnalytics();
+                break;
             case 'clear':
                 this._clearHistory(modal);
                 break;
@@ -152,6 +158,44 @@ export class HistoryModal {
         const records = this._storage.getAll();
         const json = this._exportManager.exportDetailedJson(records);
         this._downloadFile(`tpi_history_${this._getDateString()}.json`, json, 'application/json');
+    }
+
+    /**
+     * Opens the analytics page in a new tab and sends the history JSON via
+     * postMessage once the page signals it is ready.
+     *
+     * Flow:
+     *   1. Open analytics as a normal GET (no CORS, all assets load correctly).
+     *   2. Analytics page fires  postMessage({ type: 'tpi_analytics_ready' }).
+     *   3. We reply with         postMessage({ type: 'tpi_history_data', payload: json }).
+     */
+    private _openAnalytics(): void {
+        const records = this._storage.getAll();
+        const json = this._exportManager.exportDetailedJson(records);
+        const analyticsOrigin = new URL(NEW_DAY_STRINGS.ANALYTICS_URL).origin;
+
+        const newTab = window.open(NEW_DAY_STRINGS.ANALYTICS_URL, '_blank');
+
+        if (!newTab) {
+            alert('Le nouvel onglet a été bloqué par le navigateur. Veuillez autoriser les popups pour ce site.');
+            return;
+        }
+
+        const handleMessage = (event: MessageEvent) => {
+            if (event.origin !== analyticsOrigin) return;
+            if ((event.data as { type?: string })?.type === 'tpi_analytics_ready') {
+                newTab.postMessage({ type: 'tpi_history_data', payload: json }, analyticsOrigin);
+                window.removeEventListener('message', handleMessage);
+                clearTimeout(timeout);
+            }
+        };
+
+        window.addEventListener('message', handleMessage);
+
+        // Safety cleanup after 30 s if the analytics page never responds
+        const timeout = setTimeout(() => {
+            window.removeEventListener('message', handleMessage);
+        }, 30_000);
     }
 
     /**
