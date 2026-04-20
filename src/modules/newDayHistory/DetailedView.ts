@@ -152,10 +152,9 @@ export class DetailedView {
                 ? `<li>Débit entrée : <strong>${this._formatNumber(e.throughputHour)} pers./h</strong> (${this._formatNumber(e.activeBooths)} caisses)</li>`
                 : '';
 
-        const cleanlinessNote =
-            park.cleanliness.noteExplanation
-                ? `<li>Propreté : <strong>${park.cleanliness.percent}%</strong> — ${park.cleanliness.noteExplanation}</li>`
-                : `<li>Propreté : <strong>${park.cleanliness.percent}%</strong></li>`;
+        const cleanlinessNote = park.cleanliness.noteExplanation
+            ? `<li>Propreté : <strong>${park.cleanliness.percent}%</strong> — ${park.cleanliness.noteExplanation}</li>`
+            : `<li>Propreté : <strong>${park.cleanliness.percent}%</strong></li>`;
 
         return `
             <div class="tpi-detailed-section">
@@ -264,19 +263,17 @@ export class DetailedView {
                 ? `· Pénalité doublons : ${this._formatCurrency(-a.duplicatePenalty)}`
                 : '';
 
-        const fastPassInfo =
-            showFastPass
-                ? `· Fast-pass total : ${this._formatCurrency(a.fastPassTotal, false)}`
-                : '';
+        const fastPassInfo = showFastPass
+            ? `· Fast-pass total : ${this._formatCurrency(a.fastPassTotal, false)}`
+            : '';
 
-        const technicianInfo =
-            a.technicians.hasShortage
-                ? `<p class="tpi-detailed-section__info" style="color: rgb(231, 76, 60);">
+        const technicianInfo = a.technicians.hasShortage
+            ? `<p class="tpi-detailed-section__info" style="color: rgb(231, 76, 60);">
                     ⚠️ Techniciens insuffisants : ${a.technicians.count}/${a.technicians.capacity} (manque ${a.technicians.missing})
                    </p>`
-                : a.technicians.count > 0
-                  ? `<p class="tpi-detailed-section__info">Techniciens : ${a.technicians.count} (capacité ${a.technicians.capacity})</p>`
-                  : '';
+            : a.technicians.count > 0
+              ? `<p class="tpi-detailed-section__info">Techniciens : ${a.technicians.count} (capacité ${a.technicians.capacity})</p>`
+              : '';
 
         return `
             <div class="tpi-detailed-section">
@@ -465,7 +462,12 @@ export class DetailedView {
         const hasVisitors = b.open.some((bout) => bout.visitorsServed !== undefined);
         const hasMargin = hasRevenue && hasCost;
 
-        const colCount = 3 + (hasRevenue ? 1 : 0) + (hasCost ? 1 : 0) + (hasMargin ? 1 : 0) + (hasVisitors ? 1 : 0);
+        const colCount =
+            3 +
+            (hasRevenue ? 1 : 0) +
+            (hasCost ? 1 : 0) +
+            (hasMargin ? 1 : 0) +
+            (hasVisitors ? 1 : 0);
 
         const byZone = new Map<string, typeof b.open>();
         for (const bout of b.open) {
@@ -481,13 +483,12 @@ export class DetailedView {
                     <td colspan="${colCount}">${zone}</td>
                 </tr>
                 ${bouts
-                    .map(
-                        (bout) => {
-                            const margin =
-                                bout.revenue !== undefined && bout.cost !== undefined
-                                    ? bout.revenue - bout.cost
-                                    : undefined;
-                            return `
+                    .map((bout) => {
+                        const margin =
+                            bout.revenue !== undefined && bout.cost !== undefined
+                                ? bout.revenue - bout.cost
+                                : undefined;
+                        return `
                     <tr>
                         <td>${bout.name}</td>
                         <td>${bout.type}</td>
@@ -498,8 +499,7 @@ export class DetailedView {
                         ${hasVisitors ? `<td>${bout.visitorsServed !== undefined ? this._formatNumber(bout.visitorsServed) : '—'}</td>` : ''}
                     </tr>
                 `;
-                        },
-                    )
+                    })
                     .join('')}
             `,
             )
@@ -665,10 +665,9 @@ export class DetailedView {
             `
                 : '';
 
-        const cleanlinessExplanation =
-            park.cleanliness.noteExplanation
-                ? `<li style="font-style: italic; color: var(--text-secondary);">${park.cleanliness.noteExplanation}</li>`
-                : '';
+        const cleanlinessExplanation = park.cleanliness.noteExplanation
+            ? `<li style="font-style: italic; color: var(--text-secondary);">${park.cleanliness.noteExplanation}</li>`
+            : '';
 
         return `
             <div class="tpi-detailed-section">

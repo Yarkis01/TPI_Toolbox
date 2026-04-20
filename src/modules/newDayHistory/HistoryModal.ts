@@ -177,7 +177,9 @@ export class HistoryModal {
         const newTab = window.open(NEW_DAY_STRINGS.ANALYTICS_URL, '_blank');
 
         if (!newTab) {
-            alert('Le nouvel onglet a été bloqué par le navigateur. Veuillez autoriser les popups pour ce site.');
+            alert(
+                'Le nouvel onglet a été bloqué par le navigateur. Veuillez autoriser les popups pour ce site.',
+            );
             return;
         }
 

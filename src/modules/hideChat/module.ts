@@ -16,7 +16,7 @@ export class HideChatModule extends BaseModule {
 
     /** @inheritdoc */
     public get description(): string {
-        return 'Gère l\'affichage des différents tchats : masquage complet, réduction en bouton compact, et plus encore.';
+        return "Gère l'affichage des différents tchats : masquage complet, réduction en bouton compact, et plus encore.";
     }
 
     /** @inheritdoc */
@@ -31,7 +31,8 @@ export class HideChatModule extends BaseModule {
                 {
                     key: CONFIG_KEYS.MODE,
                     label: 'Affichage du tchat global',
-                    description: 'Choisissez comment le tchat global apparaît sur toutes les pages.',
+                    description:
+                        'Choisissez comment le tchat global apparaît sur toutes les pages.',
                     type: 'select',
                     defaultValue: MODES.MINI,
                     options: [
@@ -43,7 +44,8 @@ export class HideChatModule extends BaseModule {
                 {
                     key: CONFIG_KEYS.HIDE_POLITIQUE_BADGE,
                     label: 'Masquer le badge du tchat politique',
-                    description: 'Cache l\'indicateur de nouveau message sur le lien vers le tchat politique dans la barre latérale.',
+                    description:
+                        "Cache l'indicateur de nouveau message sur le lien vers le tchat politique dans la barre latérale.",
                     type: 'boolean',
                     defaultValue: false,
                     dependsOn: CONFIG_KEYS.HIDE_POLITIQUE_CHAT,
@@ -84,9 +86,15 @@ export class HideChatModule extends BaseModule {
         if (key === CONFIG_KEYS.MODE) {
             this._applyMode();
         } else if (key === CONFIG_KEYS.HIDE_POLITIQUE_BADGE) {
-            document.body.classList.toggle(HIDE_CHAT_SELECTORS.HIDE_POLITIQUE_BADGE_CLASS, value as boolean);
+            document.body.classList.toggle(
+                HIDE_CHAT_SELECTORS.HIDE_POLITIQUE_BADGE_CLASS,
+                value as boolean,
+            );
         } else if (key === CONFIG_KEYS.HIDE_POLITIQUE_CHAT) {
-            document.body.classList.toggle(HIDE_CHAT_SELECTORS.HIDE_POLITIQUE_CHAT_CLASS, value as boolean);
+            document.body.classList.toggle(
+                HIDE_CHAT_SELECTORS.HIDE_POLITIQUE_CHAT_CLASS,
+                value as boolean,
+            );
         }
     }
 
@@ -106,7 +114,10 @@ export class HideChatModule extends BaseModule {
     private _applyMode(): void {
         const mode = this.getConfigValue<string>(CONFIG_KEYS.MODE, MODES.MINI);
 
-        document.body.classList.remove(HIDE_CHAT_SELECTORS.HIDDEN_CLASS, HIDE_CHAT_SELECTORS.MINI_CLASS);
+        document.body.classList.remove(
+            HIDE_CHAT_SELECTORS.HIDDEN_CLASS,
+            HIDE_CHAT_SELECTORS.MINI_CLASS,
+        );
 
         if (mode === MODES.HIDDEN) {
             document.body.classList.add(HIDE_CHAT_SELECTORS.HIDDEN_CLASS);

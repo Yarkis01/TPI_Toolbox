@@ -3,9 +3,9 @@ import { StaffBuildingColorizerModule } from '../modules/backstage/StaffBuilding
 import { WarehouseColorizerModule } from '../modules/backstage/warehouseColorizer/module';
 import { CollapsibleZonesModule } from '../modules/collapsibleZones/module';
 import { DashboardCleanerModule } from '../modules/dashboardCleaner/module';
-import { HideChatModule } from '../modules/hideChat/module';
 import { EnhancedPlanningModule } from '../modules/enhancedPlanning/module';
 import { EntityStatusColorizerModule } from '../modules/entityStatusColorizer/module';
+import { HideChatModule } from '../modules/hideChat/module';
 import { NewDayHistoryModule } from '../modules/newDayHistory/module';
 import { OperatingSystemModule } from '../modules/operatingSystem/module';
 import { RideHypeAsTextModule } from '../modules/rideHypeAsText/module';
