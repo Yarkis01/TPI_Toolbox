@@ -1,0 +1,46 @@
+body.tpi-hide-chat {
+    &.tpi-hide-chat--hide-politique-chat {
+        .park-politique-chatbox {
+            display: none !important;
+        }
+    }
+
+    &.tpi-hide-chat--hide-politique-badge {
+        .app-sidebar__sublink-chat-badge {
+            display: none !important;
+        }
+    }
+
+    &.tpi-hide-chat--hidden {
+        .chat-dock {
+            display: none !important;
+        }
+    }
+
+    &.tpi-hide-chat--mini {
+        .chat-dock__shell {
+            width: 2.8rem;
+            height: 2.8rem;
+            padding: 0;
+            justify-content: center;
+            border-radius: 50%;
+            margin: 0 auto;
+            transition: width 0.14s ease, border-radius 0.14s ease;
+        }
+
+        .chat-dock:not(.chat-dock--open) {
+            .chat-dock__input,
+            .chat-dock__online {
+                display: none !important;
+            }
+        }
+
+        .chat-dock.chat-dock--open .chat-dock__shell {
+            width: 100%;
+            height: auto;
+            padding: 0.45rem 0.5rem 0.45rem 0.75rem;
+            border-radius: 999px;
+            margin: 0;
+        }
+    }
+}

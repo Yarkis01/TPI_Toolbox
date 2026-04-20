@@ -3,6 +3,7 @@ import { StaffBuildingColorizerModule } from '../modules/backstage/StaffBuilding
 import { WarehouseColorizerModule } from '../modules/backstage/warehouseColorizer/module';
 import { CollapsibleZonesModule } from '../modules/collapsibleZones/module';
 import { DashboardCleanerModule } from '../modules/dashboardCleaner/module';
+import { HideChatModule } from '../modules/hideChat/module';
 import { EnhancedPlanningModule } from '../modules/enhancedPlanning/module';
 import { EntityStatusColorizerModule } from '../modules/entityStatusColorizer/module';
 import { NewDayHistoryModule } from '../modules/newDayHistory/module';
@@ -36,4 +37,5 @@ export function registerCommonModules(moduleManager: ModuleManager): void {
     moduleManager.register(new EnhancedPlanningModule());
     moduleManager.register(new ZoneReorderModule());
     moduleManager.register(new DashboardCleanerModule());
+    moduleManager.register(new HideChatModule());
 }
