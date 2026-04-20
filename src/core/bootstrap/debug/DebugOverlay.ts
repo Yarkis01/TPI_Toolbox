@@ -109,7 +109,7 @@ export class DebugOverlay implements IBootstrap {
         this._toggleBtn.id = 'tpi-debug-toggle';
         this._toggleBtn.textContent = '🐛';
         this._toggleBtn.title = 'Ouvrir le débogueur (Ctrl+Shift+D)';
-        this._toggleBtn.style.display = 'none';
+        this._toggleBtn.style.display = 'flex';
         this._toggleBtn.addEventListener('click', () => this._togglePanel());
         document.body.appendChild(this._toggleBtn);
     }
@@ -127,10 +127,10 @@ export class DebugOverlay implements IBootstrap {
         this._body.className = 'tdbg-body';
         this._panel.appendChild(this._body);
 
+        this._panel.hidden = true;
         document.body.appendChild(this._panel);
         // Exclude the overlay's own node from DOM mutation observation
         this._domTab.setExcludeNode(this._panel);
-        this._renderTab(this._activeTab);
     }
 
     private _buildHeader(): HTMLElement {
