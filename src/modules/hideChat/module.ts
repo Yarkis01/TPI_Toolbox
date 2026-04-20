@@ -11,7 +11,7 @@ export class HideChatModule extends BaseModule {
 
     /** @inheritdoc */
     public get name(): string {
-        return 'Chat';
+        return 'Tchat';
     }
 
     /** @inheritdoc */
@@ -30,8 +30,8 @@ export class HideChatModule extends BaseModule {
             options: [
                 {
                     key: CONFIG_KEYS.MODE,
-                    label: 'Affichage du chat global',
-                    description: 'Choisissez comment le chat global apparaît sur toutes les pages.',
+                    label: 'Affichage du tchat global',
+                    description: 'Choisissez comment le tchat global apparaît sur toutes les pages.',
                     type: 'select',
                     defaultValue: MODES.MINI,
                     options: [
@@ -42,16 +42,16 @@ export class HideChatModule extends BaseModule {
                 },
                 {
                     key: CONFIG_KEYS.HIDE_POLITIQUE_BADGE,
-                    label: 'Masquer le badge du chat politique',
-                    description: 'Cache l\'indicateur de nouveau message sur le lien vers le chat politique dans la barre latérale.',
+                    label: 'Masquer le badge du tchat politique',
+                    description: 'Cache l\'indicateur de nouveau message sur le lien vers le tchat politique dans la barre latérale.',
                     type: 'boolean',
                     defaultValue: false,
                     dependsOn: CONFIG_KEYS.HIDE_POLITIQUE_CHAT,
                 },
                 {
                     key: CONFIG_KEYS.HIDE_POLITIQUE_CHAT,
-                    label: 'Masquer le chat politique',
-                    description: 'Cache le bloc de chat sur la page politique.',
+                    label: 'Masquer le tchat politique',
+                    description: 'Cache le bloc de tchat sur la page politique.',
                     type: 'boolean',
                     defaultValue: false,
                 },
