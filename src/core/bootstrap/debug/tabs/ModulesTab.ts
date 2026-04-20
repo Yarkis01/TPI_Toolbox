@@ -23,34 +23,45 @@ export class ModulesTab {
         const { table, tbody } = makeTable(['Nom', 'ID', 'État', '']);
 
         this._moduleManager.getModules().forEach((m) => {
+            const isEnabledInSettings = this._moduleManager.isModuleEnabled(m.id);
+            const isActive = m.isEnabled();
+
             const tr = tbody.insertRow();
             tr.insertCell().textContent = m.name;
             tr.insertCell().textContent = m.id;
 
             const statusCell = tr.insertCell();
             const badge = document.createElement('span');
-            badge.className = `tdbg-badge tdbg-badge--${m.isEnabled() ? 'ok' : 'off'}`;
-            badge.textContent = m.isEnabled() ? 'Actif' : 'Inactif';
+            if (isActive) {
+                badge.className = 'tdbg-badge tdbg-badge--ok';
+                badge.textContent = 'Actif';
+            } else if (isEnabledInSettings) {
+                badge.className = 'tdbg-badge tdbg-badge--warn';
+                badge.textContent = 'Activé (hors page)';
+            } else {
+                badge.className = 'tdbg-badge tdbg-badge--off';
+                badge.textContent = 'Inactif';
+            }
             statusCell.appendChild(badge);
 
             const status = ModuleStatusService.getInstance().getStatus(m.id);
             const isBlocked =
-                !m.isEnabled() &&
+                !isEnabledInSettings &&
                 (status.effectiveStatus === 'broken' ||
                     status.effectiveStatus === 'update_required');
 
             const actionCell = tr.insertCell();
             const toggleBtn = makeBtn(
-                m.isEnabled() ? 'Désactiver' : isBlocked ? '⚠️ Forcer' : 'Activer',
+                isEnabledInSettings ? 'Désactiver' : isBlocked ? '⚠️ Forcer' : 'Activer',
                 () => {
                     if (isBlocked) {
-                        this._moduleManager.forceToggleModule(m.id, !m.isEnabled());
+                        this._moduleManager.forceToggleModule(m.id, !isEnabledInSettings);
                     } else {
-                        this._moduleManager.toggleModule(m.id, !m.isEnabled());
+                        this._moduleManager.toggleModule(m.id, !isEnabledInSettings);
                     }
                     refresh();
                 },
-                m.isEnabled() ? 'tdbg-toggle--off' : 'tdbg-toggle--on',
+                isEnabledInSettings ? 'tdbg-toggle--off' : 'tdbg-toggle--on',
             );
             actionCell.appendChild(toggleBtn);
         });
