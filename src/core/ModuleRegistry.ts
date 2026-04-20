@@ -24,14 +24,11 @@ export function registerCommonModules(moduleManager: ModuleManager): void {
     moduleManager.register(new StaffBuildingColorizerModule());
     moduleManager.register(new WarehouseColorizerModule());
     moduleManager.register(new EntityStatusColorizerModule());
-
     moduleManager.register(new NewDayHistoryModule());
     moduleManager.register(new RideHypeAsTextModule());
     moduleManager.register(new ZoneFilterModule());
-
     moduleManager.register(new AttractionSurfaceFilterModule());
     moduleManager.register(new OperatingSystemModule(moduleManager));
-
     moduleManager.register(new CollapsibleZonesModule());
     moduleManager.register(new UpdateNotificationModule());
     moduleManager.register(new EnhancedPlanningModule());
