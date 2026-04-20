@@ -46,6 +46,7 @@ export class HideChatModule extends BaseModule {
                     description: 'Cache l\'indicateur de nouveau message sur le lien vers le chat politique dans la barre latérale.',
                     type: 'boolean',
                     defaultValue: false,
+                    dependsOn: CONFIG_KEYS.HIDE_POLITIQUE_CHAT,
                 },
                 {
                     key: CONFIG_KEYS.HIDE_POLITIQUE_CHAT,
