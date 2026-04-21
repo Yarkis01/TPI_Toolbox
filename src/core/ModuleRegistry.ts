@@ -6,6 +6,7 @@ import { DashboardCleanerModule } from '../modules/dashboardCleaner/module';
 import { EnhancedPlanningModule } from '../modules/enhancedPlanning/module';
 import { EntityStatusColorizerModule } from '../modules/entityStatusColorizer/module';
 import { HideChatModule } from '../modules/hideChat/module';
+import { HoldingFilterModule } from '../modules/holdingFilter/module';
 import { NewDayHistoryModule } from '../modules/newDayHistory/module';
 import { OperatingSystemModule } from '../modules/operatingSystem/module';
 import { RideHypeAsTextModule } from '../modules/rideHypeAsText/module';
@@ -35,4 +36,5 @@ export function registerCommonModules(moduleManager: ModuleManager): void {
     moduleManager.register(new ZoneReorderModule());
     moduleManager.register(new DashboardCleanerModule());
     moduleManager.register(new HideChatModule());
+    moduleManager.register(new HoldingFilterModule());
 }

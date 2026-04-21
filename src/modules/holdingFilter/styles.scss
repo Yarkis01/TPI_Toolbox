@@ -1,0 +1,65 @@
+#tpi-holding-filter-bar {
+    margin-bottom: 1rem;
+
+    .tpi-holding-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        padding: 1rem;
+        background: rgba(0, 128, 128, 0.08);
+        border: 1px solid rgba(0, 168, 168, 0.25);
+        border-radius: 8px;
+    }
+
+    .tpi-holding-filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+        flex: 1;
+        min-width: 150px;
+
+        label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #4db8b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        input {
+            padding: 0.4rem 0.6rem;
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 6px;
+            color: #e0e0e0;
+            font-size: 0.875rem;
+            outline: none;
+            transition: border-color 0.15s;
+
+            &::placeholder {
+                color: rgba(255, 255, 255, 0.3);
+            }
+
+            &:focus {
+                border-color: #4db8b8;
+            }
+
+            &[type='number'] {
+                -moz-appearance: textfield;
+
+                &::-webkit-outer-spin-button,
+                &::-webkit-inner-spin-button {
+                    -webkit-appearance: none;
+                }
+            }
+        }
+    }
+}
+
+.tpi-holding-no-results {
+    padding: 2rem;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.45);
+    font-style: italic;
+    width: 100%;
+}
