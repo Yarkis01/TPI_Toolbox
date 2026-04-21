@@ -44,8 +44,22 @@ export class HideChatModule extends BaseModule {
                 {
                     key: CONFIG_KEYS.HIDE_GLOBAL_BADGE,
                     label: 'Masquer le badge de notification du tchat global',
-                    description:
-                        "Cache le compteur de nouveaux messages sur le bouton du tchat global.",
+                    description: 'Cache le compteur de nouveaux messages sur le bouton du tchat global.',
+                    type: 'boolean',
+                    defaultValue: false,
+                },
+                {
+                    key: CONFIG_KEYS.HIDE_HOLDING_BADGE,
+                    label: 'Masquer le badge de notification du tchat holding',
+                    description: 'Cache le compteur de nouveaux messages dans la barre latérale pour le tchat de la holding.',
+                    type: 'boolean',
+                    defaultValue: false,
+                    dependsOn: CONFIG_KEYS.HIDE_HOLDING_CHAT,
+                },
+                {
+                    key: CONFIG_KEYS.HIDE_HOLDING_CHAT,
+                    label: 'Masquer le tchat de la holding',
+                    description: 'Cache le bloc de tchat de la holding sur les pages où il apparaît.',
                     type: 'boolean',
                     defaultValue: false,
                 },
@@ -74,6 +88,8 @@ export class HideChatModule extends BaseModule {
         document.body.classList.add(HIDE_CHAT_SELECTORS.ENABLED_CLASS);
         this._applyMode();
         this._applyGlobalBadge();
+        this._applyHoldingBadge();
+        this._applyHoldingChat();
         this._applyPolitiqueBadge();
         this._applyPolitiqueChat();
     }
@@ -85,6 +101,8 @@ export class HideChatModule extends BaseModule {
             HIDE_CHAT_SELECTORS.HIDDEN_CLASS,
             HIDE_CHAT_SELECTORS.MINI_CLASS,
             HIDE_CHAT_SELECTORS.HIDE_GLOBAL_BADGE_CLASS,
+            HIDE_CHAT_SELECTORS.HIDE_HOLDING_BADGE_CLASS,
+            HIDE_CHAT_SELECTORS.HIDE_HOLDING_CHAT_CLASS,
             HIDE_CHAT_SELECTORS.HIDE_POLITIQUE_BADGE_CLASS,
             HIDE_CHAT_SELECTORS.HIDE_POLITIQUE_CHAT_CLASS,
         );
@@ -98,6 +116,16 @@ export class HideChatModule extends BaseModule {
         } else if (key === CONFIG_KEYS.HIDE_GLOBAL_BADGE) {
             document.body.classList.toggle(
                 HIDE_CHAT_SELECTORS.HIDE_GLOBAL_BADGE_CLASS,
+                value as boolean,
+            );
+        } else if (key === CONFIG_KEYS.HIDE_HOLDING_BADGE) {
+            document.body.classList.toggle(
+                HIDE_CHAT_SELECTORS.HIDE_HOLDING_BADGE_CLASS,
+                value as boolean,
+            );
+        } else if (key === CONFIG_KEYS.HIDE_HOLDING_CHAT) {
+            document.body.classList.toggle(
+                HIDE_CHAT_SELECTORS.HIDE_HOLDING_CHAT_CLASS,
                 value as boolean,
             );
         } else if (key === CONFIG_KEYS.HIDE_POLITIQUE_BADGE) {
@@ -117,6 +145,18 @@ export class HideChatModule extends BaseModule {
     private _applyGlobalBadge(): void {
         const hide = this.getConfigValue<boolean>(CONFIG_KEYS.HIDE_GLOBAL_BADGE, false);
         document.body.classList.toggle(HIDE_CHAT_SELECTORS.HIDE_GLOBAL_BADGE_CLASS, hide);
+    }
+
+    /** Toggles the holding chat badge visibility based on the current config. */
+    private _applyHoldingBadge(): void {
+        const hide = this.getConfigValue<boolean>(CONFIG_KEYS.HIDE_HOLDING_BADGE, false);
+        document.body.classList.toggle(HIDE_CHAT_SELECTORS.HIDE_HOLDING_BADGE_CLASS, hide);
+    }
+
+    /** Toggles the holding chat block visibility based on the current config. */
+    private _applyHoldingChat(): void {
+        const hide = this.getConfigValue<boolean>(CONFIG_KEYS.HIDE_HOLDING_CHAT, false);
+        document.body.classList.toggle(HIDE_CHAT_SELECTORS.HIDE_HOLDING_CHAT_CLASS, hide);
     }
 
     /** Toggles the politique chat badge visibility based on the current config. */

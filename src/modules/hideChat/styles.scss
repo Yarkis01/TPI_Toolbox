@@ -15,6 +15,18 @@ body.tpi-hide-chat {
         }
     }
 
+    &.tpi-hide-chat--hide-holding-chat {
+        .maholding-general-chat {
+            display: none !important;
+        }
+    }
+
+    &.tpi-hide-chat--hide-holding-badge {
+        .app-sidebar__holding-badge {
+            display: none !important;
+        }
+    }
+
     &.tpi-hide-chat--hide-politique-badge {
         .app-sidebar__sublink-chat-badge {
             display: none !important;
