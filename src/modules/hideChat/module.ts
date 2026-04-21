@@ -42,6 +42,14 @@ export class HideChatModule extends BaseModule {
                     ],
                 },
                 {
+                    key: CONFIG_KEYS.HIDE_GLOBAL_BADGE,
+                    label: 'Masquer le badge de notification du tchat global',
+                    description:
+                        "Cache le compteur de nouveaux messages sur le bouton du tchat global.",
+                    type: 'boolean',
+                    defaultValue: false,
+                },
+                {
                     key: CONFIG_KEYS.HIDE_POLITIQUE_BADGE,
                     label: 'Masquer le badge du tchat politique',
                     description:
@@ -65,6 +73,7 @@ export class HideChatModule extends BaseModule {
     protected onEnable(): void {
         document.body.classList.add(HIDE_CHAT_SELECTORS.ENABLED_CLASS);
         this._applyMode();
+        this._applyGlobalBadge();
         this._applyPolitiqueBadge();
         this._applyPolitiqueChat();
     }
@@ -75,6 +84,7 @@ export class HideChatModule extends BaseModule {
             HIDE_CHAT_SELECTORS.ENABLED_CLASS,
             HIDE_CHAT_SELECTORS.HIDDEN_CLASS,
             HIDE_CHAT_SELECTORS.MINI_CLASS,
+            HIDE_CHAT_SELECTORS.HIDE_GLOBAL_BADGE_CLASS,
             HIDE_CHAT_SELECTORS.HIDE_POLITIQUE_BADGE_CLASS,
             HIDE_CHAT_SELECTORS.HIDE_POLITIQUE_CHAT_CLASS,
         );
@@ -85,6 +95,11 @@ export class HideChatModule extends BaseModule {
         super.onConfigChanged(key, value);
         if (key === CONFIG_KEYS.MODE) {
             this._applyMode();
+        } else if (key === CONFIG_KEYS.HIDE_GLOBAL_BADGE) {
+            document.body.classList.toggle(
+                HIDE_CHAT_SELECTORS.HIDE_GLOBAL_BADGE_CLASS,
+                value as boolean,
+            );
         } else if (key === CONFIG_KEYS.HIDE_POLITIQUE_BADGE) {
             document.body.classList.toggle(
                 HIDE_CHAT_SELECTORS.HIDE_POLITIQUE_BADGE_CLASS,
@@ -96,6 +111,12 @@ export class HideChatModule extends BaseModule {
                 value as boolean,
             );
         }
+    }
+
+    /** Toggles the global chat notification badge visibility based on the current config. */
+    private _applyGlobalBadge(): void {
+        const hide = this.getConfigValue<boolean>(CONFIG_KEYS.HIDE_GLOBAL_BADGE, false);
+        document.body.classList.toggle(HIDE_CHAT_SELECTORS.HIDE_GLOBAL_BADGE_CLASS, hide);
     }
 
     /** Toggles the politique chat badge visibility based on the current config. */

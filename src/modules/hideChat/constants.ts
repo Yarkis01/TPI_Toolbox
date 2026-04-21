@@ -4,12 +4,14 @@ export const HIDE_CHAT_SELECTORS = {
     MINI_CLASS: 'tpi-hide-chat--mini',
     HIDE_POLITIQUE_BADGE_CLASS: 'tpi-hide-chat--hide-politique-badge',
     HIDE_POLITIQUE_CHAT_CLASS: 'tpi-hide-chat--hide-politique-chat',
+    HIDE_GLOBAL_BADGE_CLASS: 'tpi-hide-chat--hide-global-badge',
 };
 
 export const CONFIG_KEYS = {
     MODE: 'mode',
     HIDE_POLITIQUE_BADGE: 'hidePolitiqueBadge',
     HIDE_POLITIQUE_CHAT: 'hidePolitiqueChat',
+    HIDE_GLOBAL_BADGE: 'hideGlobalBadge',
 } as const;
 
 export const MODES = {

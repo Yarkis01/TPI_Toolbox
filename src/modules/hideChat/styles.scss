@@ -5,6 +5,16 @@ body.tpi-hide-chat {
         }
     }
 
+    &.tpi-hide-chat--hide-global-badge {
+        .chat-dock__send-new-badge {
+            display: none !important;
+        }
+
+        .chat-dock__send--has-badge .chat-dock__send-arrow {
+            display: block !important;
+        }
+    }
+
     &.tpi-hide-chat--hide-politique-badge {
         .app-sidebar__sublink-chat-badge {
             display: none !important;
