@@ -6,6 +6,7 @@ export const SELECTORS = {
     STAT_LABEL: '.park-overview-mini-stat__label',
     STAT_VALUE: '.park-overview-mini-stat__value',
     FILTER_BAR_ID: 'tpi-holding-filter-bar',
+    COUNT_ID: 'tpi-holding-filter-count',
     NO_RESULTS_ID: 'tpi-holding-no-results',
 } as const;
 

@@ -18,13 +18,14 @@ interface FilterField {
 
 const FILTER_FIELDS: FilterField[] = [
     { id: 'tpi-hf-name', label: 'Recherche', type: 'text', placeholder: 'Nom de la holding...' },
-    { id: 'tpi-hf-redevance', label: 'Redevance max (%)', type: 'number', placeholder: '100' },
-    { id: 'tpi-hf-part-social', label: 'Part sociale max (%)', type: 'number', placeholder: '100' },
-    { id: 'tpi-hf-niveau', label: 'Niveau min', type: 'number', placeholder: '1' },
+    { id: 'tpi-hf-redevance', label: 'Redevance max (%)', type: 'number', placeholder: 'Sans limite' },
+    { id: 'tpi-hf-part-social', label: 'Part sociale max (%)', type: 'number', placeholder: 'Sans limite' },
+    { id: 'tpi-hf-niveau', label: 'Niveau min', type: 'number', placeholder: 'Tous' },
 ];
 
 export class HoldingFilterModule extends BaseModule {
     private _filterBar: HTMLElement | null = null;
+    private _countEl: HTMLElement | null = null;
     private _boundFilter = this._applyFilters.bind(this);
 
     /** @inheritdoc */
@@ -61,6 +62,7 @@ export class HoldingFilterModule extends BaseModule {
     protected onDisable(): void {
         this._filterBar?.remove();
         this._filterBar = null;
+        this._countEl = null;
         document.querySelectorAll<HTMLElement>(SELECTORS.CARD).forEach(c => (c.style.display = ''));
         document.getElementById(SELECTORS.NO_RESULTS_ID)?.remove();
     }
@@ -70,46 +72,63 @@ export class HoldingFilterModule extends BaseModule {
         const list = document.querySelector(SELECTORS.CARD_LIST);
         if (!list) return;
 
-        this._filterBar = document.createElement('div');
+        this._filterBar = document.createElement('section');
         this._filterBar.id = SELECTORS.FILTER_BAR_ID;
+        this._filterBar.className = 'dash-block dash-block--teal';
 
-        const filtersRow = document.createElement('div');
-        filtersRow.className = 'tpi-holding-filters';
+        const body = document.createElement('div');
+        body.className = 'dash-block__body tpi-hf-body';
+        this._filterBar.appendChild(body);
+
+        const grid = document.createElement('div');
+        grid.className = 'tpi-hf-grid';
 
         for (const field of FILTER_FIELDS) {
-            const group = document.createElement('div');
-            group.className = 'tpi-holding-filter-group';
-
             const label = document.createElement('label');
+            label.className = 'tpi-hf-label';
             label.htmlFor = field.id;
             label.textContent = field.label;
 
             const input = document.createElement('input');
+            input.className = 'tpi-hf-input';
             input.type = field.type;
             input.id = field.id;
             input.placeholder = field.placeholder;
-            if (field.type === 'number') {
-                input.min = '0';
-            }
+            if (field.type === 'number') input.min = '0';
 
-            group.appendChild(label);
-            group.appendChild(input);
-            filtersRow.appendChild(group);
+            label.appendChild(input);
+            grid.appendChild(label);
         }
+
+        const totalCards = document.querySelectorAll(SELECTORS.CARD).length;
+
+        const actions = document.createElement('div');
+        actions.className = 'tpi-hf-actions';
+
+        this._countEl = document.createElement('span');
+        this._countEl.id = SELECTORS.COUNT_ID;
+        const bold = document.createElement('strong');
+        bold.textContent = String(totalCards);
+        this._countEl.appendChild(bold);
+        this._countEl.append(' holding(s)');
 
         const resetBtn = document.createElement('button');
         resetBtn.type = 'button';
-        resetBtn.className = 'tpi-holding-reset-btn';
+        resetBtn.className = 'tpi-hf-reset-btn';
         resetBtn.textContent = 'Réinitialiser';
         resetBtn.addEventListener('click', () => {
-            filtersRow.querySelectorAll<HTMLInputElement>('input').forEach(input => (input.value = ''));
+            grid.querySelectorAll<HTMLInputElement>('input').forEach(input => (input.value = ''));
             this._applyFilters();
         });
 
-        filtersRow.appendChild(resetBtn);
-        this._filterBar.appendChild(filtersRow);
+        actions.appendChild(this._countEl);
+        actions.appendChild(resetBtn);
+
+        body.appendChild(grid);
+        body.appendChild(actions);
+
         list.before(this._filterBar);
-        this._filterBar.addEventListener('input', this._boundFilter);
+        grid.addEventListener('input', this._boundFilter);
     }
 
     /** Filters the holding cards based on current input values. */
@@ -134,6 +153,11 @@ export class HoldingFilterModule extends BaseModule {
             card.style.display = passes ? '' : 'none';
             if (passes) visibleCount++;
         });
+
+        if (this._countEl) {
+            const bold = this._countEl.querySelector('strong');
+            if (bold) bold.textContent = String(visibleCount);
+        }
 
         const list = document.querySelector(SELECTORS.CARD_LIST);
         let noResults = document.getElementById(SELECTORS.NO_RESULTS_ID);

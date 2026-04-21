@@ -1,76 +1,89 @@
 #tpi-holding-filter-bar {
     margin-bottom: 1rem;
 
-    .tpi-holding-filters {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.75rem;
-        padding: 1rem;
-        background: rgba(0, 128, 128, 0.08);
-        border: 1px solid rgba(0, 168, 168, 0.25);
-        border-radius: 8px;
-    }
-
-    .tpi-holding-filter-group {
+    .tpi-hf-body {
         display: flex;
         flex-direction: column;
-        gap: 0.3rem;
-        flex: 1;
-        min-width: 150px;
+        gap: 0.55rem;
+    }
 
-        label {
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: #4db8b8;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+    .tpi-hf-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0.75rem;
+        align-items: end;
+    }
+
+    @media (max-width: 920px) {
+        .tpi-hf-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .tpi-hf-label {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+        font-size: 0.86rem;
+        color: rgba(255, 255, 255, 0.88);
+    }
+
+    .tpi-hf-input {
+        width: 100%;
+        min-height: 34px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(0, 0, 0, 0.25);
+        color: rgba(255, 255, 255, 0.9);
+        padding: 0.45rem 0.6rem;
+        font-size: 0.86rem;
+        box-sizing: border-box;
+
+        &::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+            font-style: italic;
         }
 
-        input {
-            padding: 0.4rem 0.6rem;
-            background: rgba(0, 0, 0, 0.25);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 6px;
-            color: #e0e0e0;
-            font-size: 0.875rem;
-            outline: none;
-            transition: border-color 0.15s;
+        &:focus {
+            outline: 2px solid rgba(0, 184, 198, 0.45);
+            outline-offset: 1px;
+        }
 
-            &::placeholder {
-                color: rgba(255, 255, 255, 0.3);
-            }
+        &[type='number'] {
+            -moz-appearance: textfield;
 
-            &:focus {
-                border-color: #4db8b8;
-            }
-
-            &[type='number'] {
-                -moz-appearance: textfield;
-
-                &::-webkit-outer-spin-button,
-                &::-webkit-inner-spin-button {
-                    -webkit-appearance: none;
-                }
+            &::-webkit-outer-spin-button,
+            &::-webkit-inner-spin-button {
+                -webkit-appearance: none;
             }
         }
     }
-}
 
-.tpi-holding-reset-btn {
-    align-self: flex-end;
-    padding: 0.4rem 0.9rem;
-    background: transparent;
-    border: 1px solid rgba(0, 168, 168, 0.4);
-    border-radius: 6px;
-    color: #4db8b8;
-    font-size: 0.8rem;
-    cursor: pointer;
-    transition: background 0.15s, color 0.15s;
-    white-space: nowrap;
+    .tpi-hf-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        font-size: 0.84rem;
+        color: rgba(255, 255, 255, 0.5);
+    }
 
-    &:hover {
-        background: rgba(0, 168, 168, 0.15);
-        color: #7dd8d8;
+    .tpi-hf-reset-btn {
+        padding: 0.3rem 0.8rem;
+        min-height: 30px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 8px;
+        color: rgba(255, 255, 255, 0.75);
+        font-size: 0.82rem;
+        cursor: pointer;
+        transition: background 0.15s, border-color 0.15s;
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.32);
+        }
     }
 }
 
