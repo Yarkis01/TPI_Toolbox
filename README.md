@@ -1,6 +1,6 @@
 # 🔧 TPI Toolbox
 
-![Version](https://img.shields.io/badge/version-2.1.0-purple.svg)
+![Version](https://img.shields.io/badge/version-2.2.0-purple.svg)
 ![License](https://img.shields.io/badge/license-GPL--3.0-green.svg)
 ![Downloads](https://img.shields.io/github/downloads/Yarkis01/TPI_Toolbox/total.svg?v=2)
 
