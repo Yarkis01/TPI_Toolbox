@@ -97,6 +97,16 @@ export class HoldingFilterModule extends BaseModule {
             filtersRow.appendChild(group);
         }
 
+        const resetBtn = document.createElement('button');
+        resetBtn.type = 'button';
+        resetBtn.className = 'tpi-holding-reset-btn';
+        resetBtn.textContent = 'Réinitialiser';
+        resetBtn.addEventListener('click', () => {
+            filtersRow.querySelectorAll<HTMLInputElement>('input').forEach(input => (input.value = ''));
+            this._applyFilters();
+        });
+
+        filtersRow.appendChild(resetBtn);
         this._filterBar.appendChild(filtersRow);
         list.before(this._filterBar);
         this._filterBar.addEventListener('input', this._boundFilter);

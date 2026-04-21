@@ -56,6 +56,24 @@
     }
 }
 
+.tpi-holding-reset-btn {
+    align-self: flex-end;
+    padding: 0.4rem 0.9rem;
+    background: transparent;
+    border: 1px solid rgba(0, 168, 168, 0.4);
+    border-radius: 6px;
+    color: #4db8b8;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    white-space: nowrap;
+
+    &:hover {
+        background: rgba(0, 168, 168, 0.15);
+        color: #7dd8d8;
+    }
+}
+
 .tpi-holding-no-results {
     padding: 2rem;
     text-align: center;
