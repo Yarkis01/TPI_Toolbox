@@ -18,8 +18,18 @@ interface FilterField {
 
 const FILTER_FIELDS: FilterField[] = [
     { id: 'tpi-hf-name', label: 'Recherche', type: 'text', placeholder: 'Nom de la holding...' },
-    { id: 'tpi-hf-redevance', label: 'Redevance max (%)', type: 'number', placeholder: 'Sans limite' },
-    { id: 'tpi-hf-part-social', label: 'Part sociale max (%)', type: 'number', placeholder: 'Sans limite' },
+    {
+        id: 'tpi-hf-redevance',
+        label: 'Redevance max (%)',
+        type: 'number',
+        placeholder: 'Sans limite',
+    },
+    {
+        id: 'tpi-hf-part-social',
+        label: 'Part sociale max (%)',
+        type: 'number',
+        placeholder: 'Sans limite',
+    },
     { id: 'tpi-hf-niveau', label: 'Niveau min', type: 'number', placeholder: 'Tous' },
 ];
 
@@ -63,7 +73,9 @@ export class HoldingFilterModule extends BaseModule {
         this._filterBar?.remove();
         this._filterBar = null;
         this._countEl = null;
-        document.querySelectorAll<HTMLElement>(SELECTORS.CARD).forEach(c => (c.style.display = ''));
+        document
+            .querySelectorAll<HTMLElement>(SELECTORS.CARD)
+            .forEach((c) => (c.style.display = ''));
         document.getElementById(SELECTORS.NO_RESULTS_ID)?.remove();
     }
 
@@ -117,7 +129,7 @@ export class HoldingFilterModule extends BaseModule {
         resetBtn.className = 'tpi-hf-reset-btn';
         resetBtn.textContent = 'Réinitialiser';
         resetBtn.addEventListener('click', () => {
-            grid.querySelectorAll<HTMLInputElement>('input').forEach(input => (input.value = ''));
+            grid.querySelectorAll<HTMLInputElement>('input').forEach((input) => (input.value = ''));
             this._applyFilters();
         });
 
@@ -133,15 +145,24 @@ export class HoldingFilterModule extends BaseModule {
 
     /** Filters the holding cards based on current input values. */
     private _applyFilters(): void {
-        const name = (document.getElementById('tpi-hf-name') as HTMLInputElement).value.toLowerCase().trim();
-        const maxRedevance = parseFloat((document.getElementById('tpi-hf-redevance') as HTMLInputElement).value);
-        const maxPartSocial = parseFloat((document.getElementById('tpi-hf-part-social') as HTMLInputElement).value);
-        const minNiveau = parseFloat((document.getElementById('tpi-hf-niveau') as HTMLInputElement).value);
+        const name = (document.getElementById('tpi-hf-name') as HTMLInputElement).value
+            .toLowerCase()
+            .trim();
+        const maxRedevance = parseFloat(
+            (document.getElementById('tpi-hf-redevance') as HTMLInputElement).value,
+        );
+        const maxPartSocial = parseFloat(
+            (document.getElementById('tpi-hf-part-social') as HTMLInputElement).value,
+        );
+        const minNiveau = parseFloat(
+            (document.getElementById('tpi-hf-niveau') as HTMLInputElement).value,
+        );
 
         let visibleCount = 0;
 
-        document.querySelectorAll<HTMLElement>(SELECTORS.CARD).forEach(card => {
-            const cardName = card.querySelector(SELECTORS.CARD_HEAD)?.textContent?.toLowerCase() ?? '';
+        document.querySelectorAll<HTMLElement>(SELECTORS.CARD).forEach((card) => {
+            const cardName =
+                card.querySelector(SELECTORS.CARD_HEAD)?.textContent?.toLowerCase() ?? '';
             const stats = this._parseStats(card);
 
             const passes =
@@ -179,10 +200,11 @@ export class HoldingFilterModule extends BaseModule {
     private _parseStats(card: HTMLElement): HoldingStats {
         const stats: HoldingStats = { redevance: 0, partSocial: 0, niveau: 0 };
 
-        card.querySelectorAll(SELECTORS.STAT_ITEM).forEach(item => {
+        card.querySelectorAll(SELECTORS.STAT_ITEM).forEach((item) => {
             const label = item.querySelector(SELECTORS.STAT_LABEL)?.textContent?.trim() ?? '';
             const value = parseFloat(
-                item.querySelector(SELECTORS.STAT_VALUE)?.textContent?.replace('%', '').trim() ?? '0',
+                item.querySelector(SELECTORS.STAT_VALUE)?.textContent?.replace('%', '').trim() ??
+                    '0',
             );
 
             if (label === STAT_LABELS.REDEVANCE) stats.redevance = value;
