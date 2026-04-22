@@ -44,14 +44,16 @@ export class HideChatModule extends BaseModule {
                 {
                     key: CONFIG_KEYS.HIDE_GLOBAL_BADGE,
                     label: 'Masquer le badge de notification du tchat global',
-                    description: 'Cache le compteur de nouveaux messages sur le bouton du tchat global.',
+                    description:
+                        'Cache le compteur de nouveaux messages sur le bouton du tchat global.',
                     type: 'boolean',
                     defaultValue: false,
                 },
                 {
                     key: CONFIG_KEYS.HIDE_HOLDING_BADGE,
                     label: 'Masquer le badge de notification du tchat holding',
-                    description: 'Cache le compteur de nouveaux messages dans la barre latérale pour le tchat de la holding.',
+                    description:
+                        'Cache le compteur de nouveaux messages dans la barre latérale pour le tchat de la holding.',
                     type: 'boolean',
                     defaultValue: false,
                     dependsOn: CONFIG_KEYS.HIDE_HOLDING_CHAT,
@@ -59,7 +61,8 @@ export class HideChatModule extends BaseModule {
                 {
                     key: CONFIG_KEYS.HIDE_HOLDING_CHAT,
                     label: 'Masquer le tchat de la holding',
-                    description: 'Cache le bloc de tchat de la holding sur les pages où il apparaît.',
+                    description:
+                        'Cache le bloc de tchat de la holding sur les pages où il apparaît.',
                     type: 'boolean',
                     defaultValue: false,
                 },
