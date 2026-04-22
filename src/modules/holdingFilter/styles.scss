@@ -69,6 +69,29 @@
         color: rgba(255, 255, 255, 0.5);
     }
 
+    .tpi-hf-select {
+        width: 100%;
+        min-height: 34px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(0, 0, 0, 0.25);
+        color: rgba(255, 255, 255, 0.9);
+        padding: 0.45rem 0.6rem;
+        font-size: 0.86rem;
+        box-sizing: border-box;
+        cursor: pointer;
+
+        &:focus {
+            outline: 2px solid rgba(0, 184, 198, 0.45);
+            outline-offset: 1px;
+        }
+
+        option {
+            background: #1e2a35;
+            color: rgba(255, 255, 255, 0.9);
+        }
+    }
+
     .tpi-hf-reset-btn {
         padding: 0.3rem 0.8rem;
         min-height: 30px;
