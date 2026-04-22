@@ -185,9 +185,9 @@ export class HoldingFilterModule extends BaseModule {
         resetBtn.textContent = 'Réinitialiser';
         resetBtn.addEventListener('click', () => {
             grid.querySelectorAll<HTMLInputElement>('input').forEach((input) => (input.value = ''));
-            grid
-                .querySelectorAll<HTMLSelectElement>('select')
-                .forEach((select) => (select.value = 'none'));
+            grid.querySelectorAll<HTMLSelectElement>('select').forEach(
+                (select) => (select.value = 'none'),
+            );
             this._applyFilters();
         });
 
