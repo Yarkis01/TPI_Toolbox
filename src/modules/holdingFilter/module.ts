@@ -69,7 +69,7 @@ export class HoldingFilterModule extends BaseModule {
 
     /** @inheritdoc */
     public get description(): string {
-        return 'Ajoute des filtres sur la page de recrutement des holdings pour trouver rapidement celle qui correspond à vos critères (redevance, part sociale, niveau...).';
+        return 'Améliore les filtres de la page de recrutement des holdings : recherche par nom, filtrage par redevance, part sociale et niveau, ainsi que des options de tri avancées.';
     }
 
     /** @inheritdoc */
