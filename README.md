@@ -4,6 +4,9 @@
 ![License](https://img.shields.io/badge/license-GPL--3.0-green.svg)
 ![Downloads](https://img.shields.io/github/downloads/Yarkis01/TPI_Toolbox/total.svg?v=2)
 
+> [!WARNING]  
+> **DÉPÔT ARCHIVÉ** : Suite à la fermeture officielle du jeu *Theme Park Industries*, cette toolbox **n'est plus maintenue et le projet est désormais archivé**. Le code reste accessible en lecture seule pour quiconque souhaite le consulter ou s'en inspirer. Merci à tous pour l'aventure ! 🎢
+
 **TPI Toolbox** est un script utilisateur (Userscript) modulaire et performant conçu pour enrichir l'expérience sur le jeu de gestion **[Theme Park Industries](https://www.themeparkindustries.com/)**. 
 
 Développé en TypeScript, il apporte de nombreuses aides visuelles, des filtres avancés et des fonctionnalités inédites pour optimiser la gestion de votre parc d'attractions. Grâce à son interface intégrée, vous pouvez activer ou désactiver chaque module selon vos préférences.
